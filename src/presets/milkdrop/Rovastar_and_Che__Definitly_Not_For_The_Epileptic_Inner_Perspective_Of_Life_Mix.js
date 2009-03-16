@@ -1,0 +1,93 @@
+function Rovastar_and_Che__Definitly_Not_For_The_Epileptic_Inner_Perspective_Of_Life_Mix() {
+  with (Math) {
+    fRating=3.5;
+    gamma=1;
+    decay=1;
+    echo_zoom=1.0004;
+    echo_alpha=0;
+    echo_orient=0;
+    wave_mode=1;
+    wave_additive=1;
+    wave_usedots=1;
+    bWaveThick=1;
+    bModWaveAlphaByVolume=1;
+    wave_brighten=1;
+    wrap=1;
+    darken_center=1;
+    bRedBlueStereo=0;
+    brighten=0;
+    darken=1;
+    solarize=0;
+    invert=0;
+    wave_a=1.00573;
+    fWaveScale=0.28209;
+    fWaveSmoothing=0;
+    wave_mystery=0;
+    fModWaveAlphaStart=1.489999;
+    fModWaveAlphaEnd=0.75;
+    warp_speed=1;
+    warp_scale=1.331;
+    zoomexp=0.690737;
+    fShader=1;
+    zoom=2.380962;
+    rot=0;
+    cx=0.4999;
+    cy=0.4999;
+    dx=0.2;
+    dy=0.2;
+    warp=0.01;
+    sx=0.463935;
+    sy=0.535239;
+    wave_r=0;
+    wave_g=1;
+    wave_b=0;
+    wave_x=0.5;
+    wave_y=0.5;
+    ob_size=0.03;
+    ob_r=0;
+    ob_g=0;
+    ob_b=0;
+    ob_a=1;
+    ib_size=0.005;
+    ib_r=0;
+    ib_g=0;
+    ib_b=0;
+    ib_a=1;
+    mv_x=64;
+    mv_y=1.248;
+    mv_dx=0;
+    mv_dy=0;
+    mv_l=0.9;
+    mv_r=1;
+    mv_g=1;
+    mv_b=1;
+    mv_a=1;
+    // che's sensor - alpha
+    le=1.4*bass_att+.1*bass+.5*treb;
+    pulse=band(above(le,th),above(le-th,block));
+    block=le-th;
+    th=if_milk(above(le,th),le+114/(le+10)-7.407,
+    th+th*.07/(th-12)+below(th,2.7)*.1*(2.7-th));
+    
+    cycle=if_milk(pulse,cycle+1,cycle);
+    q1=cycle;
+    
+    wave_r = 0.5 + 0.350*( 0.60*sin(0.825*time) + 0.40*sin(0.915*time) );
+    wave_g = 0.5+ 0.350*( 0.60*sin(0.900*time) + 0.40*sin(1.025*time) );
+    wave_b = 0.5 + 0.350*( 0.60*sin(0.810*time) + 0.40*sin(0.950*time) );
+    mv_r= 0.5 + 0.350*( 0.60*sin(0.900*time) + 0.40*sin(0.750*time) );
+    mv_g= 0.5+ 0.350*( 0.60*sin(0.825*time) + 0.40*sin(0.950*time) );
+    mv_b= 0.5 + 0.350*( 0.60*sin(0.775*time) + 0.40*sin(1.025*time) );
+    ib_r=mv_b;
+    ib_b=1-mv_g;
+    ib_g=wave_r;
+    ob_b=mv_r;
+    ob_r=0.5*(wave_b + wave_g);
+    ob_g=0.5*(wave_r+mv_b);
+    zoom = zoom-(0.10-(.5*th+.2*le+pulse))*0.1;
+    warp = 0;
+    // per_pixel_1=rot = -ang+sin(q1);
+    // per_pixel_2=zoom = zoom - rot*.08;
+  }
+}
+register_preset( Rovastar_and_Che__Definitly_Not_For_The_Epileptic_Inner_Perspective_Of_Life_Mix);

@@ -1,0 +1,55 @@
+function Geiss__Hyperion() {
+  with (Math) {
+    gamma=1;
+    decay=0.98;
+    echo_zoom=2;
+    echo_alpha=0;
+    echo_orient=0;
+    wave_mode=2;
+    wave_additive=0;
+    wave_usedots=0;
+    bModWaveAlphaByVolume=1;
+    wave_brighten=1;
+    wrap=1;
+    darken_center=0;
+    bMotionVectorsOn=0;
+    bRedBlueStereo=0;
+    mv_x=12;
+    mv_y=9;
+    wave_a=8.200001;
+    fWaveScale=3.227871;
+    fWaveSmoothing=0.9;
+    wave_mystery=0;
+    fModWaveAlphaStart=1.05;
+    fModWaveAlphaEnd=1.65;
+    warp_speed=1;
+    warp_scale=1;
+    zoomexp=1;
+    fShader=0;
+    zoom=1.205;
+    rot=0;
+    cx=0.5;
+    cy=0.5;
+    dx=0;
+    dy=0;
+    warp=0.016046;
+    sx=1;
+    sy=1;
+    wave_r=0;
+    wave_g=0.6;
+    wave_b=1;
+    wave_x=0.5;
+    wave_y=0.5;
+    wave_g = wave_g + 0.100*( 0.90*sin(0.583*time) + 0.10*sin(1.006*time) );
+    wave_b = wave_b + 0.100*( 0.90*sin(0.993*time) + 0.10*sin(0.933*time) );
+    zoom = zoom + 0.013*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );
+    rot = rot + 0.040*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+    cx = cx + 0.003*( 0.60*sin(0.471*time) + 0.40*sin(0.297*time) );
+    cy = cy + 0.003*( 0.60*sin(0.379*time) + 0.40*sin(0.351*time) );
+    dx = dx + 0.003*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );
+    rot=rot+0.02*(sin(time*2.134)+sin(time*1.7134)+sin(time*2.834));
+    dx=dx+0.01*(sin(time*1.134)+sin(time*0.7134)+sin(time*2.334));
+    dy=dy+0.01*(sin(time*1.8834)+sin(time*1.0144)+sin(time*1.334));
+  }
+}
+register_preset( Geiss__Hyperion);

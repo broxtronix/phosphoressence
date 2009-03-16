@@ -1,0 +1,63 @@
+function Geiss__Cruzin'() {
+  with (Math) {
+    fGammaAdj=2;
+    fDecay=0.98;
+    fVideoEchoZoom=2;
+    fVideoEchoAlpha=0;
+    nVideoEchoOrientation=0;
+    nWaveMode=6;
+    bAdditiveWaves=0;
+    bWaveDots=0;
+    bModWaveAlphaByVolume=0;
+    bMaximizeWaveColor=1;
+    bTexWrap=1;
+    bDarkenCenter=0;
+    bMotionVectorsOn=0;
+    bRedBlueStereo=0;
+    nMotionVectorsX=12;
+    nMotionVectorsY=9;
+    bBrighten=0;
+    bDarken=0;
+    bSolarize=0;
+    bInvert=0;
+    fWaveAlpha=4;
+    fWaveScale=1.691672;
+    fWaveSmoothing=0.5;
+    fWaveParam=0;
+    fModWaveAlphaStart=0.75;
+    fModWaveAlphaEnd=0.95;
+    fWarpAnimSpeed=1;
+    fWarpScale=3.138;
+    fZoomExponent=1;
+    fShader=0;
+    zoom=1.0003;
+    rot=0;
+    cx=0.5;
+    cy=0.11;
+    dx=0;
+    dy=-0.001;
+    warp=0.0243;
+    sx=1.001992;
+    sy=1.004987;
+    wave_r=0;
+    wave_g=0.57;
+    wave_b=1;
+    wave_x=0.65;
+    wave_y=0.5;
+    wave_r = wave_r + 0.250*( 0.60*sin(10.937*time) + 0.40*sin(1.470*time) );
+    wave_g = wave_g + 0.300*( 0.60*sin(11.344*time) + 0.40*sin(1.041*time) );
+    wave_b = wave_b + 0.250*( 0.60*sin(21.251*time) + 0.40*sin(1.355*time) );
+    rot = rot + 0.004*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+    cx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );
+    cy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );
+    decay = decay - 0.01*equal(frame%6,0);
+    // per_pixel_1=du = (x-cx)*2;
+    // per_pixel_2=dv = (y-cy)*2;
+    // per_pixel_3=q = 0.01*pow(du*du+dv*dv,1.5);
+    // per_pixel_4=dx = q*du;
+    // per_pixel_5=dy = q*dv;
+    // per_pixel_6=
+    fRating=4;
+  }
+}
+register_preset( Geiss__Cruzin');

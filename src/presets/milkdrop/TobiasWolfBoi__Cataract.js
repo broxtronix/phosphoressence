@@ -1,0 +1,57 @@
+function TobiasWolfBoi__Cataract() {
+  with (Math) {
+    fRating=3;
+    gamma=1.5;
+    decay=0.98;
+    echo_zoom=2;
+    echo_alpha=0;
+    echo_orient=0;
+    wave_mode=0;
+    wave_additive=0;
+    wave_usedots=0;
+    bModWaveAlphaByVolume=0;
+    wave_brighten=0;
+    wrap=1;
+    darken_center=0;
+    bMotionVectorsOn=0;
+    bRedBlueStereo=0;
+    mv_x=12;
+    mv_y=9;
+    brighten=0;
+    darken=1;
+    solarize=1;
+    invert=0;
+    wave_a=2.1;
+    fWaveScale=71.663254;
+    fWaveSmoothing=0;
+    wave_mystery=1;
+    fModWaveAlphaStart=0.75;
+    fModWaveAlphaEnd=0.95;
+    warp_speed=1;
+    warp_scale=2.853;
+    zoomexp=99.9;
+    fShader=0;
+    zoom=1.567768;
+    rot=0;
+    cx=0.5;
+    cy=0.5;
+    dx=0;
+    dy=0;
+    warp=0;
+    sx=1;
+    sy=1;
+    wave_r=0.99;
+    wave_g=0.99;
+    wave_b=0.99;
+    wave_x=0.5;
+    wave_y=0.5;
+    wave_r = wave_r + 0.010*( 0.60*sin(0.933*time) + 0.40*sin(1.045*time) );
+    wave_g = wave_g + 0.010*( 0.60*sin(0.900*time) + 0.40*sin(0.956*time) );
+    wave_b = wave_b + 0.010*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time) );
+    zoom = zoom + 0.013*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );
+    rot = rot + 0.040*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+    // per_pixel_1=q2=0.05+0.01*sin(time*0.71);
+    // per_pixel_2=zoom=zoom+q2*sin(rad*20+time*2.5);
+  }
+}
+register_preset( TobiasWolfBoi__Cataract);

@@ -1,0 +1,53 @@
+function Geiss__Bass_Kaleidosphere() {
+  with (Math) {
+    gamma=2;
+    echo_zoom=2;
+    echo_alpha=0;
+    echo_orient=0;
+    decay=0.97;
+    wave_mode=2;
+    wave_additive=0;
+    wave_usedots=0;
+    bModWaveAlphaByVolume=0;
+    wave_brighten=1;
+    wrap=1;
+    darken_center=0;
+    bMotionVectorsOn=0;
+    mv_x=12;
+    mv_y=9;
+    wave_a=3.5;
+    fWaveScale=2.72;
+    fWaveSmoothing=0.5;
+    wave_mystery=0;
+    fModWaveAlphaStart=0.75;
+    fModWaveAlphaEnd=0.95;
+    warp_speed=1;
+    warp_scale=2.853;
+    zoomexp=1;
+    fShader=0;
+    zoom=1.046;
+    rot=0.02;
+    cx=0.5;
+    cy=0.5;
+    dx=0;
+    dy=0;
+    warp=0.882;
+    sx=1;
+    sy=1;
+    wave_r=0.6;
+    wave_g=0.6;
+    wave_b=0.6;
+    wave_x=0.5;
+    wave_y=0.47;
+    wave_r = wave_r + 0.400*( 0.60*sin(0.933*time) + 0.40*sin(1.045*time) );
+    wave_g = wave_g + 0.400*( 0.60*sin(0.900*time) + 0.40*sin(0.956*time) );
+    wave_b = wave_b + 0.400*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time) );
+    zoom = zoom + 0.023*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );
+    rot = rot + 0.030*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+    cx = cx + 0.070*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );
+    cy = cy + 0.070*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );
+    // per_pixel_1=zoom=zoom-max(0,(bass-1.2))*sin(time*1.4+rad*6);
+    fRating=3;
+  }
+}
+register_preset( Geiss__Bass_Kaleidosphere);
