@@ -1,0 +1,1 @@
+autoreconf --force --verbose --install -I m4 -I thirdparty/m4

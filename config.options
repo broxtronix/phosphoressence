@@ -1,0 +1,33 @@
+#! /bin/sh
+
+### IRG Specific Convenience Paths
+
+IRG_ARCH_RAW="`uname -m`_`uname -s`_gcc`gcc -dumpversion | cut -f-2 -d .`"
+IRG_ARCH=`echo $IRG_ARCH_RAW | awk '{ print tolower( $0 ) }'`
+IRGPKG_DIR=/irg/packages/$IRG_ARCH
+
+PREFIX=`pwd`/build/$IRG_ARCH
+
+
+### IRG Specific Convenience Paths
+
+IRG_ARCH_RAW="`uname -p`_`uname -s`_gcc`gcc -dumpversion | cut -f-2 -d .`"
+IRG_ARCH=`echo $IRG_ARCH_RAW | awk '{ print tolower( $0 ) }'`
+IRGPKG_DIR=/irg/packages/$IRG_ARCH
+
+### Configure Options (Alternative to using command line syntax:  --enable-FEATURE=[val] )
+ENABLE_DEBUG=yes
+ENABLE_OPTIMIZE=yes
+ENABLE_LIBTOOL=yes
+ENABLE_CUSTOM_ARCH_NAME=$IRG_ARCH
+
+ENABLE_APP_PHOSPHORESSENCE=yes
+
+### Package Base Paths - Set these to the directories that contain 
+###   lib/include directories for packages in non-standard locations.
+
+PKG_PATHS="  \
+  `pwd`/thirdparty/MBA-1.1                       \
+  $HOME/projects/VisionWorkbench/trunk/build/    \
+  $HOME/local \
+"
