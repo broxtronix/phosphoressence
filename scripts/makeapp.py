@@ -37,7 +37,7 @@ plist_text = """
 </plist>
 """
 
-def build_bundle_tree(executable, appname):
+def build_bundle_tree(executable, scripts, presets, appname):
     basedir = appname + ".app/Contents"
 
     try: os.makedirs(basedir + "/MacOS")
@@ -46,8 +46,17 @@ def build_bundle_tree(executable, appname):
     except: pass
     try: os.makedirs(basedir + "/Frameworks")
     except: pass
+    try: os.makedirs(basedir + "/Resources/scripts")
+    except: pass
+    try: os.makedirs(basedir + "/Resources/presets")
+    except: pass
+    try: os.makedirs(basedir + "/Resources/shaders")
+    except: pass
 
     os.system("cp " + executable + " " + basedir + "/MacOS/" + appname)
+    os.system("cp -r " + presets + "/* " + basedir + "/Resources/presets")
+    os.system("cp -r " + scripts + "/*.js " + basedir + "/Resources/scripts")
+    os.system("cp -r " + shaders + "/*.glsl " + basedir + "/Resources/shaders")
 
     f = open(basedir + "/Info.plist","w")
     f.write(plist_text)
@@ -57,7 +66,7 @@ def fix_dylib_paths(name):
     libs = os.popen("otool -L " + name)
     for line in libs:
         if (line.find(":") == -1 and
-            line.find("@loader_path") == -1 and 
+            line.find("@executable_path") == -1 and 
             line.find("/System/Library/") == -1 and 
             line.find("/usr/lib") == -1 and
             line.find("/usr/X11") == -1):
@@ -77,7 +86,7 @@ def fix_dylib_paths(name):
             else:
                 source_token = tokens[0]
                 idx = source_token.rfind("/")
-                dest_token = "@loader_path" + source_token[idx:]
+                dest_token = "@executable_path" + source_token[idx:]
                 print "\tReplacing " + source_token + " with " + dest_token
                 os.system("install_name_tool -change " + source_token + " " + dest_token + " " + name)
 
@@ -115,7 +124,7 @@ def install_libraries(executable, appname):
             else:
                 source_lib = tokens[0]
                 idx = source_lib.rfind("/")
-                dest_id = "@loader_path" + source_lib[idx:]
+                dest_id = "@executable_path" + source_lib[idx:]
                 dest_lib = base_name + source_lib[idx:]
                 print "Installing " + source_lib + " in " + dest_lib
                 os.system("cp " + source_lib + " " + dest_lib)
@@ -125,6 +134,9 @@ def install_libraries(executable, appname):
                 
 # MAIN
 executable = "src/pe"
+scripts = "src/StandardScripts"
+shaders = "src/StandardShaders"
+presets = "src/presets"
 appname = "PhosphorEssence"
 print "------------------------------------------------------"
 print "        PhosphorEssence App Bundle Builder            "
@@ -135,5 +147,5 @@ print "------------------------------------------------------"
 print ""
 print "Building " + appname + ".app from " + executable
 
-build_bundle_tree(executable, appname)
+build_bundle_tree(executable, scripts, presets, appname)
 install_libraries(executable, appname)

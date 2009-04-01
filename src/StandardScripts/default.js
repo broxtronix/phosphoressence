@@ -1,5 +1,3 @@
-var SCRIPTS = "/Users/mbroxton/projects/PhosphorEssence/src/StandardScripts";
-
 function osc_receive_callback(path, value) {
     if (debug)
 	print("[OSC]    Path: " + path + "   Value: " + value);
@@ -224,8 +222,8 @@ function joystick_receive_callback(path, value) {
 function pe_load() {
     
     // Load various javascript modules
-    load(SCRIPTS + "/PresetFunctions.js");
-    load(SCRIPTS + "/Bindings.js");
+    load(RESOURCES + "/scripts/PresetFunctions.js");
+    load(RESOURCES + "/scripts/Bindings.js");
 
     // Set up bindings object
     bindings = new Bindings();
@@ -248,46 +246,42 @@ function pe_initialize() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Set up some basic control bindings
-    // bindings.add(osc, "/1/fader1", "decay", 0.15, 1.1, 0.95, "log10");
-    // bindings.add(osc, "/1/fader2", "zoom", 0.5, 1.5, 1.0);
-    // bindings.add(osc, "/1/fader3", "zoomexp", 0.25, 5.0, 1.0, "log10");  
-    // bindings.add(osc, "/1/fader4", "rot", -0.785, 0.785, 0.0);
+    bindings.add(osc, "/1/fader1", "decay", 0.15, 1.1, 0.95, "log10");
+    bindings.add(osc, "/1/fader2", "zoom", 0.5, 1.5, 1.0);
+    bindings.add(osc, "/1/fader3", "zoomexp", 0.25, 5.0, 1.0, "log10");  
+    bindings.add(osc, "/1/fader4", "rot", -0.785, 0.785, 0.0);
 
-    // bindings.add(osc, "/2/fader1", "sx", 0.5, 1.5, 1.0);
-    // bindings.add(osc, "/2/fader2", "sy", 0.5, 1.5, 1.0);
+    bindings.add(osc, "/2/fader1", "sx", 0.5, 1.5, 1.0);
+    bindings.add(osc, "/2/fader2", "sy", 0.5, 1.5, 1.0);
+    bindings.add(osc, "/2/fader3", "dx", -0.5, 0.5, 0.0);
+    bindings.add(osc, "/2/fader4", "dy", -0.5, 0.5, 0.0);
+    bindings.add(osc, "/2/fader5", "cx", -1.5, 1.5, 0.0);
+    bindings.add(osc, "/2/fader6", "cy", -1.5, 1.5, 0.0);
+    bindings.add(osc, "/2/toggle7", "wave_enabled", 0.0, 1.0, 0.0);
+    bindings.add(osc, "/2/fader7", "wave_frequency", 0.01, 300, 100, "log10");
+    bindings.add(osc, "/2/toggle8", "square_a", 0.0, 1.0, 1.0);
+    bindings.add(osc, "/2/fader8", "square_frequency", 0.001, 1.0, 0.03);
 
-    // bindings.add(osc, "/2/fader3", "dx", -0.5, 0.5, 0.0);
-    // bindings.add(osc, "/2/fader4", "dy", -0.5, 0.5, 0.0);
-    // bindings.add(osc, "/2/fader5", "cx", -1.5, 1.5, 0.0);
-    // bindings.add(osc, "/2/fader6", "cy", -1.5, 1.5, 0.0);
-    // bindings.add(osc, "/2/toggle7", "wave_enabled", 0.0, 1.0, 0.0);
-    // bindings.add(osc, "/2/fader7", "wave_frequency", 0.01, 300, 100, "log10");
-    // bindings.add(osc, "/2/toggle8", "square_a", 0.0, 1.0, 1.0);
-    // bindings.add(osc, "/2/fader8", "square_frequency", 0.001, 1.0, 0.03);
+    bindings.add(osc, "/3/fader1", "warp", 0.0, 2.0, 0.0);
+    bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5);
+    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
+    bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0);
+    bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0);
+    bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0);
+    bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
+    bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
 
-    // bindings.add(osc, "/3/fader1", "warp", 0.0, 2.0, 0.0);
-    // bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5);
-    // bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
-    // bindings.add(osc, "/3/fader4", "mv_a", 0.0, 1.0, 0.0);
-    // bindings.add(osc, "/joystick1/axis3", "mv_a", 0.0, 1.0, 0.0);
-    // bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0);
-    // bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0);
-    // bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0);
-    // bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
-    // bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
-
-    //   pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
-    //   pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);
-    //   pe_parameters().add_parameter("rd_D_b", "/3/fader3", 0.0, 0.5, 0.0625);
-    //   pe_parameters().add_parameter("rd_s", "/3/fader4", 0.0, 0.05, 0.03125);
-    //   pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12);
-    //   pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0);
+    // pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
+    // pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);
+    // pe_parameters().add_parameter("rd_D_b", "/3/fader3", 0.0, 0.5, 0.0625);
+    // pe_parameters().add_parameter("rd_s", "/3/fader4", 0.0, 0.05, 0.03125);
+    // pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12);
+    // pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0);
 
     // Langton bEATS
-    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.1, 0.95);
-    bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
-    bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
-    //    bindings.add(osc, "/joystick0/axis5", "zoomexp", 0.25, 5.0, 1.0, "log10");
+    // bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.1, 0.95);
+    // bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
+    // bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 
     sx_coefficient = 0.0;
     sy_coefficient = 0.0;
@@ -309,7 +303,7 @@ function pe_initialize() {
 
     
     // Load Milkdrop Presets
-    // load("/Users/mbroxton/projects/PhosphorEssence/src/presets/milkdrop/milk_presets.js");
+    //    load(RESOURCES + "/presets/milkdrop/milk_presets.js");
 }
 
 
@@ -320,113 +314,113 @@ function pe_initialize() {
 // PhosphorEssence parameters.
 function pe_render() {
     
-    if ( run_preset ) {
+    // if ( run_preset ) {
 
-	// Milkdrop preset mode
-	if ( preset = current_preset() )
-	    preset();
+    // 	// Milkdrop preset mode
+    // 	if ( preset = current_preset() )
+    // 	    preset();
 
-    } else {
+    // } else {
 
-	// Update scaling
-	var scaling_stepsize = 1/100.0;
-	sx += scaling_stepsize * sx_coefficient;
-	sy += scaling_stepsize * sy_coefficient;
-	if (sx > 1.5) sx = 1.5;
-	if (sx < 0.5) sx = 0.5;
-	if (sy > 1.5) sy = 1.5;
-	if (sy < 0.5) sy = 0.5;
+    // 	// Update scaling
+    // 	var scaling_stepsize = 1/100.0;
+    // 	sx += scaling_stepsize * sx_coefficient;
+    // 	sy += scaling_stepsize * sy_coefficient;
+    // 	if (sx > 1.5) sx = 1.5;
+    // 	if (sx < 0.5) sx = 0.5;
+    // 	if (sy > 1.5) sy = 1.5;
+    // 	if (sy < 0.5) sy = 0.5;
 
-	// Update center of rotation
-	var crot_stepsize = 1/100.0;
-	cx += crot_stepsize * cx_coefficient;
-	cy += crot_stepsize * cy_coefficient;
-	if (cx > 1.5) cx = 1.5;
-	if (cx < -1.5) cx = -1.5;
-	if (cy > 1.5) cy = 1.5;
-	if (cy < -1.5) cy = -1.5;
+    // 	// Update center of rotation
+    // 	var crot_stepsize = 1/100.0;
+    // 	cx += crot_stepsize * cx_coefficient;
+    // 	cy += crot_stepsize * cy_coefficient;
+    // 	if (cx > 1.5) cx = 1.5;
+    // 	if (cx < -1.5) cx = -1.5;
+    // 	if (cy > 1.5) cy = 1.5;
+    // 	if (cy < -1.5) cy = -1.5;
 
-	// Update warp
-	var warp_stepsize = 1/30.0;
-	warp += warp_stepsize * warp_coefficient;
-	if (warp > 2.0) warp = 2.0;
-	if (warp < 0.0) warp = 0.0;
+    // 	// Update warp
+    // 	var warp_stepsize = 1/30.0;
+    // 	warp += warp_stepsize * warp_coefficient;
+    // 	if (warp > 2.0) warp = 2.0;
+    // 	if (warp < 0.0) warp = 0.0;
 
-	// Update gamma
-	// var gamma_stepsize = 1/100.0;
-	// gamma += gamma_stepsize * gamma_coefficient;
-	// if (gamma > 1.5) gamma = 1.5;
-	// if (gamma < 0.9) gamma = 0.9;
+    // 	// Update gamma
+    // 	// var gamma_stepsize = 1/100.0;
+    // 	// gamma += gamma_stepsize * gamma_coefficient;
+    // 	// if (gamma > 1.5) gamma = 1.5;
+    // 	// if (gamma < 0.9) gamma = 0.9;
 
-	// Update wsfreq 
-	var wsfreq_stepsize = 1.1;
-	if (wsfreq_coefficient > 0)
-	    wave_frequency *= wsfreq_stepsize;
-	else if (wsfreq_coefficient < 0)
-	    wave_frequency /= wsfreq_stepsize;
-	if (wave_frequency > 400) wave_frequency = 400;
-	if (wave_frequency < 0.01) wave_frequency = 0.01;
+    // 	// Update wsfreq 
+    // 	var wsfreq_stepsize = 1.1;
+    // 	if (wsfreq_coefficient > 0)
+    // 	    wave_frequency *= wsfreq_stepsize;
+    // 	else if (wsfreq_coefficient < 0)
+    // 	    wave_frequency /= wsfreq_stepsize;
+    // 	if (wave_frequency > 400) wave_frequency = 400;
+    // 	if (wave_frequency < 0.01) wave_frequency = 0.01;
 
-	// Update sqfreq 
-	// var sqfreq_stepsize = 1.05;
-	// if (sqfreq_coefficient > 0)
-	//     square_frequency *= sqfreq_stepsize;
-	// else if (sqfreq_coefficient < 0)
-	//     square_frequency /= sqfreq_stepsize;
-	// if (square_frequency > 0.05) square_frequency = 0.05;
-	// if (square_frequency < 0.001) square_frequency = 0.001;
-	// print(square_frequency);
+    // 	// Update sqfreq 
+    // 	// var sqfreq_stepsize = 1.05;
+    // 	// if (sqfreq_coefficient > 0)
+    // 	//     square_frequency *= sqfreq_stepsize;
+    // 	// else if (sqfreq_coefficient < 0)
+    // 	//     square_frequency /= sqfreq_stepsize;
+    // 	// if (square_frequency > 0.05) square_frequency = 0.05;
+    // 	// if (square_frequency < 0.001) square_frequency = 0.001;
+    // 	// print(square_frequency);
 
-	// Update color_shift
-	var color_shift_stepsize = 1/100.0;
-	color_shift += color_shift_stepsize * color_shift_coefficient;
-	if (color_shift > 1.0) color_shift = 1.0;
-	if (color_shift < -1.0) color_shift = -1.0;
+    // 	// Update color_shift
+    // 	var color_shift_stepsize = 1/100.0;
+    // 	color_shift += color_shift_stepsize * color_shift_coefficient;
+    // 	if (color_shift > 1.0) color_shift = 1.0;
+    // 	if (color_shift < -1.0) color_shift = -1.0;
 
-	// Update MV length
-	var mv_l_stepsize = 1/20.0;
-	mv_l += mv_l_stepsize * mv_l_coeff;
-	if (mv_l > 2.0) mv_l = 2.0;
-	if (mv_l < 0.0) mv_l = 0.0;
+    // 	// Update MV length
+    // 	var mv_l_stepsize = 1/20.0;
+    // 	mv_l += mv_l_stepsize * mv_l_coeff;
+    // 	if (mv_l > 2.0) mv_l = 2.0;
+    // 	if (mv_l < 0.0) mv_l = 0.0;
 	
-	// Cycle through OB colors
-	ib_r = 0.5;
-	ib_g = 0.5;
-	ib_b = 0.5;
-	ib_r += 0.35 * Math.sin(7/10.0*time);
-	ib_g += 0.35 * Math.sin(11/10.0*time);
-	ib_b += 0.35 * Math.sin(13/10.0*time);
+    	// Cycle through OB colors
+    	ib_r = 0.5;
+    	ib_g = 0.5;
+    	ib_b = 0.5;
+    	ib_r += 0.35 * Math.sin(7/10.0*time);
+    	ib_g += 0.35 * Math.sin(11/10.0*time);
+    	ib_b += 0.35 * Math.sin(13/10.0*time);
 
-	// Cycle through Wave colors
-	wave_brighten = 1.0;
-	wave_r=0.65;
-	wave_g=0.65;
-	wave_b=0.65;
-	wave_r = wave_r + 0.350*( 0.60*Math.sin(0.742*time) + 0.40*Math.sin(1.021*time) );
-	wave_g = wave_g + 0.350*( 0.60*Math.sin(0.703*time) + 0.40*Math.sin(0.969*time) );
-	wave_b = wave_b + 0.350*( 0.60*Math.sin(1.090*time) + 0.40*Math.sin(0.963*time) );
+    	// Cycle through Wave colors
+    	wave_brighten = 1.0;
+    	wave_r=0.65;
+    	wave_g=0.65;
+    	wave_b=0.65;
+    	wave_r = wave_r + 0.350*( 0.60*Math.sin(0.742*time) + 0.40*Math.sin(1.021*time) );
+    	wave_g = wave_g + 0.350*( 0.60*Math.sin(0.703*time) + 0.40*Math.sin(0.969*time) );
+    	wave_b = wave_b + 0.350*( 0.60*Math.sin(1.090*time) + 0.40*Math.sin(0.963*time) );
 	
-	// Cycle through waveshape colors
-	square_r=0.65;
-	square_g=0.65;
-	square_b=0.65;
-	square_r += 0.35 * Math.sin(17/10.0*time);
-	square_g += 0.35 * Math.sin(13/10.0*time);
-	square_b += 0.35 * Math.sin(12/10.0*time);
+    	// Cycle through waveshape colors
+    	square_r=0.65;
+    	square_g=0.65;
+    	square_b=0.65;
+    	square_r += 0.35 * Math.sin(17/10.0*time);
+    	square_g += 0.35 * Math.sin(13/10.0*time);
+    	square_b += 0.35 * Math.sin(12/10.0*time);
 
-	// Cycle through motion vecton colors
-	mv_r=0.65;
-	mv_g=0.65;
-	mv_b=0.65;
-	mv_r += 0.5 * Math.sin(15/10.0*time);
-	mv_g += 0.5 * Math.sin(19/10.0*time);
-	mv_b += 0.5 * Math.sin(14/10.0*time);
+    	// Cycle through motion vecton colors
+    	mv_r=0.65;
+    	mv_g=0.65;
+    	mv_b=0.65;
+    	mv_r += 0.5 * Math.sin(15/10.0*time);
+    	mv_g += 0.5 * Math.sin(19/10.0*time);
+    	mv_b += 0.5 * Math.sin(14/10.0*time);
 
-	// wave_x = 0.5;
-	// wave_y = 0.5;
-	// wave_x = wave_x + 0.500*( 0.60*Math.sin(2.121*time) + 0.40*Math.sin(1.621*time) );
-	// wave_y = wave_y + 0.500*( 0.60*Math.sin(1.742*time) + 0.40*Math.sin(2.322*time) );
-    }
+    // 	// wave_x = 0.5;
+    // 	// wave_y = 0.5;
+    // 	// wave_x = wave_x + 0.500*( 0.60*Math.sin(2.121*time) + 0.40*Math.sin(1.621*time) );
+    // 	// wave_y = wave_y + 0.500*( 0.60*Math.sin(1.742*time) + 0.40*Math.sin(2.322*time) );
+    //   }
 }
 
 

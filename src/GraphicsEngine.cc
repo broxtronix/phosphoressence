@@ -32,6 +32,8 @@ using namespace vw;
 using namespace vw::GPU;
 
 #include <fstream>
+#include <CoreFoundation/CoreFoundation.h>
+
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -492,9 +494,17 @@ void GraphicsEngine::saveFeedback() {
 void GraphicsEngine::initializeGL() {  
 
   // Set up the GLSL fragment shader.
-  m_gpu_main_program = create_gpu_program("/Users/mbroxton/projects/PhosphorEssence/src/StandardShaders/main.glsl");
-  m_gpu_blur_program = create_gpu_program("/Users/mbroxton/projects/PhosphorEssence/src/StandardShaders/blur_x.glsl");
-  m_gpu_rd_program = create_gpu_program("/Users/mbroxton/projects/PhosphorEssence/src/StandardShaders/rd.glsl");
+  CFURLRef appUrlRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+  CFStringRef macPath = CFURLCopyFileSystemPath(appUrlRef,
+                                                kCFURLPOSIXPathStyle);
+  std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
+  std::string resources_dir = bundle_base_str + + "/Contents/Resources";
+  CFRelease(appUrlRef);
+  CFRelease(macPath);
+
+  m_gpu_main_program = create_gpu_program(resources_dir + "/shaders/main.glsl");
+  m_gpu_blur_program = create_gpu_program(resources_dir + "/shaders/blur_x.glsl");
+  m_gpu_rd_program = create_gpu_program(resources_dir + "/shaders/rd.glsl");
 
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);

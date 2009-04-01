@@ -133,8 +133,10 @@ void JoystickController::list_joysticks() {
 }
 
 JoystickController::~JoystickController() {
-  m_task->terminate();
-  m_thread->join();
+  if (m_task) {
+    m_task->terminate();
+    m_thread->join();
+  }
 }
 
 void JoystickController::update() {

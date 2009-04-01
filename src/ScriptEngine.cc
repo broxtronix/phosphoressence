@@ -6,16 +6,13 @@
 #include <ScriptEngine.h>
 #include <PeParameters.h>
 #include <ostream>
+#include <CoreFoundation/CoreFoundation.h>
 
 // ---------------------------------------------------------------------
 //      C++ Callbacks & Basic JavaScript Utility Functions
 // ---------------------------------------------------------------------
 
 // Function Prototypes
-bool ExecuteString(v8::Handle<v8::String> source,
-                   v8::Handle<v8::Value> name,
-                   bool print_result,
-                   bool report_exceptions);
 v8::Handle<v8::Value> Print(const v8::Arguments& args);
 v8::Handle<v8::Value> Load(const v8::Arguments& args);
 v8::Handle<v8::Value> Quit(const v8::Arguments& args);
@@ -65,7 +62,7 @@ v8::Handle<v8::Value> Load(const v8::Arguments& args) {
     if (source.IsEmpty()) {
       return v8::ThrowException(v8::String::New("Error loading file"));
     }
-    if (!ExecuteString(source, v8::String::New(*file), false, false)) {
+    if (!ScriptEngine::ExecuteString(source, v8::String::New(*file), false, false)) {
       return v8::ThrowException(v8::String::New("Error executing file"));
     }
   }
@@ -112,10 +109,10 @@ v8::Handle<v8::String> ReadFile(const char* name) {
 
 
 // Executes a string within the current v8 context.
-bool ExecuteString(v8::Handle<v8::String> source,
-                   v8::Handle<v8::Value> name,
-                   bool print_result,
-                   bool report_exceptions) {
+bool ScriptEngine::ExecuteString(v8::Handle<v8::String> source,
+                                 v8::Handle<v8::Value> name,
+                                 bool print_result,
+                                 bool report_exceptions) {
   v8::HandleScope handle_scope;
   v8::TryCatch try_catch;
   v8::Handle<v8::Script> script = v8::Script::Compile(source, name);
@@ -259,10 +256,10 @@ void PeStandardSetter(v8::Local<v8::String> property, v8::Local<v8::Value> value
 
   std::ostringstream ostr;
   ostr << "bindings.parameter_to_controller(\"" << ToCString(str) << "\", " << value->NumberValue() << ");";
-  ExecuteString(v8::String::New(ostr.str().c_str()),
-                v8::String::New("(shell)"),
-                true,
-                true);  
+  ScriptEngine::ExecuteString(v8::String::New(ostr.str().c_str()),
+                              v8::String::New("(shell)"),
+                              true,
+                              true);  
 }
 
 void create_pe_param_objects(v8::Handle<v8::ObjectTemplate> &global_templ) {
@@ -385,12 +382,22 @@ ScriptEngine::ScriptEngine() {
 
   // Load the default.js file.
   std::cout << "\t--> Loading default PhosphorEssence preset script\n";
-  std::string defaults_file = "/Users/mbroxton/projects/PhosphorEssence/src/StandardScripts/default.js";
+
+  CFURLRef appUrlRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+  CFStringRef macPath = CFURLCopyFileSystemPath(appUrlRef,
+                                                kCFURLPOSIXPathStyle);
+  std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
+  std::string resources_dir = bundle_base_str + + "/Contents/Resources";
+  std::string defaults_file = resources_dir + "/scripts/default.js";
+  std::cout << "\t    " << defaults_file << "\n";
+  CFRelease(appUrlRef);
+  CFRelease(macPath);
+
   v8::Handle<v8::String> source = ReadFile(defaults_file.c_str());
   if (source.IsEmpty()) {
     v8::ThrowException(v8::String::New("Error loading file"));
   }
-  if (!ExecuteString(source, v8::String::New(defaults_file.c_str()), true, true)) {
+  if (!ScriptEngine::ExecuteString(source, v8::String::New(defaults_file.c_str()), true, true)) {
     v8::ThrowException(v8::String::New("Error executing file"));
   }
 
@@ -399,30 +406,16 @@ ScriptEngine::ScriptEngine() {
 
   // As a last step, call the javascript initialize_callback() to give
   // use a chance to set everything up in the javascript VM.
+  std::ostringstream ostr;
+  ostr << "var RESOURCES = \"" + resources_dir + "\";";
+  execute_js(ostr.str());
   execute_js("pe_load()");
+
+
 
   // Start the command shell
   m_command_prompt_task.reset(new CommandPromptTask(this));
   m_thread.reset(new vw::Thread( m_command_prompt_task ));
-}
-
-void ScriptEngine::execute_js(std::string const& function, std::string arg1, float arg2) {
-  vw::Mutex::Lock lock(m_mutex);
-  
-  // Set up the proper handle scope and enter the correct context.
-  v8::HandleScope handle_scope;
-  v8::Context::Scope context_scope(m_context);
-
-  // For now we create a string and execute it, which may lead to some
-  // loss of precision in the floating point number.  This is a
-  // cop-out for now, I suppose, until a better solution can be found.
-  std::ostringstream ostr;
-  ostr << function << "(\"" << arg1 << "\", " << arg2 << ");";
-
-  ExecuteString(v8::String::New(ostr.str().c_str()),
-                v8::String::New("(shell)"),
-                true,
-                true);  
 }
 
 void ScriptEngine::execute_js(std::string const& code_string) {
@@ -432,10 +425,10 @@ void ScriptEngine::execute_js(std::string const& code_string) {
   v8::HandleScope handle_scope;
   v8::Context::Scope context_scope(m_context);
 
-  ExecuteString(v8::String::New(code_string.c_str()),
-                v8::String::New("(shell)"),
-                true,
-                true);
+  ScriptEngine::ExecuteString(v8::String::New(code_string.c_str()),
+                              v8::String::New("(shell)"),
+                              true,
+                              true);
 }
 
 ScriptEngine::~ScriptEngine() {

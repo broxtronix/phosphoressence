@@ -265,12 +265,15 @@ int main(int argc, char *argv[]) {
   // Start up the OSC control thread.  It listens in the background,
   // changing the values in PeParameters as it receives updates.
   std::cout << "\t--> Initializing OSC driver\n";
-  OscController osc_controller("60002", "10.0.1.7", "60000");
+  std::string osc_ip = "10.0.1.7";
+  if (argc == 2) 
+    osc_ip = argv[1];
+  OscController osc_controller("60002", osc_ip.c_str() , "60000");
 
   std::cout << "\t--> Initializing MIDI driver\n";
   MidiController midi_controller;
 
-  std::cout << "\t--> Initializing Joystick drivers\n";
+  // std::cout << "\t--> Initializing Joystick drivers\n";
   JoystickController joystick_controller;
 
   // Create the audio thread, and create the sound statistics listener

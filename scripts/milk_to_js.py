@@ -62,7 +62,7 @@ def fix_syntax(line):
         return "    " + line.strip() + ";\n"
 
 # MAIN
-files = glob.glob("*.milk")
+files = glob.glob("Geiss*.milk")
 master_file = open("milk_presets.js","w")
 
 for f in files:
@@ -95,6 +95,6 @@ for f in files:
     js_file.close()
 
     master_file.write("print(\"Loading " + preset_name + ".js\");\n");
-    master_file.write("load(\"/Users/mbroxton/projects/PhosphorEssence/src/presets/milkdrop/" + preset_name + ".js\");\n");
+    master_file.write("load(RESOURCES + \"/presets/milkdrop/" + preset_name + ".js\");\n");
 
 master_file.close();

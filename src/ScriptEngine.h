@@ -43,7 +43,7 @@ class ScriptEngine : public ScriptEngineBase {
   v8::Persistent<v8::Context> m_context;
 
   void setup_pe_parameters();
-
+  
 public:
   ScriptEngine();
   ~ScriptEngine();
@@ -52,8 +52,33 @@ public:
                            std::string class_name, 
                            std::string instance_name);
 
+  static bool ExecuteString(v8::Handle<v8::String> source,
+                            v8::Handle<v8::Value> name,
+                            bool print_result,
+                            bool report_exceptions);
+
   virtual void execute_js(std::string const& code_string);
-  virtual void execute_js(std::string const& function, std::string arg1, float arg2);
+
+  template <class Arg1T, class Arg2T>
+  void execute_js(std::string const& function, Arg1T arg1, Arg2T arg2) {
+    vw::Mutex::Lock lock(m_mutex);
+    
+    // Set up the proper handle scope and enter the correct context.
+    v8::HandleScope handle_scope;
+    v8::Context::Scope context_scope(m_context);
+    
+    // For now we create a string and execute it, which may lead to some
+    // loss of precision in the floating point number.  This is a
+    // cop-out for now, I suppose, until a better solution can be found.
+    std::ostringstream ostr;
+    ostr << function << "(\"" << arg1 << "\", " << arg2 << ");";
+    
+    ScriptEngine::ExecuteString(v8::String::New(ostr.str().c_str()),
+                                v8::String::New("(shell)"),
+                                true,
+                                true);  
+  }
+
 };
 
 #endif // __SCRIPT_ENGINE_H__
