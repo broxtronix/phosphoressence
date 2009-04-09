@@ -49,8 +49,20 @@ vec4 myblur(float kernel_size) {
 }
 
 void main() { 
-  vec4 g = vec4(gain, gain, gain, 1.0);
-  vec4 src = texture2D(feedback_texture, gl_TexCoord[0].st);
+  //  gl_FragColor = texture2D(feedback_texture, gl_TexCoord[0].st);
+
+  // Compute the source texture coordinates
+  vec2 texture_coords = gl_TexCoord[0].st;                               // Ranges from [0..1, 0..1]
+  vec2 normalized_coords = vec2((texture_coords.x-0.5)*2.0,
+                                (texture_coords.y-0.5)*2.0);             // Ranges from [-1..1, -1..1]
+  float r = sqrt(normalized_coords.x*normalized_coords.x+normalized_coords.y*normalized_coords.y);
+  vec2 remapped_coords = vec2(1.0/(r*r)*normalized_coords.x,1.0/(r*r)*normalized_coords.y);
+  //vec2 remapped_coords = vec2(normalized_coords.x,normalized_coords.y);
+  vec2 unnormalized_coords = vec2(remapped_coords.x / 2.0 + 0.5, remapped_coords.y / 2.0 + 0.5);
+
+  // Extract the old and new texel
+  vec4 dest = texture2D(feedback_texture, texture_coords);
+  vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert
   if (invert == 1.0) {
@@ -64,9 +76,35 @@ void main() {
   src.g = pow(src.g, gamma);
   src.b = pow(src.b, gamma);
 
-  gl_FragColor = g * src;
+  // Apply gain
+  vec4 g = vec4(gain, gain, gain, 1.0);
+  vec4 final_texel = g * src;
 
-  if (invert == 1.0) {
+  // final_texel.r = ((final_texel.r + dest.r)+0.001) / 2.0;
+  // final_texel.g = ((final_texel.g + dest.g)+0.001) / 2.0;
+  // final_texel.b = ((final_texel.b + dest.b)+0.001) / 2.0;
+
+  // final_texel.r = log(1.0+final_texel.r);
+  // final_texel.g = log(1.0+final_texel.g);
+  // final_texel.b = log(1.0+final_texel.b);
+  // final_texel.a = 1.0;
+  // if (final_texel.r > 10.0) {
+  //   final_texel.r = 1.0;
+  //   final_texel.g = 0.0;
+  // } else {
+  //   final_texel.r = 0.0;
+  //   final_texel.g = 1.0;
+  // }
+  // final_texel.b = 0.0;
+
+  // Return the final value
+  gl_FragColor = final_texel;
+
+
+
+
+
+
   // Current center texture
     //  vec4 f = texture2D(feedback_texture, gl_TexCoord[0].st);
 
@@ -93,5 +131,4 @@ void main() {
   // gl_FragColor.a = 1.0;
   //  texture2D(test, gl_TexCoord[0].st) = g * blur(5.0);
   //  gl_FragColor = g * blur(5.0);
-  }
 }

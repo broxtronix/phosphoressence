@@ -48,6 +48,48 @@ namespace GPU {
   static std::map<GpuProgramKey, boost::shared_ptr<GpuProgram_GLSL> > program_cache_glsl;
 
 
+  // --------------------------------------------------------------
+  //                       GLSL DEBUGGING
+  // --------------------------------------------------------------
+  std::string get_shader_info_log(GLuint obj) {
+    int infologLength = 0;
+    int charsWritten  = 0;
+    char *infoLog;
+
+    glGetShaderiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+    
+    if (infologLength > 1) {
+      infoLog = (char *)malloc(infologLength);
+      glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+      std::ostringstream err;
+      err << "<h4>An error occured while compiling the GLSL shader:</h4><p><h5><tt>" << infoLog << "</tt></h5>";
+      // QMessageBox::critical(0, "GLSL Shader Error", 
+      //                       err.str().c_str());
+      free(infoLog);
+      return err.str();
+    }
+    return "";
+  }
+
+  std::string get_program_info_log(GLuint obj) {
+    int infologLength = 0;
+    int charsWritten  = 0;
+    char *infoLog;
+  
+    glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+    if (infologLength > 1) {
+      infoLog = (char *)malloc(infologLength);
+      glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+      std::ostringstream err;
+      err << "<h4>An error occured while linking the GLSL program:</h4><p><h5><tt>" << infoLog << "</tt></h5>";
+      // QMessageBox::critical(0, "GLSL Program Error", 
+      //                       err.str().c_str());
+      free(infoLog);
+      return err.str();
+    }
+    return "";
+  }
+
   //########################################################################
   //#    GLSL - Program
   //########################################################################
@@ -86,9 +128,9 @@ namespace GPU {
     glGetInfoLogARB(shader, maxErrorLength, &errorStringLength, errorString);
     glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &isCompiled);
     if(!isCompiled) {
-      vw_out(ErrorMessage, "GPU") << "*********GLSL Vertex Shader Compilation Error*********";
+      vw_out(ErrorMessage, "GPU") << "*********GLSL Vertex Shader Compilation Error*********\n";
       vw_out(ErrorMessage, "GPU") << errorString;
-      vw_out(ErrorMessage, "GPU") << vertexString.c_str();
+      //      vw_out(ErrorMessage, "GPU") << vertexString.c_str();
       return false;
     }
     return true;
@@ -109,9 +151,9 @@ namespace GPU {
     glGetInfoLogARB(shader, maxErrorLength, &errorStringLength, errorString);
     glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &isCompiled);
     if(!isCompiled) { 
-      vw_out(ErrorMessage, "GPU") << "*********GLSL Fragment Shader Compilation Error*********";
+      vw_out(ErrorMessage, "GPU") << "*********GLSL Fragment Shader Compilation Error*********\n";
       vw_out(ErrorMessage, "GPU") << errorString;
-      vw_out(ErrorMessage, "GPU") << fragmentString.c_str();
+      //      vw_out(ErrorMessage, "GPU") << fragmentString.c_str();
       return false;
     }
     return true;

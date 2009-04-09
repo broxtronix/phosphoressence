@@ -59,8 +59,12 @@ void OscController::send(std::string path, float value) {
 // }
 
 void OscController::member_callback(std::string path, float value, int index) {
-  if (index == 1) 
-    std::cout << "WARNING: xy controllers not yet supported in OSC!\n";
-  this->receive_callback(path, value);
+  if (path == "/1/xy" && index == 0) {
+    this->receive_callback("/1/xy/0", value);
+  } else if (path == "/1/xy" && index == 1) {
+    this->receive_callback("/1/xy/1", value);
+  } else {
+    this->receive_callback(path, value);
+  }
 }
 

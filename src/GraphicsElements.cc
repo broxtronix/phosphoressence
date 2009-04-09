@@ -5,6 +5,11 @@
 
 void GraphicsEngine::drawFeedback() {
 
+  // Copy the pixel data from the pixel buffer object to the feedback texture.
+  glEnable( GL_TEXTURE_2D );
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
+
   // Feedback gain, gamma, etc are controlled using a pixel shader.
   m_gpu_main_program->install();
   m_gpu_main_program->set_input_int("feedback_texture", 0);
@@ -91,14 +96,11 @@ void GraphicsEngine::drawFeedback() {
     }
   }
  
-  // Copy the pixel data from the pixel buffer object to the feedback texture.
-  glEnable( GL_TEXTURE_2D );
-  glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
-
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_ONE, GL_ZERO);
+  //  glEnable(GL_BLEND);
+  glDisable(GL_BLEND);
+  //  glBlendFunc (GL_ONE, GL_ZERO);
         
-  // We will draw the image as a texture on this quad.
+  //  We will draw the image as a texture on this quad.
   qglColor(Qt::white);
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
@@ -115,7 +117,7 @@ void GraphicsEngine::drawFeedback() {
   }
   glEnd() ;
 
-  glDisable(GL_BLEND);
+  //  glDisable(GL_BLEND);
 
   // Disable texture mapping and GLSL shaders
   glDisable( GL_TEXTURE_2D );

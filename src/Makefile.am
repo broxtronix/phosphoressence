@@ -36,8 +36,8 @@ if MAKE_APP_PHOSPHORESSENCE
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS)
 endif
 
-AM_CPPFLAGS = @ASP_CPPFLAGS@ -I/Users/mbroxton/local/include/SDL
-AM_LDFLAGS  = @ASP_LDFLAGS@ -L/Users/mbroxton/local/lib -lSDL
+AM_CPPFLAGS = @ASP_CPPFLAGS@ -I/opt/local/include/SDL
+AM_LDFLAGS  = @ASP_LDFLAGS@ -L/opt/local/lib -lSDL
 
 ##############################################################################
 #                             Tests					     #

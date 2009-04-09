@@ -14,6 +14,7 @@
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
+#include <AGL/agl.h>
 #else // Linux
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -325,9 +326,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-
   glFlush();
-  swapBuffers();
 }
 
 void GraphicsEngine::drawLegend(QPainter* painter) {
@@ -451,9 +450,6 @@ void GraphicsEngine::saveFeedback() {
   glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-
-
-
   // -- Save Feedback --
   // glBindBuffer(GL_PIXEL_PACK_BUFFER, m_feedback_pbo);
   // glReadPixels(0,0,m_framebuffer_width,m_framebuffer_height,GL_BGRA,GL_UNSIGNED_BYTE,NULL);
@@ -498,7 +494,7 @@ void GraphicsEngine::initializeGL() {
   CFStringRef macPath = CFURLCopyFileSystemPath(appUrlRef,
                                                 kCFURLPOSIXPathStyle);
   std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
-  std::string resources_dir = bundle_base_str + + "/Contents/Resources";
+  std::string resources_dir = bundle_base_str + "/Contents/Resources";
   CFRelease(appUrlRef);
   CFRelease(macPath);
 
@@ -532,11 +528,18 @@ void GraphicsEngine::initializeGL() {
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
+
+// #ifdef __APPLE__
+//   AGLContext aglContext;
+//   aglContext = aglGetCurrentContext();
+//   GLint swapInt = 2;
+//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+// #endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(33); // ~30 fps
+  m_timer->start(16.66); // ~33 fps
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
@@ -580,13 +583,15 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
+  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
@@ -601,6 +606,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Setup the feedback texture buffer
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height,
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);

@@ -31,13 +31,12 @@
 #include <QApplication>
 #include <QWidget>
 
-// VW
+// // VW
 #include <vw/Core.h>
 #include <vw/Image.h>
 #include <vw/Math.h>
 #include <vw/FileIO.h>
 #include <vw/Stereo.h>
-using namespace vw;
 
 // Local files
 #include <MainWindow.h>
@@ -51,6 +50,8 @@ using namespace vw;
 #include <OScopeShape.h>
 #include <PhasescopeShape.h>
 #include <SpectrographShape.h>
+
+using namespace vw;
 
 void setup_parameters() {
   pe_parameters().add_parameter("decay", false, 0.98,

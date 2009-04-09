@@ -246,10 +246,16 @@ function pe_initialize() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Set up some basic control bindings
-    bindings.add(osc, "/1/fader1", "decay", 0.15, 1.1, 0.95, "log10");
-    bindings.add(osc, "/1/fader2", "zoom", 0.5, 1.5, 1.0);
-    bindings.add(osc, "/1/fader3", "zoomexp", 0.25, 5.0, 1.0, "log10");  
-    bindings.add(osc, "/1/fader4", "rot", -0.785, 0.785, 0.0);
+    // bindings.add(osc, "/1/fader1", "decay", 0.8, 1.1, 0.95, "log10");
+    // bindings.add(osc, "/1/xy/0", "zoom", 0.5, 1.5, 1.0);
+    // bindings.add(osc, "/1/xy/1", "rot", 0.785, -0.785, 0.0);
+    bindings.add(osc, "/1/fader2", "warp", 0.0, 2.0, 0.0);
+    bindings.add(osc, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10");
+    bindings.add(osc, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0);
+    bindings.add(osc, "/1/fader4", "zoomexp", 0.25, 5.0, 1.0, "log10");  
+    bindings.add(osc, "/1/push1", "ib_size", 0, 0, 0);  
+    bindings.add(osc, "/1/push2", "ib_size", 1, 1, 0);  
+    bindings.add(osc, "/1/push3", "ib_size", 10, 10, 0);  
 
     bindings.add(osc, "/2/fader1", "sx", 0.5, 1.5, 1.0);
     bindings.add(osc, "/2/fader2", "sy", 0.5, 1.5, 1.0);
@@ -257,14 +263,11 @@ function pe_initialize() {
     bindings.add(osc, "/2/fader4", "dy", -0.5, 0.5, 0.0);
     bindings.add(osc, "/2/fader5", "cx", -1.5, 1.5, 0.0);
     bindings.add(osc, "/2/fader6", "cy", -1.5, 1.5, 0.0);
-    bindings.add(osc, "/2/toggle7", "wave_enabled", 0.0, 1.0, 0.0);
-    bindings.add(osc, "/2/fader7", "wave_frequency", 0.01, 300, 100, "log10");
     bindings.add(osc, "/2/toggle8", "square_a", 0.0, 1.0, 1.0);
     bindings.add(osc, "/2/fader8", "square_frequency", 0.001, 1.0, 0.03);
 
-    bindings.add(osc, "/3/fader1", "warp", 0.0, 2.0, 0.0);
     bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5);
-    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
+    //    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
     bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0);
     bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0);
     bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0);
@@ -279,9 +282,9 @@ function pe_initialize() {
     // pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0);
 
     // Langton bEATS
-    // bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.1, 0.95);
-    // bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
-    // bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
+    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 2.0, 0.95);
+    bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
+    bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 
     sx_coefficient = 0.0;
     sy_coefficient = 0.0;
