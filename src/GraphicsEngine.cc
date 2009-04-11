@@ -20,7 +20,7 @@
 #include <GL/glu.h>
 #endif 
 #include <QtGui>
-#include <cuda.h>
+//#include <cuda.h>
 
 // Vision Workbench
 #include <vw/Image.h>
@@ -202,6 +202,51 @@ void GraphicsEngine::drawImage() {
     glVertex2d( -aspect, -1.0 );
     glVertex2d( -aspect, -1.0 );
     glVertex2d( -aspect, 1.0 );
+    glEnd();
+  }
+
+
+  // -----------------------
+  // Grid
+  // ----------------------
+  if (pe_parameters().get_value("ib_a")) {
+    glLoadIdentity();
+    glLineWidth( pe_parameters().get_value("ib_size") );
+    glColor4f( pe_parameters().get_value("ib_r"),
+               pe_parameters().get_value("ib_g"),
+               pe_parameters().get_value("ib_b"),
+               pe_parameters().get_value("ib_a") );
+    
+    float step_size = 2*aspect / HORIZ_MESH_SIZE;
+    for (float i = -aspect; i < aspect; i+=step_size) {
+      glBegin(GL_LINES);
+      float x = i;
+      float y1 = 1.0;
+      float y2 = -1.0;
+      float r1 = sqrt(x*x+y1*y1);
+      float r2 = sqrt(x*x+y2*y2);
+      float XX1 = 1/(r1*r1) * x;
+      float XX2 = 1/(r2*r2) * x;
+      float YY1 = 1/(r1*r1) * y1;
+      float YY2 = 1/(r2*r2) * y2;
+      glVertex2d( XX1, YY1 );
+      glVertex2d( XX2, YY2 );
+    }
+
+    for (float j = -1; j < 1; j+=step_size ) {
+      glBegin(GL_LINES);
+      float x1 = aspect;
+      float x2 = -aspect;
+      float y = j;
+      float r1 = sqrt(x1*x1+y*y);
+      float r2 = sqrt(x2*x2+y*y);
+      float XX1 = 1/(r1*r1)*x1;
+      float XX2 = 1/(r2*r2)*x2;
+      float YY1 = 1/(r1*r1)*y;
+      float YY2 = 1/(r2*r2)*y;
+      glVertex2d( XX1, YY1 );
+      glVertex2d( XX2, YY2 );
+    }
     glEnd();
   }
 
@@ -447,7 +492,7 @@ void GraphicsEngine::saveFeedback() {
 
   // Old Code for saving the feedback texture...
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // -- Save Feedback --
@@ -583,15 +628,13 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
@@ -605,8 +648,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
   // Setup the feedback texture buffer
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height,
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);

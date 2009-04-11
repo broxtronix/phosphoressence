@@ -55,7 +55,12 @@ void GraphicsEngine::drawFeedback() {
     for (int j = 0; j < VERT_MESH_SIZE + 1; j++) {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
-      
+
+      // pe_parameters().set_value("x",u);
+      // pe_parameters().set_value("y",v);
+      // pe_parameters().set_value("rad",sqrt(u*u+v*v));
+      // pe_parameters().set_value("ang",atan2(v,u));
+
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 
                                                    sqrtf(u * u + v * v) * 2.0f - 1.0f));

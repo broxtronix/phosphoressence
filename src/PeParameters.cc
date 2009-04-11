@@ -28,9 +28,9 @@ PeParameters& pe_parameters() {
 }
 
 void PeParameters::add_parameter(std::string name, bool read_only, float default_value, std::string description) {
-  vw::Mutex::Lock lock(m_mutex);
-
   Parameter p(name, read_only, default_value, description);
+
+  vw::Mutex::Lock lock(m_mutex);
   m_parameters.push_back(p);
 }
 
@@ -60,8 +60,6 @@ PeParameters::PeParameters() {
 }
 
 float PeParameters::get_value(std::string name) {
-  vw::Mutex::Lock lock(m_mutex);
-
   if (name == "time") {
     long long new_time = vw::Stopwatch::microtime();
     m_time += double(new_time - m_last_time) / 1e6;
@@ -69,6 +67,7 @@ float PeParameters::get_value(std::string name) {
     return m_time;
   }
 
+  vw::Mutex::Lock lock(m_mutex);
   Parameter* match = NULL;
   std::list<Parameter>::iterator iter = m_parameters.begin();
   while (iter != m_parameters.end()) {

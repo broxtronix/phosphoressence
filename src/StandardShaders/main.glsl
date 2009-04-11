@@ -1,10 +1,10 @@
+// Top level uniform variables
 uniform sampler2D feedback_texture;                             
+uniform float framebuffer_width;
+uniform float framebuffer_height;
 uniform float gain;
 uniform float invert;
 uniform float gamma;
-uniform float color_shift;
-uniform float framebuffer_width;
-uniform float framebuffer_height;
 
 uniform float width;
 uniform float D_g;
@@ -55,9 +55,53 @@ void main() {
   vec2 texture_coords = gl_TexCoord[0].st;                               // Ranges from [0..1, 0..1]
   vec2 normalized_coords = vec2((texture_coords.x-0.5)*2.0,
                                 (texture_coords.y-0.5)*2.0);             // Ranges from [-1..1, -1..1]
-  float r = sqrt(normalized_coords.x*normalized_coords.x+normalized_coords.y*normalized_coords.y);
-  vec2 remapped_coords = vec2(1.0/(r*r)*normalized_coords.x,1.0/(r*r)*normalized_coords.y);
-  //vec2 remapped_coords = vec2(normalized_coords.x,normalized_coords.y);
+  float x = normalized_coords.x;
+  float y = -normalized_coords.y * framebuffer_width / framebuffer_height;
+  float r = sqrt(x*x+y*y);
+  float theta = atan(x,y)-3.14159;
+  float phi = atan(y,x);
+
+  // Linear
+  //  vec2 remapped_coords = vec2(x,y);
+
+  // 1. Sinusoidal
+  //  vec2 remapped_coords = vec2(sin(x),sin(y));
+
+  // 2. Spherical
+  //   vec2 remapped_coords = vec2(1.0/(r*r)*x,
+  //                               1.0/(r*r)*y);
+
+  // 3. Swirl (variation 3)
+  // vec2 remapped_coords = vec2(x*sin(r*r)-y*cos(r*r),
+  //                             x*cos(r*r)+y*sin(r*r));
+
+  // 4. Horsehoe 
+  // vec2 remapped_coords = vec2(1.0/r * (x-y)*(x+y), 
+  //                             1.0/r * 2.0*x*y);
+
+  //  5. Polar (*)
+  //  vec2 remapped_coords = vec2(theta/3.14159, r-1.0);
+
+  // 6. Handkerchief
+  // vec2 remapped_coords = vec2(r*sin(theta+r), 
+  //                             r*cos(theta-r));
+
+  // 7. Heart (*)
+  // vec2 remapped_coords = vec2(r*sin(theta*r), 
+  //                             -r*cos(theta*r));
+
+  // 8. Disc
+  // vec2 remapped_coords = vec2(theta/3.14159*sin(theta*r), 
+  //                             theta/3.14159*cos(theta*r));
+
+  // Test
+  vec2 remapped_coords = vec2(theta, y);
+  
+  
+
+
+
+
   vec2 unnormalized_coords = vec2(remapped_coords.x / 2.0 + 0.5, remapped_coords.y / 2.0 + 0.5);
 
   // Extract the old and new texel
@@ -97,10 +141,18 @@ void main() {
   // }
   // final_texel.b = 0.0;
 
+  // NaNs are the bane of our existence here!  We replace them with
+  // null values.
+  if (final_texel.r != final_texel.r ||
+      final_texel.g != final_texel.g ||
+      final_texel.b != final_texel.b ||
+      final_texel.a != final_texel.a)
+    final_texel = vec4(1.0,0,0,0);
+
   // Return the final value
   gl_FragColor = final_texel;
 
-
+  
 
 
 

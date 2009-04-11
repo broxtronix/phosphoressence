@@ -54,6 +54,52 @@
 using namespace vw;
 
 void setup_parameters() {
+  // -------------------------------------------------------------------------------
+  //                           READ-ONLY PARAMETERS
+  //
+  // These are listed here first since the parameter list is search in
+  // the order that paramaters are added.
+  // -------------------------------------------------------------------------------
+  pe_parameters().add_parameter("x", true, 0.0,
+                                "Retrieves the x-position of the current pixel (for per-pixel equations)");
+  pe_parameters().add_parameter("y", true, 0.0,
+                                "Retrieves the x-position of the current pixel (for per-pixel equations)");
+  pe_parameters().add_parameter("rad", true, 0.0,
+                                "Retrieves the x-position of the current pixel (for per-pixel equations)");
+  pe_parameters().add_parameter("ang", true, 0.0,
+                                "Retrieves the x-position of the current pixel (for per-pixel equations)");
+  pe_parameters().add_parameter("time", true, 0.0,
+                                "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running");
+  pe_parameters().add_parameter("fps", true, 0.0,
+                                ">0 (readonly)       retrieves the current framerate, in frames per second.");
+  pe_parameters().add_parameter("frame", true, 0.0,
+                                "(readonly) retrieves the number of frames of animation elapsed since the program started");
+  // pe_parameters().add_parameter("progress", true, 0.0,
+  //                               "0..1 (readonly)     progress through the current preset; if preset was just loaded, this is closer to 0; if preset is about to end, this is closer to 1."
+  //                               "-note that if Scroll Lock is on, 'progress' will freeze!");
+
+
+  pe_parameters().add_parameter("bass", true, 0.0,
+                                ">0 (readonly)       retrieves the current amount of bass.  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass");
+  pe_parameters().add_parameter("mid", true, 0.0,
+                                ">0 (readonly)         -same, but for mids (middle frequencies)");
+  pe_parameters().add_parameter("treb", true, 0.0,
+                                ">0 (readonly)         -same, but for treble (high) frequencies");
+  pe_parameters().add_parameter("bass_att", true, 0.0,
+                                ">0 (readonly)       retrieves an attenuated reading on the bass, meaning that it is damped in time and doesn't change so rapidly.");
+  pe_parameters().add_parameter("mid_att", true, 0.0,
+                                ">0 (readonly)         -same, but for mids (middle frequencies)");
+  pe_parameters().add_parameter("treb_att", true, 0.0,
+                                ">0 (readonly)         -same, but for treble (high) frequencies");
+  // pe_parameters().add_parameter("meshx", true, 0.0,
+  //                               "8-128 (readonly)  tells you the user's mesh size in the X direction.  always an integer value.");
+  // pe_parameters().add_parameter("meshy", true, 0.0,
+  //                               "6-96   tells you the user's mesh size in the Y direction.  always an integer value.");
+
+
+  // -------------------------------------------------------------------------------
+  //                           READ/WRITE PARAMETERS
+  // -------------------------------------------------------------------------------
   pe_parameters().add_parameter("decay", false, 0.98,
                                 "0..1   controls the eventual fade to black; 1=no fade, 0.9=strong fade, 0.98=recommended");
   pe_parameters().add_parameter("invert", false, 0.0,
@@ -182,31 +228,7 @@ void setup_parameters() {
                                 "any    set this value for debugging your preset code; if you hit the 'N' key, "
                                 "the value of 'monitor' will be posted in the upper-right corner of milkdrop.  "
                                 "for example, setting \"monitor = q3;\" would let you keep an eye on q3's value. ");
-  pe_parameters().add_parameter("time", true, 0.0,
-                                "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running");
-  pe_parameters().add_parameter("fps", true, 0.0,
-                                ">0 (readonly)       retrieves the current framerate, in frames per second.");
-  pe_parameters().add_parameter("frame", true, 0.0,
-                                "(readonly) retrieves the number of frames of animation elapsed since the program started");
-  // pe_parameters().add_parameter("progress", true, 0.0,
-  //                               "0..1 (readonly)     progress through the current preset; if preset was just loaded, this is closer to 0; if preset is about to end, this is closer to 1."
-  //                               "-note that if Scroll Lock is on, 'progress' will freeze!");
-  pe_parameters().add_parameter("bass", true, 0.0,
-                                ">0 (readonly)       retrieves the current amount of bass.  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass");
-  pe_parameters().add_parameter("mid", true, 0.0,
-                                ">0 (readonly)         -same, but for mids (middle frequencies)");
-  pe_parameters().add_parameter("treb", true, 0.0,
-                                ">0 (readonly)         -same, but for treble (high) frequencies");
-  pe_parameters().add_parameter("bass_att", true, 0.0,
-                                ">0 (readonly)       retrieves an attenuated reading on the bass, meaning that it is damped in time and doesn't change so rapidly.");
-  pe_parameters().add_parameter("mid_att", true, 0.0,
-                                ">0 (readonly)         -same, but for mids (middle frequencies)");
-  pe_parameters().add_parameter("treb_att", true, 0.0,
-                                ">0 (readonly)         -same, but for treble (high) frequencies");
-  // pe_parameters().add_parameter("meshx", true, 0.0,
-  //                               "8-128 (readonly)  tells you the user's mesh size in the X direction.  always an integer value.");
-  // pe_parameters().add_parameter("meshy", true, 0.0,
-  //                               "6-96   tells you the user's mesh size in the Y direction.  always an integer value.");
+  
   pe_parameters().add_parameter("q1", false, 0.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");
   pe_parameters().add_parameter("q2", false, 0.0,
