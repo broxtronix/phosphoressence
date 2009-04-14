@@ -209,46 +209,46 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // Grid
   // ----------------------
-  if (pe_parameters().get_value("ib_a")) {
-    glLoadIdentity();
-    glLineWidth( pe_parameters().get_value("ib_size") );
-    glColor4f( pe_parameters().get_value("ib_r"),
-               pe_parameters().get_value("ib_g"),
-               pe_parameters().get_value("ib_b"),
-               pe_parameters().get_value("ib_a") );
+  // if (pe_parameters().get_value("ib_a")) {
+  //   glLoadIdentity();
+  //   glLineWidth( pe_parameters().get_value("ib_size") );
+  //   glColor4f( pe_parameters().get_value("ib_r"),
+  //              pe_parameters().get_value("ib_g"),
+  //              pe_parameters().get_value("ib_b"),
+  //              pe_parameters().get_value("ib_a") );
     
-    float step_size = 2*aspect / HORIZ_MESH_SIZE;
-    for (float i = -aspect; i < aspect; i+=step_size) {
-      glBegin(GL_LINES);
-      float x = i;
-      float y1 = 1.0;
-      float y2 = -1.0;
-      float r1 = sqrt(x*x+y1*y1);
-      float r2 = sqrt(x*x+y2*y2);
-      float XX1 = 1/(r1*r1) * x;
-      float XX2 = 1/(r2*r2) * x;
-      float YY1 = 1/(r1*r1) * y1;
-      float YY2 = 1/(r2*r2) * y2;
-      glVertex2d( XX1, YY1 );
-      glVertex2d( XX2, YY2 );
-    }
+  //   float step_size = 2*aspect / HORIZ_MESH_SIZE;
+  //   for (float i = -aspect; i < aspect; i+=step_size) {
+  //     glBegin(GL_LINES);
+  //     float x = i;
+  //     float y1 = 1.0;
+  //     float y2 = -1.0;
+  //     float r1 = sqrt(x*x+y1*y1);
+  //     float r2 = sqrt(x*x+y2*y2);
+  //     float XX1 = 1/(r1*r1) * x;
+  //     float XX2 = 1/(r2*r2) * x;
+  //     float YY1 = 1/(r1*r1) * y1;
+  //     float YY2 = 1/(r2*r2) * y2;
+  //     glVertex2d( XX1, YY1 );
+  //     glVertex2d( XX2, YY2 );
+  //   }
 
-    for (float j = -1; j < 1; j+=step_size ) {
-      glBegin(GL_LINES);
-      float x1 = aspect;
-      float x2 = -aspect;
-      float y = j;
-      float r1 = sqrt(x1*x1+y*y);
-      float r2 = sqrt(x2*x2+y*y);
-      float XX1 = 1/(r1*r1)*x1;
-      float XX2 = 1/(r2*r2)*x2;
-      float YY1 = 1/(r1*r1)*y;
-      float YY2 = 1/(r2*r2)*y;
-      glVertex2d( XX1, YY1 );
-      glVertex2d( XX2, YY2 );
-    }
-    glEnd();
-  }
+  //   for (float j = -1; j < 1; j+=step_size ) {
+  //     glBegin(GL_LINES);
+  //     float x1 = aspect;
+  //     float x2 = -aspect;
+  //     float y = j;
+  //     float r1 = sqrt(x1*x1+y*y);
+  //     float r2 = sqrt(x2*x2+y*y);
+  //     float XX1 = 1/(r1*r1)*x1;
+  //     float XX2 = 1/(r2*r2)*x2;
+  //     float YY1 = 1/(r1*r1)*y;
+  //     float YY2 = 1/(r2*r2)*y;
+  //     glVertex2d( XX1, YY1 );
+  //     glVertex2d( XX2, YY2 );
+  //   }
+  //   glEnd();
+  // }
 
   // -----------------------
   // Wave Shape
@@ -574,12 +574,13 @@ void GraphicsEngine::initializeGL() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-// #ifdef __APPLE__
-//   AGLContext aglContext;
-//   aglContext = aglGetCurrentContext();
-//   GLint swapInt = 2;
-//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-// #endif
+  // Uncomment to get rid of the flicker!
+#ifdef __APPLE__
+  AGLContext aglContext;
+  aglContext = aglGetCurrentContext();
+  GLint swapInt = 2;
+  aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+#endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);

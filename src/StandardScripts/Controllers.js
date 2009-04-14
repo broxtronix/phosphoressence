@@ -22,6 +22,18 @@ function joystick_receive_callback(path, value) {
 	sx=0.999;
     }
 
+    if (path == "/joystick0/button0" && value == 1) {
+	ifs_mode = ifs_mode + 1;
+	if (ifs_mode > 8)
+	    ifs_mode = 0;
+    }
+
+    if (path == "/joystick0/button6" && value == 1) {
+	ifs_mode = ifs_mode - 1;
+	if (ifs_mode < 0)
+	    ifs_mode = 8;
+    }
+
     // Square shape enable
     if (path == "/joystick0/button1" && value == 1) {
 	if (square_a) square_a = 0.0;
@@ -265,7 +277,7 @@ function setup_joystick() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Langton bEATS
-    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.2, 0.95);
+    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.2, 0.98);
     bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
     bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 

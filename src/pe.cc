@@ -247,6 +247,9 @@ void setup_parameters() {
                                 "Used to carry information between the per-frame code and per-pixel code.");
  
 
+  pe_parameters().add_parameter("ifs_mode", false, 0.0,
+                                "Select IFS (fractal feedback) mode.");
+
   pe_parameters().add_parameter("square_frequency", false, 0.01,
                                 "Speed of rotation of the square shape.");
   pe_parameters().add_parameter("square_r", false, 0.0,

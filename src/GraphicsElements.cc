@@ -19,6 +19,8 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_main_program->set_input_float("invert", pe_parameters().get_value("invert"));
   m_gpu_main_program->set_input_float("color_shift", pe_parameters().get_value("color_shift"));
   m_gpu_main_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
+  m_gpu_main_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_main_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
 
   // Warp stuff
   float zoom = pe_parameters().get_value("zoom");
