@@ -24,14 +24,14 @@ function joystick_receive_callback(path, value) {
 
     if (path == "/joystick0/button0" && value == 1) {
 	ifs_mode = ifs_mode + 1;
-	if (ifs_mode > 8)
+	if (ifs_mode > 18)
 	    ifs_mode = 0;
     }
 
     if (path == "/joystick0/button6" && value == 1) {
 	ifs_mode = ifs_mode - 1;
 	if (ifs_mode < 0)
-	    ifs_mode = 8;
+	    ifs_mode = 18;
     }
 
     // Square shape enable

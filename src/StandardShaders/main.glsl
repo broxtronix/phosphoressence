@@ -145,7 +145,78 @@ void main() {
     remapped_coords = vec2(theta/3.14159*sin(theta*r), 
                            theta/3.14159*cos(theta*r));
 
+
+  } else if (ifs_mode == 9.0) {
+
+    // 9. Spiral
+    remapped_coords = vec2(1.0 / r * (cos(theta)+sin(r)),
+                           1.0 / r * (sin(theta)-cos(r)));
+
+  } else if (ifs_mode == 10.0) {
+
+    // 10. Hyperbolic
+    remapped_coords = vec2( sin(theta) / r, 
+                            r * cos(theta) );
+
+  } else if (ifs_mode == 11.0) {
+
+    // 11. Diamond
+    remapped_coords = vec2( sin(theta)*cos(r), 
+                            cos(theta)*sin(r) );
+
+  } else if (ifs_mode == 12.0) {
+
+    // 12. Ex
+    float p0 = sin(theta+r); 
+    float p1 = cos(theta-r);
+    remapped_coords = vec2( r * (p0*p0*p0 + p1*p1*p1),
+                            r * (p0*p0*p0 - p1*p1*p1) );
+
+  } else if (ifs_mode == 13.0) {
+
+    // 13. Julia
+    float root_r = sqrt(r);
+    float omega = 0.0;     // NEED TO IMPLEMENT
+    remapped_coords = vec2( root_r * cos(theta/2.0 + omega),
+                            root_r * sin(theta/2.0 + omega) );
+
+  } else if (ifs_mode == 14.0) {
+
+    // 14. Bent
+    if (x >= 0.0 && y >= 0.0)
+      remapped_coords = vec2(x,y);
+    else if (x < 0.0 && y >= 0.0)
+      remapped_coords = vec2(2.0*x,y);
+    else if (x >= 0.0 && y < 0.0)
+      remapped_coords = vec2(x,y/2.0);
+    else
+      remapped_coords = vec2(2.0*x,y/2.0);
+
+  } else if (ifs_mode == 15.0) {
+
+    // 15. Waves (dependent)
+    remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
+
+  } else if (ifs_mode == 16.0) {
+
+    // 16. Fisheye
+    float p = 2.0 / (r + 1.0);
+    remapped_coords = vec2(p * y, p * x);
+
+  } else if (ifs_mode == 17.0) {
+
+    // 17. Popcorn (dependent)
+    remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
+
+  } else if (ifs_mode == 18.0) {
+
+    // 18. Exponential
+    float p = exp(x-1.0);
+    remapped_coords = vec2(p * cos(3.14159*y), 
+                           p * sin(3.14159*y) );
+
   } else { 
+
 
     // Linear
     remapped_coords = vec2(x,y);
