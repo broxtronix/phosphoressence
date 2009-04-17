@@ -107,7 +107,8 @@ public:
         
         // Go to next frame, wrapping around in the ring buffer if
         // necessary.
-        if ( (m_data.read_index)++ >= m_data.max_frame_index ) {
+        (m_data.read_index)++;
+        if ( m_data.read_index >= m_data.max_frame_index ) {
           m_data.read_index = 0;
           data_ptr = &(m_data.samples[0]);
         }
@@ -210,7 +211,8 @@ public slots:
 
       // Go to next frame, wrapping around in the ring buffer if
       // necessary.
-      if ( (m_data.read_index)++ >= m_data.max_frame_index ) {
+      (m_data.read_index)++;
+      if ( m_data.read_index >= m_data.max_frame_index ) {
         m_data.read_index = 0;
         data_ptr = &(m_data.samples[0]);
       }

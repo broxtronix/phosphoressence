@@ -72,7 +72,8 @@ public:
 
       // Reset the data pointer if we have reached the end of the
       // buffer.
-      if ( (m_data.write_index)++ >= m_data.max_frame_index ) {
+      (m_data.write_index)++;
+      if ( m_data.write_index >= m_data.max_frame_index ) {
         m_data.write_index = 0;
         data_ptr = &(m_data.samples[0]);
       }
