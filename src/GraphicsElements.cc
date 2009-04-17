@@ -10,16 +10,17 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  // Feedback gain, gamma, etc are controlled using a pixel shader.
+  float aspect = float(m_viewport_width) / m_viewport_height;
+  float framebuffer_radius = sqrt(1+pow(aspect,2));
+
+  // Feedback decay, gamma, etc are controlled using a pixel shader.
   m_gpu_main_program->install();
   m_gpu_main_program->set_input_int("feedback_texture", 0);
-  m_gpu_main_program->set_input_float("framebuffer_width", m_framebuffer_width);
-  m_gpu_main_program->set_input_float("framebuffer_height", m_framebuffer_height);
-  m_gpu_main_program->set_input_float("gain", pe_parameters().get_value("decay"));
-  m_gpu_main_program->set_input_float("invert", pe_parameters().get_value("invert"));
-  m_gpu_main_program->set_input_float("color_shift", pe_parameters().get_value("color_shift"));
-  m_gpu_main_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
+  m_gpu_main_program->set_input_float("framebuffer_radius", framebuffer_radius);
   m_gpu_main_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_main_program->set_input_float("decay", pe_parameters().get_value("decay"));
+  m_gpu_main_program->set_input_float("invert", pe_parameters().get_value("invert"));
+  m_gpu_main_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
   m_gpu_main_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
 
   // Warp stuff

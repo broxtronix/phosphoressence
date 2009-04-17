@@ -113,11 +113,7 @@ void GraphicsEngine::timer_callback() {
 
 
 void GraphicsEngine::drawImage() {
-  double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
-  pe_parameters().set_value("fps", 1.0/(new_time - m_fps_last_time));
-  m_fps_last_time = new_time;
-  pe_parameters().set_value("frame", pe_parameters().get_value("frame") + 1.0);
-  
+
   // ------------------------ <Scripts> -------------------------
 
   // Call out to any PhosphorScripts that are running on the
@@ -371,7 +367,14 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-  glFlush();
+
+  this->swapBuffers();
+
+  // Recompute FPS
+  double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
+  pe_parameters().set_value("fps", 1.0/(new_time - m_fps_last_time));
+  m_fps_last_time = new_time;
+  pe_parameters().set_value("frame", pe_parameters().get_value("frame") + 1.0);
 }
 
 void GraphicsEngine::drawLegend(QPainter* painter) {
@@ -492,7 +495,8 @@ void GraphicsEngine::saveFeedback() {
 
   // Old Code for saving the feedback texture...
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
+  //  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // -- Save Feedback --
@@ -578,14 +582,15 @@ void GraphicsEngine::initializeGL() {
 #ifdef __APPLE__
   AGLContext aglContext;
   aglContext = aglGetCurrentContext();
-  GLint swapInt = 2;
+  GLint swapInt = 1;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  this->setAutoBufferSwap(false);
 #endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(16.66); // ~33 fps
+  m_timer->start(16.0); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
@@ -629,13 +634,15 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
@@ -649,7 +656,8 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
   // Setup the feedback texture buffer
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
                m_framebuffer_width, m_framebuffer_height,
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);

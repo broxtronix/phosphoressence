@@ -1,8 +1,7 @@
 // Top level uniform variables
 uniform sampler2D feedback_texture;                             
-uniform float framebuffer_width;
-uniform float framebuffer_height;
-uniform float gain;
+uniform float framebuffer_radius;
+uniform float decay;
 uniform float invert;
 uniform float gamma;
 uniform float time;
@@ -80,52 +79,23 @@ vec4 hsv_to_rgb(vec4 hsv) {
   return vec4(r,g,b,hsv.a);
 }
 
-vec4 laplace_4() {
-  vec4 laplacian = vec4(-4.0,-4.0,-4.0,1.0) * texture2D(feedback_texture, gl_TexCoord[0].st);
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width,0.0) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width,0.0) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0,-width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0, width/framebuffer_height) );
-  return laplacian;
-}
-
-vec4 laplace_8() {
-  vec4 laplacian = vec4(-8.0,-8.0,-8.0,1.0) * texture2D(feedback_texture, gl_TexCoord[0].st);
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width, -width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width, 0.0) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width, width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( 0.0                    , -width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( 0.0                    , width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width, -width/framebuffer_height) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width, 0.0) );
-  laplacian += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width, width/framebuffer_height) );
-  return laplacian;
-}
-
-vec4 myblur(float kernel_size) {
-  vec4 total;
-  float N = floor(kernel_size+1.0)*floor(kernel_size+1.0);
-  for (float j= -kernel_size/2.0; j <= kernel_size/2.0; j += 1.0 ) {
-    for (float i=-kernel_size/2.0; i <= kernel_size/2.0; i += 1.0) {
-      total += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(i/framebuffer_width,j/framebuffer_height) );
-    }
-  }
-  vec4 result = total / vec4(N,N,N,N);
-  result.a = 1.0;
-  return result;
-}
-
 void main() { 
+
+  // For debugging:
   //  gl_FragColor = texture2D(feedback_texture, gl_TexCoord[0].st);
+  //  return;
 
   // Compute the source texture coordinates
-  vec2 texture_coords = gl_TexCoord[0].st;                               // Ranges from [0..1, 0..1]
-  vec2 normalized_coords = vec2((texture_coords.x-0.5)*2.0,
-                                (texture_coords.y-0.5)*2.0);             // Ranges from [-1..1, -1..1]
-  float x = normalized_coords.x;
-  float y = normalized_coords.y;
+  //
+  // texture_coords ranges from [0..1, 0..1]
+  // norm_coords ranges from [-1..1, -1..1]
+  vec2 texture_coords = gl_TexCoord[0].st;                    
+  vec2 norm_coords = vec2((texture_coords.x-0.5)*2.0*framebuffer_radius,
+                          (texture_coords.y-0.5)*2.0*framebuffer_radius);  
+  float x = norm_coords.x;
+  float y = norm_coords.y;
   float r = sqrt(x*x+y*y);
-  float theta = atan(x,y)-3.14159;
+  float theta = atan(x,y);
   float phi = atan(y,x);
 
   vec2 remapped_coords;
@@ -182,12 +152,16 @@ void main() {
 
   }
 
+  vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 
+                                  remapped_coords.y / (2.0*framebuffer_radius) + 0.5);
 
-  vec2 unnormalized_coords = vec2(remapped_coords.x / 2.0 + 0.5, remapped_coords.y / 2.0 + 0.5);
-
-  // Extract the old and new texel
-  vec4 dest = texture2D(feedback_texture, texture_coords);
-  vec4 src = texture2D(feedback_texture, unnormalized_coords);
+  //  vec4 dest = texture2D(feedback_texture, texture_coords);
+  vec4 src;
+  if (unnormalized_coords.x <= 0.0 || unnormalized_coords.x >= 1.0 ||
+      unnormalized_coords.y <= 0.0 || unnormalized_coords.y >= 1.0)
+    src = vec4(1.0,0.0,0.0,1.0);
+  else 
+    src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert
   if (invert == 1.0) {
@@ -202,16 +176,16 @@ void main() {
   // src.b = pow(src.b, gamma);
 
   // Apply gain
-  vec4 g = vec4(gain, gain, gain, 1.0);
-  vec4 hsv_texel = g * rgb_to_hsv(src);
-  while (hsv_texel.r >= 1.0) // Hue
-    hsv_texel.r -= 1.0;
-  if (hsv_texel.g > 1.0) {    // Saturation
-    hsv_texel.g = 1.0;
-  } if (hsv_texel.b > 1.0) {    // Luminance
-    hsv_texel.b = 1.0;
-  }
-  vec4 final_texel = hsv_to_rgb(hsv_texel);
+  vec4 g = vec4(decay, decay, decay, 1.0);
+  // vec4 hsv_texel = g * rgb_to_hsv(src);
+  // while (hsv_texel.r > 1.0) // Hue
+  //   hsv_texel.r -= 1.0;
+  // if (hsv_texel.g > 1.0) {    // Saturation
+  //   hsv_texel.g = 1.0;
+  // } if (hsv_texel.b > 1.0) {    // Luminance
+  //   hsv_texel.b = 1.0;
+  // }
+  vec4 final_texel = g * src; //hsv_to_rgb(hsv_texel);
 
   // final_texel.r = ((final_texel.r + dest.r)+0.001) / 2.0;
   // final_texel.g = ((final_texel.g + dest.g)+0.001) / 2.0;
@@ -232,44 +206,12 @@ void main() {
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.
-  if (final_texel.r != final_texel.r ||
-      final_texel.g != final_texel.g ||
-      final_texel.b != final_texel.b ||
-      final_texel.a != final_texel.a)
-    final_texel = vec4(0.0,0.0,0.0,0.0);
+  // if (final_texel.r != final_texel.r ||
+  //     final_texel.g != final_texel.g ||
+  //     final_texel.b != final_texel.b ||
+  //     final_texel.a != final_texel.a)
+  //   final_texel = vec4(0.0,0.0,0.0,0.0);
 
   // Return the final value
   gl_FragColor = final_texel;
-
-  
-
-
-
-
-  // Current center texture
-    //  vec4 f = texture2D(feedback_texture, gl_TexCoord[0].st);
-
-  // float laplacian_g = -4.0 * texture2D(feedback_texture, gl_TexCoord[0].st).g;
-  // laplacian_g += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width,0.0) ).g;
-  // laplacian_g += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width,0.0) ).g;
-  // laplacian_g += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0,-width/framebuffer_height) ).g;
-  // laplacian_g += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0, width/framebuffer_height) ).g;
-
-  // float laplacian_b = -4.0 * texture2D(feedback_texture, gl_TexCoord[0].st).b;
-  // laplacian_b += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(-width/framebuffer_width,0.0) ).b;
-  // laplacian_b += texture2D(feedback_texture, gl_TexCoord[0].st + vec2( width/framebuffer_width,0.0) ).b;
-  // laplacian_b += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0,-width/framebuffer_height) ).b;
-  // laplacian_b += texture2D(feedback_texture, gl_TexCoord[0].st + vec2(0.0, width/framebuffer_height) ).b;
-
-  // gl_FragColor = f;
-  // vec4 l8 = laplace_8();
-  // gl_FragColor.r -= s * (f.r * f.b) + D_g * l8.r;
-  // gl_FragColor.g -= s * (16.0 - f.g * f.b) + D_g * l8.g;
-  // gl_FragColor.b -= s * (f.g * f.b - f.b - beta) + D_b * l8.b;
-  // gl_FragColor -= D_g * laplace_8();
-  // gl_FragColor.a = 1.0;
-
-  // gl_FragColor.a = 1.0;
-  //  texture2D(test, gl_TexCoord[0].st) = g * blur(5.0);
-  //  gl_FragColor = g * blur(5.0);
 }
