@@ -264,14 +264,14 @@ function setup_osc() {
     // bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
     // bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
 
-    bindings.add(osc, "/3/fader1", "q1", -1, 1, 1.0);
-    bindings.add(osc, "/3/fader2", "q2", -1, 1, 0.0);
-    bindings.add(osc, "/3/fader3", "q3", -1, 1, 0.0);
-    bindings.add(osc, "/3/fader4", "q4", -1, 1, 0.0);
-    bindings.add(osc, "/3/fader5", "q5", -1, 1, 0.0);
-    bindings.add(osc, "/3/fader6", "q6", -1, 1, 0.0);
-    bindings.add(osc, "/3/fader7", "q7", -1, 1, 1.0);
-    bindings.add(osc, "/3/fader8", "q8", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader1", "q1", 0, 2, 1.0); // a
+    bindings.add(osc, "/3/fader2", "q2", 0, 6.28, 0.0);
+    bindings.add(osc, "/3/fader3", "q3", -2, 2, 0.0); // b
+    bindings.add(osc, "/3/fader4", "q4", 0, 6.28, 0.0);
+    bindings.add(osc, "/3/fader5", "q5", 0, 2, 0.0); // c
+    bindings.add(osc, "/3/fader6", "q6", 0, 6.28, 0.0);
+    bindings.add(osc, "/3/fader7", "q7", -2, 2, 1.0); // d
+    bindings.add(osc, "/3/fader8", "q8", 0, 6.28, 0.0);
 
     // pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
     // pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);

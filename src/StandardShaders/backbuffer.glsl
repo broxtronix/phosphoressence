@@ -231,12 +231,17 @@ void main() {
   // } else { 
 
     // Linear
-    //    remapped_coords = vec2(x,y);
+  //    remapped_coords = vec2(x,y);
 
     // Mobius Transform
     remapped_coords = mobius_transform(vec2(x,y), 
-                                       vec2(q1,q2), vec2(q3,q4), 
-                                       vec2(q5,q6), vec2(q7,q8));
+                                       vec2(q1*cos(q2),q1*sin(q2)), 
+                                       vec2(q3*cos(q4),q3*sin(q4)), 
+                                       vec2(q5*cos(q6),q5*sin(q6)),
+                                       vec2(q7*cos(q8),q7*sin(q8)));
+    // remapped_coords = mobius_transform(vec2(x,y), 
+    //                                    vec2(q1,q2), vec2(q3,q4), 
+    //                                    vec2(q5,q6), vec2(q7,q8));
     //  }
 
   vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 
@@ -264,22 +269,17 @@ void main() {
     src.b = src.b * -1.0 + 1.0;
   }
   
-  // Apply Gamma
-  src.r = pow(src.r, gamma);
-  src.g = pow(src.g, gamma);
-  src.b = pow(src.b, gamma);
-
   // Apply gain
   vec4 g = vec4(decay, decay, decay, 1.0);
-   vec4 hsv_texel = g * rgb_to_hsv(src);
+  vec4 hsv_texel = g * rgb_to_hsv(src);
   while (hsv_texel.r >= 1.0)     // Hue
-    hsv_texel.r -= 0.99;
+    hsv_texel.r -= 1.0;
   if (hsv_texel.g > 1.0) {      // Saturation
     hsv_texel.g = 1.0;
   } if (hsv_texel.b > 1.0) {    // Luminance
     hsv_texel.b = 1.0;
   }
-  vec4 final_texel = hsv_to_rgb(hsv_texel);
+  vec4 final_texel = g*src;//hsv_to_rgb(hsv_texel);
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.

@@ -349,6 +349,11 @@ void GraphicsEngine::drawImage() {
   // Draw the framebuffer to the real screen.
   glEnable( GL_TEXTURE_2D );
   glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
+
+  m_gpu_frontbuffer_program->install();
+  m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
+  m_gpu_frontbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_frontbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
         
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.
@@ -370,6 +375,8 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
+  m_gpu_backbuffer_program->uninstall();
+
 
   this->swapBuffers();
 
@@ -552,9 +559,8 @@ void GraphicsEngine::initializeGL() {
   CFRelease(appUrlRef);
   CFRelease(macPath);
 
-  m_gpu_main_program = create_gpu_program(resources_dir + "/shaders/main.glsl");
-  m_gpu_blur_program = create_gpu_program(resources_dir + "/shaders/blur_x.glsl");
-  m_gpu_rd_program = create_gpu_program(resources_dir + "/shaders/rd.glsl");
+  m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
+  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
 
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);

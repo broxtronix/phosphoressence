@@ -229,7 +229,7 @@ void setup_parameters() {
                                 "the value of 'monitor' will be posted in the upper-right corner of milkdrop.  "
                                 "for example, setting \"monitor = q3;\" would let you keep an eye on q3's value. ");
   
-  pe_parameters().add_parameter("q1", false, 0.0,
+  pe_parameters().add_parameter("q1", false, 1.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");
   pe_parameters().add_parameter("q2", false, 0.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");
@@ -241,7 +241,7 @@ void setup_parameters() {
                                 "Used to carry information between the per-frame code and per-pixel code.");
   pe_parameters().add_parameter("q6", false, 0.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");
-  pe_parameters().add_parameter("q7", false, 0.0,
+  pe_parameters().add_parameter("q7", false, 1.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");
   pe_parameters().add_parameter("q8", false, 0.0,
                                 "Used to carry information between the per-frame code and per-pixel code.");

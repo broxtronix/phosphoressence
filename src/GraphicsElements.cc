@@ -14,23 +14,23 @@ void GraphicsEngine::drawFeedback() {
   float framebuffer_radius = sqrt(1+pow(aspect,2));
 
   // Feedback decay, gamma, etc are controlled using a pixel shader.
-  m_gpu_main_program->install();
-  m_gpu_main_program->set_input_int("feedback_texture", 0);
-  m_gpu_main_program->set_input_float("framebuffer_radius", framebuffer_radius);
-  m_gpu_main_program->set_input_float("time", pe_parameters().get_value("time"));
-  m_gpu_main_program->set_input_float("decay", pe_parameters().get_value("decay"));
-  m_gpu_main_program->set_input_float("invert", pe_parameters().get_value("invert"));
-  m_gpu_main_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
-  m_gpu_main_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
+  m_gpu_backbuffer_program->install();
+  m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
+  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", framebuffer_radius);
+  m_gpu_backbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_backbuffer_program->set_input_float("decay", pe_parameters().get_value("decay"));
+  m_gpu_backbuffer_program->set_input_float("invert", pe_parameters().get_value("invert"));
+  m_gpu_backbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
+  m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
 
-  m_gpu_main_program->set_input_float("q1", pe_parameters().get_value("q1"));
-  m_gpu_main_program->set_input_float("q2", pe_parameters().get_value("q2"));
-  m_gpu_main_program->set_input_float("q3", pe_parameters().get_value("q3"));
-  m_gpu_main_program->set_input_float("q4", pe_parameters().get_value("q4"));
-  m_gpu_main_program->set_input_float("q5", pe_parameters().get_value("q5"));
-  m_gpu_main_program->set_input_float("q6", pe_parameters().get_value("q6"));
-  m_gpu_main_program->set_input_float("q7", pe_parameters().get_value("q7"));
-  m_gpu_main_program->set_input_float("q8", pe_parameters().get_value("q8"));
+  m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
+  m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
+  m_gpu_backbuffer_program->set_input_float("q3", pe_parameters().get_value("q3"));
+  m_gpu_backbuffer_program->set_input_float("q4", pe_parameters().get_value("q4"));
+  m_gpu_backbuffer_program->set_input_float("q5", pe_parameters().get_value("q5"));
+  m_gpu_backbuffer_program->set_input_float("q6", pe_parameters().get_value("q6"));
+  m_gpu_backbuffer_program->set_input_float("q7", pe_parameters().get_value("q7"));
+  m_gpu_backbuffer_program->set_input_float("q8", pe_parameters().get_value("q8"));
 
   // Warp stuff
   float zoom = pe_parameters().get_value("zoom");
@@ -138,7 +138,7 @@ void GraphicsEngine::drawFeedback() {
 
   // Disable texture mapping and GLSL shaders
   glDisable( GL_TEXTURE_2D );
-  m_gpu_main_program->uninstall();
+  m_gpu_backbuffer_program->uninstall();
 }
 
 

@@ -149,9 +149,8 @@ private:
   GLuint m_framebuffer_texture0;
   GLuint m_framebuffer_texture1;
   GLuint m_framebuffer;
-  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_main_program;
-  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_rd_program;
-  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_blur_program;
+  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
+  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
 
   // Drawables & Script Engines
   std::list<boost::shared_ptr<Drawable> > m_drawables;

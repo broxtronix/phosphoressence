@@ -88,6 +88,8 @@ function pe_render() {
 	 mv_r += 0.5 * Math.sin(15/10.0*time);
 	 mv_g += 0.5 * Math.sin(19/10.0*time);
 	 mv_b += 0.5 * Math.sin(14/10.0*time);
+
+	 q7 = 2*Math.sin(time/5.0);
      }
 }
 
