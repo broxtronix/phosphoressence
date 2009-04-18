@@ -36,6 +36,9 @@ using namespace vw::GPU;
 #include <CoreFoundation/CoreFoundation.h>
 
 
+//#define PE_GL_FORMAT GL_RGBA16F_ARB
+#define PE_GL_FORMAT GL_RGBA
+
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
 // --------------------------------------------------------------
@@ -372,7 +375,10 @@ void GraphicsEngine::drawImage() {
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
-  pe_parameters().set_value("fps", 1.0/(new_time - m_fps_last_time));
+  float fps = 1.0/(new_time - m_fps_last_time);
+  pe_parameters().set_value("fps", fps);
+  // For debugging:
+  //  std::cout << "FPS: " << fps << "\n";
   m_fps_last_time = new_time;
   pe_parameters().set_value("frame", pe_parameters().get_value("frame") + 1.0);
 }
@@ -495,8 +501,7 @@ void GraphicsEngine::saveFeedback() {
 
   // Old Code for saving the feedback texture...
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
-  //  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // -- Save Feedback --
@@ -554,8 +559,11 @@ void GraphicsEngine::initializeGL() {
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+  // glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // Crank up the anisotropic filtering.  Not totally sure what this
@@ -582,7 +590,7 @@ void GraphicsEngine::initializeGL() {
 #ifdef __APPLE__
   AGLContext aglContext;
   aglContext = aglGetCurrentContext();
-  GLint swapInt = 1;
+  GLint swapInt = 0;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
   this->setAutoBufferSwap(false);
 #endif
@@ -634,15 +642,13 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-               //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
@@ -656,8 +662,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
   // Setup the feedback texture buffer
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
                m_framebuffer_width, m_framebuffer_height,
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);
