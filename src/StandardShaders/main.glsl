@@ -7,12 +7,14 @@ uniform float gamma;
 uniform float time;
 uniform float ifs_mode;
 
-uniform float width;
-uniform float D_g;
-uniform float D_b;
-uniform float s;
-uniform float beta;
-uniform float rd_blur;
+uniform float q1;
+uniform float q2;
+uniform float q3;
+uniform float q4;
+uniform float q5;
+uniform float q6;
+uniform float q7;
+uniform float q8;
 
 #define EPS 0.00001
 #define PI 3.14159
@@ -73,12 +75,31 @@ vec4 hsv_to_rgb(vec4 hsv) {
   return vec4(r,g,b,hsv.a);
 }
 
+// Multiply two complex number together
+vec2 cmult(vec2 a, vec2 b) {
+  return vec2(a.x*b.x-a.y*b.y,  // Real Part
+              a.x*b.y+a.y*b.x); // Complex Part
+}
+
+// Divide two complex numbers
+vec2 cdiv(vec2 a, vec2 b) {
+  float numerator = b.x*b.x+b.y*b.y;
+  return vec2((a.x*b.x+a.y*b.y) / numerator,  // Real Part
+              (a.y*b.x-a.x*b.y) / numerator); // Complex Part
+}
+
+vec2 mobius_transform(vec2 z, vec2 a, vec2 b, vec2 c, vec2 d) {
+  vec2 numerator = cmult(a,z) + b;
+  vec2 denominator = cmult(c,z) + d;
+  return cdiv(numerator,denominator);
+}
+
 void main() { 
 
-  // For debugging:
+  // For debugging.  Uncomment to disable the rest of the shader.
+  //
   // gl_FragColor = texture2D(feedback_texture, gl_TexCoord[0].st);
   // return;
-
 
   // Compute the source texture coordinates
   //
@@ -209,20 +230,32 @@ void main() {
 
   // } else { 
 
-
     // Linear
-    remapped_coords = vec2(x,y);
+    //    remapped_coords = vec2(x,y);
 
+    // Mobius Transform
+    remapped_coords = mobius_transform(vec2(x,y), 
+                                       vec2(q1,q2), vec2(q3,q4), 
+                                       vec2(q5,q6), vec2(q7,q8));
     //  }
 
   vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 
                                   remapped_coords.y / (2.0*framebuffer_radius) + 0.5);
-  vec4 src;
-  if (unnormalized_coords.x <= 0.0 || unnormalized_coords.x >= 1.0 ||
-      unnormalized_coords.y <= 0.0 || unnormalized_coords.y >= 1.0)
-    src = vec4(1.0,0.0,0.0,1.0);
-  else 
-    src = texture2D(feedback_texture, unnormalized_coords);
+
+  // Wrap the textures around so that the pattern repeats if necessary.
+
+  // Texture Flip
+  // float xmodval = mod(unnormalized_coords.x,2.0);
+  // float ymodval = mod(unnormalized_coords.x,2.0);
+  // if (xmodval > 1.0)
+  //   unnormalized_coords.x = 2.0 - xmodval;
+  // if (ymodval > 1.0)s
+  //   unnormalized_coords.y = 2.0 - ymodval;
+
+  // Texture Wrap
+  unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
+  unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert
   if (invert == 1.0) {
@@ -232,14 +265,13 @@ void main() {
   }
   
   // Apply Gamma
-  // src.r = pow(src.r, gamma);
-  // src.g = pow(src.g, gamma);
-  // src.b = pow(src.b, gamma);
+  src.r = pow(src.r, gamma);
+  src.g = pow(src.g, gamma);
+  src.b = pow(src.b, gamma);
 
   // Apply gain
   vec4 g = vec4(decay, decay, decay, 1.0);
-  vec4 hsv_texel = g * rgb_to_hsv(src);
-  
+   vec4 hsv_texel = g * rgb_to_hsv(src);
   while (hsv_texel.r >= 1.0)     // Hue
     hsv_texel.r -= 0.99;
   if (hsv_texel.g > 1.0) {      // Saturation

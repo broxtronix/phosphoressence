@@ -23,6 +23,15 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_main_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
   m_gpu_main_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
 
+  m_gpu_main_program->set_input_float("q1", pe_parameters().get_value("q1"));
+  m_gpu_main_program->set_input_float("q2", pe_parameters().get_value("q2"));
+  m_gpu_main_program->set_input_float("q3", pe_parameters().get_value("q3"));
+  m_gpu_main_program->set_input_float("q4", pe_parameters().get_value("q4"));
+  m_gpu_main_program->set_input_float("q5", pe_parameters().get_value("q5"));
+  m_gpu_main_program->set_input_float("q6", pe_parameters().get_value("q6"));
+  m_gpu_main_program->set_input_float("q7", pe_parameters().get_value("q7"));
+  m_gpu_main_program->set_input_float("q8", pe_parameters().get_value("q8"));
+
   // Warp stuff
   float zoom = pe_parameters().get_value("zoom");
   float zoomExp = pe_parameters().get_value("zoomexp");

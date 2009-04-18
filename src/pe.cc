@@ -291,7 +291,7 @@ int main(int argc, char *argv[]) {
   // Start up the OSC control thread.  It listens in the background,
   // changing the values in PeParameters as it receives updates.
   std::cout << "\t--> Initializing OSC driver\n";
-  std::string osc_ip = "10.0.1.7";
+  std::string osc_ip = "10.0.1.2";
   if (argc == 2) 
     osc_ip = argv[1];
   OscController osc_controller("60002", osc_ip.c_str() , "60000");

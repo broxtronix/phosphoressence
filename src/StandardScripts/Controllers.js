@@ -236,9 +236,9 @@ function setup_osc() {
     osc.receive_callback = osc_receive_callback;
 
     // Set up some basic control bindings
-    // bindings.add(osc, "/1/fader1", "decay", 0.8, 1.1, 0.95, "log10");
-    // bindings.add(osc, "/1/xy/0", "zoom", 0.5, 1.5, 1.0);
-    // bindings.add(osc, "/1/xy/1", "rot", 0.785, -0.785, 0.0);
+    bindings.add(osc, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10");
+    bindings.add(osc, "/1/xy/0", "zoom", 0.5, 1.5, 1.0);
+    bindings.add(osc, "/1/xy/1", "rot", 0.785, -0.785, 0.0);
     bindings.add(osc, "/1/fader2", "warp", 0.0, 2.0, 0.0);
     bindings.add(osc, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10");
     bindings.add(osc, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0);
@@ -256,13 +256,22 @@ function setup_osc() {
     bindings.add(osc, "/2/toggle8", "square_a", 0.0, 1.0, 1.0);
     bindings.add(osc, "/2/fader8", "square_frequency", 0.001, 1.0, 0.03);
 
-    bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5);
-    //    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
-    bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0);
-    bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0);
-    bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0);
-    bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
-    bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
+    // bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5);
+    // //    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5);
+    // bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0);
+    // bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0);
+    // bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0);
+    // bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
+    // bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
+
+    bindings.add(osc, "/3/fader1", "q1", -1, 1, 1.0);
+    bindings.add(osc, "/3/fader2", "q2", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader3", "q3", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader4", "q4", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader5", "q5", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader6", "q6", -1, 1, 0.0);
+    bindings.add(osc, "/3/fader7", "q7", -1, 1, 1.0);
+    bindings.add(osc, "/3/fader8", "q8", -1, 1, 0.0);
 
     // pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
     // pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);

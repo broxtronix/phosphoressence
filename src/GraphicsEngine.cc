@@ -36,8 +36,8 @@ using namespace vw::GPU;
 #include <CoreFoundation/CoreFoundation.h>
 
 
-//#define PE_GL_FORMAT GL_RGBA16F_ARB
-#define PE_GL_FORMAT GL_RGBA
+#define PE_GL_FORMAT GL_RGBA16F_ARB
+//#define PE_GL_FORMAT GL_RGBA
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -780,11 +780,15 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
       (*iter)->execute_js("next_preset();");
     }
     break;
+
   case Qt::Key_Up:  
-    typedef std::list<boost::shared_ptr<ScriptEngine> >::iterator iter_type;
-    for (iter_type iter = m_script_engines.begin(); iter != m_script_engines.end(); ++iter ) {
-      (*iter)->execute_js("random_preset();");
-    }
+    pe_parameters().set_value("ifs_mode", pe_parameters().get_value("ifs_mode") + 1.0);
+    break;
+  case Qt::Key_Down:  
+    pe_parameters().set_value("ifs_mode", pe_parameters().get_value("ifs_mode") - 1.0);
+    break;
+  case Qt::Key_I:  
+    pe_parameters().set_value("invert", 1.0-pe_parameters().get_value("invert"));
     break;
   default: 
     QWidget::keyPressEvent(event);
