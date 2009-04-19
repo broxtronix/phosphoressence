@@ -250,16 +250,16 @@ void main() {
   // Wrap the textures around so that the pattern repeats if necessary.
 
   // Texture Flip
-  // float xmodval = mod(unnormalized_coords.x,2.0);
-  // float ymodval = mod(unnormalized_coords.x,2.0);
-  // if (xmodval > 1.0)
-  //   unnormalized_coords.x = 2.0 - xmodval;
-  // if (ymodval > 1.0)s
-  //   unnormalized_coords.y = 2.0 - ymodval;
+  float xmodval = mod(unnormalized_coords.x,2.0);
+  float ymodval = mod(unnormalized_coords.x,2.0);
+  if (xmodval > 1.0)
+    unnormalized_coords.x = 2.0 - xmodval;
+  if (ymodval > 1.0)
+    unnormalized_coords.y = 2.0 - ymodval;
 
   // Texture Wrap
-  unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
-  unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  // unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
+  // unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert
@@ -272,14 +272,9 @@ void main() {
   // Apply gain
   vec4 g = vec4(decay, decay, decay, 1.0);
   vec4 hsv_texel = g * rgb_to_hsv(src);
-  while (hsv_texel.r >= 1.0)     // Hue
-    hsv_texel.r -= 1.0;
-  if (hsv_texel.g > 1.0) {      // Saturation
-    hsv_texel.g = 1.0;
-  } if (hsv_texel.b > 1.0) {    // Luminance
-    hsv_texel.b = 1.0;
-  }
-  vec4 final_texel = g*src;//hsv_to_rgb(hsv_texel);
+  hsv_texel.r = mod(hsv_texel.r,1.0);    // Wrap hue
+  hsv_texel = clamp(hsv_texel,0.0,1.0);  // Clamp saturation & luminance
+  vec4 final_texel = hsv_to_rgb(hsv_texel);
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.

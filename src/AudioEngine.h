@@ -41,7 +41,7 @@ protected:
 public:
   AudioListener(float buffer_length = 5.0) : 
     m_buffer_length(buffer_length), 
-    m_sample_rate(96000) {
+    m_sample_rate(48000) {
   
     // Set up the ring buffer for storing the audio
     m_data.read_index = 0;
@@ -115,7 +115,7 @@ public:
                                                      statusFlags);
   }
   
-  AudioThread(int sample_rate = 96000);
+  AudioThread(int sample_rate = 48000);
   ~AudioThread();
 
   void register_listener(boost::shared_ptr<AudioListener> listener) {

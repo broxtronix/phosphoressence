@@ -33,21 +33,21 @@ public:
 
   virtual void draw(float time, float gain) {
 
-    float dt_draw = 1/96000.0; // TODO : Replace with call to sample_rate()
+    float dt_draw = 1/48000.0; // TODO : Replace with call to sample_rate()
     float tau_excite = 3e-5;   // TODO : Move to parameters
     float tau_decay = -(1/30.0)/log(pe_parameters().get_value("decay")); // TODO: Avoid using fixed frame rate!
     float beta = (1-exp(-dt_draw/tau_decay)); // TODO: Move tau_decay to pe_parameters()
 
     // Read the values into a local audio cache
-    float left_cache[96000];
-    float right_cache[96000];
+    float left_cache[48000];
+    float right_cache[48000];
     int idx = 0;
     {
       vw::Mutex::Lock lock(m_mutex);
 
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
-        if (idx < 96000) {
+        if (idx < 48000) {
           left_cache[idx] = *data_ptr++;
           right_cache[idx] = *data_ptr++;
           ++idx;

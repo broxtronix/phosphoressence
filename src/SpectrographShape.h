@@ -85,21 +85,22 @@ public:
             glBegin(GL_LINES);
           
           float horiz_pos = 0.0;
-          float T = float(NUM_FFT_SAMPLES)/96000.0; // FFT length
+          float T = float(NUM_FFT_SAMPLES)/48000.0; // FFT length
           float log_lo = log10f(1/T);
           float log_hi = log10f(float(NUM_FFT_SAMPLES/2)/T);
+          float aspect = pe_parameters().get_value("aspect");
           for (unsigned i=1; i < NUM_FFT_SAMPLES/2; ++i) {
 
-            // This bit of math sets up a position between [-1.0 1.0]
+            // This bit of math sets up a position between [-aspec +aspect]
             // on a log scale.
             float f = float(i)/T;        // FFT frequency
-            horiz_pos = ( (log10f(f)-log_lo)/(log_hi-log_lo) )*2-1.0;
+            horiz_pos = ( (log10f(f)-log_lo)/(log_hi-log_lo) )*2*aspect-aspect;
             
             // Draw the bar as more red as the volume increases
             //            std::cout << spectrum[i] << "\n";
             glColor4f(norm_color[0], norm_color[1], norm_color[2], wave_a );
-            glVertex2d(horiz_pos, -0.5);
-            glVertex2d(horiz_pos, spectrum[i]*20-0.5);
+            glVertex2d(horiz_pos, -1.0);
+            glVertex2d(horiz_pos, spectrum[i]*20-1.0);
           }
           glEnd();
           

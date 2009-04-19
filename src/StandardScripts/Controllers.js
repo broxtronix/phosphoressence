@@ -84,7 +84,7 @@ function joystick_receive_callback(path, value) {
     }
 
     // Rotation
-    var rot_gain = 0.01;
+    var rot_gain = 0.005;
     if (path == "/joystick0/axis0") {
 	var delta = -(value-0.5) * rot_gain;
 	if (Math.abs(value-0.5) > 0.05) {
@@ -95,7 +95,7 @@ function joystick_receive_callback(path, value) {
     }
 
     // Zoom
-    var zoom_gain = 0.006;
+    var zoom_gain = 0.002;
     if (path == "/joystick0/axis1") {
 	var delta = -(value-0.5) * zoom_gain;
 	if (Math.abs(value-0.5) > 0.05) {
@@ -286,7 +286,7 @@ function setup_joystick() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Langton bEATS
-    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.2, 0.98);
+    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.05, 0.98);
     bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
     bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 

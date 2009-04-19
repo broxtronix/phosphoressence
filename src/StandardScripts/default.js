@@ -28,7 +28,7 @@ function pe_load() {
 function pe_initialize() {
 
     setup_osc();
-    //    setup_joystick();
+    setup_joystick();
 
     // Load Milkdrop Presets
     //    load(RESOURCES + "/presets/milkdrop/milk_presets.js");
@@ -51,7 +51,7 @@ function pe_render() {
      } else {
 	 
 	 // Update joystick parameters
-	 //	 joystick_render_callback();
+	 joystick_render_callback();
 	 
 	 // Cycle through OB colors
 	 ib_r = 0.5;
@@ -89,7 +89,7 @@ function pe_render() {
 	 mv_g += 0.5 * Math.sin(19/10.0*time);
 	 mv_b += 0.5 * Math.sin(14/10.0*time);
 
-	 q7 = 2*Math.sin(time/5.0);
+	 //	 q7 = 2*Math.sin(time/5.0);
      }
 }
 

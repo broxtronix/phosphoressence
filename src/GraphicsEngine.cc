@@ -596,7 +596,7 @@ void GraphicsEngine::initializeGL() {
 #ifdef __APPLE__
   AGLContext aglContext;
   aglContext = aglGetCurrentContext();
-  GLint swapInt = 0;
+  GLint swapInt = 1;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
   this->setAutoBufferSwap(false);
 #endif
