@@ -85,7 +85,7 @@ public:
             glBegin(GL_LINES);
           
           float horiz_pos = 0.0;
-          float T = float(NUM_FFT_SAMPLES)/48000.0; // FFT length
+          float T = float(NUM_FFT_SAMPLES)/AUDIO_SAMPLE_RATE; // FFT length
           float log_lo = log10f(1/T);
           float log_hi = log10f(float(NUM_FFT_SAMPLES/2)/T);
           float aspect = pe_parameters().get_value("aspect");

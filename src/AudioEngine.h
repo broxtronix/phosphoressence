@@ -16,6 +16,7 @@
 // Basic audio settings
 #define NUM_CHANNELS    (2)
 #define FFT_SAMPLES     512
+#define AUDIO_SAMPLE_RATE 96000.0
 
 class AudioListener {
 
@@ -41,7 +42,7 @@ protected:
 public:
   AudioListener(float buffer_length = 5.0) : 
     m_buffer_length(buffer_length), 
-    m_sample_rate(48000) {
+    m_sample_rate(AUDIO_SAMPLE_RATE) {
   
     // Set up the ring buffer for storing the audio
     m_data.read_index = 0;
@@ -115,7 +116,7 @@ public:
                                                      statusFlags);
   }
   
-  AudioThread(int sample_rate = 48000);
+  AudioThread(int sample_rate = AUDIO_SAMPLE_RATE);
   ~AudioThread();
 
   void register_listener(boost::shared_ptr<AudioListener> listener) {

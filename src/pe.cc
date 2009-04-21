@@ -48,6 +48,7 @@
 #include <MidiController.h>
 #include <JoystickController.h>
 #include <OScopeShape.h>
+#include <VectorShape.h>
 #include <PhasescopeShape.h>
 #include <SpectrographShape.h>
 
@@ -261,6 +262,17 @@ void setup_parameters() {
   pe_parameters().add_parameter("square_a", false, 1.0, 
                                 "opacity of the wave (0..1) [0=transparent, 1=opaque]");
 
+
+  pe_parameters().add_parameter("lj_A", false, 1.0,
+                                "Amplitude for horizontal lissajous pattern.");
+  pe_parameters().add_parameter("lj_B", false, 1.0,
+                                "Amplitude for vertical lissajous pattern.");
+  pe_parameters().add_parameter("lj_omega_a", false, 1.0,
+                                "Angular frequency for horizontal lissajous pattern.");
+  pe_parameters().add_parameter("lj_omega_b", false, 1.0,
+                                "Angular frequency for vertical lissajous pattern.");
+  pe_parameters().add_parameter("lj_phase", false, 0.0,
+                                "Phase shift for horizontal lissajous pattern.");
   
 
   pe_parameters().add_parameter("aspect", true, 1.0,
@@ -310,15 +322,17 @@ int main(int argc, char *argv[]) {
   audio_thread.register_listener(stats_listener);
 
   // Create some Waveshapes
-  boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
-  boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
-  boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  audio_thread.register_listener(oscope);
-  audio_thread.register_listener(phasescope);
-  audio_thread.register_listener(spectrograph);
-  main_window.gl_widget()->register_drawable(oscope);
-  main_window.gl_widget()->register_drawable(phasescope);
-  main_window.gl_widget()->register_drawable(spectrograph);
+  // boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
+  // boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
+  // boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
+  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  // audio_thread.register_listener(oscope);
+  // audio_thread.register_listener(phasescope);
+  // audio_thread.register_listener(spectrograph);
+  // main_window.gl_widget()->register_drawable(oscope);
+  // main_window.gl_widget()->register_drawable(phasescope);
+  // main_window.gl_widget()->register_drawable(spectrograph);
+  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
   boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());
