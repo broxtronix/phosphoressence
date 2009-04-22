@@ -329,10 +329,10 @@ int main(int argc, char *argv[]) {
   audio_thread.register_listener(oscope);
   audio_thread.register_listener(phasescope);
   audio_thread.register_listener(spectrograph);
-  main_window.gl_widget()->register_drawable(oscope);
-  main_window.gl_widget()->register_drawable(phasescope);
-  main_window.gl_widget()->register_drawable(spectrograph);
-  //  main_window.gl_widget()->register_drawable(lissajous);
+  // main_window.gl_widget()->register_drawable(oscope);
+  // main_window.gl_widget()->register_drawable(phasescope);
+  // main_window.gl_widget()->register_drawable(spectrograph);
+  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
   boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());
