@@ -254,12 +254,15 @@ void PeStandardSetter(v8::Local<v8::String> property, v8::Local<v8::Value> value
   v8::String::Utf8Value str(property);
   pe_parameters().set_value( ToCString(str), value->NumberValue() );
 
-  std::ostringstream ostr;
-  ostr << "bindings.parameter_to_controller(\"" << ToCString(str) << "\", " << value->NumberValue() << ");";
-  ScriptEngine::ExecuteString(v8::String::New(ostr.str().c_str()),
-                              v8::String::New("(shell)"),
-                              true,
-                              true);  
+  // This causes things to crash.  Disabled for now until I can figure it out...
+  // std::string path = ToCString(str);
+  // float val = value->NumberValue();
+  // std::ostringstream ostr;
+  // ostr << "bindings.parameter_to_controller(\"" << path << "\", " << val << ");";
+  // ScriptEngine::ExecuteString(v8::String::New(ostr.str().c_str()),
+  //                             v8::String::New("(shell)"),
+  //                             true,
+  //                             true);  
 }
 
 void create_pe_param_objects(v8::Handle<v8::ObjectTemplate> &global_templ) {
@@ -303,11 +306,15 @@ void ScriptEngine::setup_pe_parameters() {
 // does nothing.
 v8::Handle<v8::Value> ControllerMethod_ReceiveCallback(const v8::Arguments& args)
 {
+  v8::HandleScope handle_scope;
+
   return v8::Undefined();
 }
 
 v8::Handle<v8::Value> ControllerMethod_Send(const v8::Arguments& args)
 {
+  v8::HandleScope handle_scope;
+
   if (args.Length() != 2) {
     std::cout << "Error: Controller::send(path, value) takes two arguments, "
               << "but you supplied " << args.Length() << ".\n";

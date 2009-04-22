@@ -309,16 +309,16 @@ void GraphicsEngine::drawImage() {
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
-  // if (pe_parameters().get_value("wave_enabled") ) {
+  if (pe_parameters().get_value("wave_enabled") ) {
     std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
     for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
-      // if ( i == pe_parameters().get_value("wave_mode") ) {
+      if ( i == pe_parameters().get_value("wave_mode") ) {
         (*iter)->draw(pe_parameters().get_value("time"),
                       pe_parameters().get_value("decay"));
-      //   break;
-      // }
+         break;
+      }
     }
-    //  }
+  }
 
   // -------------- <Feedback> -------------------------
 
