@@ -266,9 +266,10 @@ function setup_osc() {
 
     bindings.add(osc, "/2/fader1", "lj_A", 0, 1.0, 1.0); 
     bindings.add(osc, "/2/fader2", "lj_B", 0, 1.0, 1.0); 
-    bindings.add(osc, "/2/fader3", "lj_omega_a", 0.01, 1000.0, 1.0, "log10"); 
-    bindings.add(osc, "/2/fader4", "lj_omega_b", 0.01, 1000.0, 1.0, "log10"); 
-    bindings.add(osc, "/2/fader5", "lj_phase", 0, 3.14159, 0.0);     
+    bindings.add(osc, "/2/fader3", "lj_omega", 0.01, 10000.0, 1.0, "log10"); 
+    bindings.add(osc, "/2/fader4", "lj_ratio_a", 1.0, 10.0, "log10"); 
+    bindings.add(osc, "/2/fader5", "lj_ratio_b", 1.0, 10.0, "log10"); 
+    bindings.add(osc, "/2/fader6", "lj_phase", 0.9, 1.1, 1.0);     
 
     bindings.add(osc, "/3/fader1", "q1", 0, 2, 1.0); // a
     bindings.add(osc, "/3/fader2", "q2", 0, 6.28, 0.0);
@@ -285,6 +286,11 @@ function setup_osc() {
     // pe_parameters().add_parameter("rd_s", "/3/fader4", 0.0, 0.05, 0.03125);
     // pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12);
     // pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0);
+}
+
+function osc_render_callback() {
+    lj_ratio_a = Math.round(lj_ratio_a);
+    lj_ratio_b = Math.round(lj_ratio_b);
 }
 
 function setup_joystick() {

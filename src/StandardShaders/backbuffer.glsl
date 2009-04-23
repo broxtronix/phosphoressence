@@ -231,14 +231,14 @@ void main() {
   // } else { 
 
     // Linear
-  //    remapped_coords = vec2(x,y);
+  remapped_coords = vec2(x,y);
 
     // Mobius Transform
-    remapped_coords = mobius_transform(vec2(x,y), 
-                                       vec2(q1*cos(q2),q1*sin(q2)), 
-                                       vec2(q3*cos(q4),q3*sin(q4)), 
-                                       vec2(q5*cos(q6),q5*sin(q6)),
-                                       vec2(q7*cos(q8),q7*sin(q8)));
+    // remapped_coords = mobius_transform(vec2(x,y), 
+    //                                    vec2(q1*cos(q2),q1*sin(q2)), 
+    //                                    vec2(q3*cos(q4),q3*sin(q4)), 
+    //                                    vec2(q5*cos(q6),q5*sin(q6)),
+    //                                    vec2(q7*cos(q8),q7*sin(q8)));
     // remapped_coords = mobius_transform(vec2(x,y), 
     //                                    vec2(q1,q2), vec2(q3,q4), 
     //                                    vec2(q5,q6), vec2(q7,q8));
@@ -250,16 +250,16 @@ void main() {
   // Wrap the textures around so that the pattern repeats if necessary.
 
   // Texture Flip
-  float xmodval = mod(unnormalized_coords.x,2.0);
-  float ymodval = mod(unnormalized_coords.x,2.0);
-  if (xmodval > 1.0)
-    unnormalized_coords.x = 2.0 - xmodval;
-  if (ymodval > 1.0)
-    unnormalized_coords.y = 2.0 - ymodval;
+  // float xmodval = mod(unnormalized_coords.x,2.0);
+  // float ymodval = mod(unnormalized_coords.x,2.0);
+  // if (xmodval > 1.0)
+  //   unnormalized_coords.x = 2.0 - xmodval;
+  // if (ymodval > 1.0)
+  //   unnormalized_coords.y = 2.0 - ymodval;
 
   // Texture Wrap
-  // unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
-  // unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
+  unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert

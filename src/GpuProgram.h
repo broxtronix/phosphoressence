@@ -156,22 +156,22 @@ namespace vw { namespace GPU {
   //#############################################################################################
 
     boost::shared_ptr<GpuProgram> create_gpu_program(const std::string& fragmentPath, 
-                                                  const std::vector<int>& fragmentAttributes = std::vector<int>(),
+                                                     const std::vector<int>& fragmentAttributes = std::vector<int>(),
                                                      const std::string& vertexPath = "", 
                                                      const std::vector<int>& vertexAttributes = std::vector<int>());
 
     boost::shared_ptr<GpuProgram_GLSL> create_gpu_program_glsl_string(const std::string& fragmentString, 
-                                                  const std::vector<int>& fragmentAttributes = std::vector<int>(),
-						  const std::string& vertexString = "", 
-                                                  const std::vector<int>& vertexAttributes = std::vector<int>());
+                                                                      const std::vector<int>& fragmentAttributes = std::vector<int>(),
+                                                                      const std::string& vertexString = "", 
+                                                                      const std::vector<int>& vertexAttributes = std::vector<int>());
 
     boost::shared_ptr<GpuProgram_GLSL> create_gpu_program_glsl(const std::string& fragmentPath, 
-                                           const std::vector<int>& fragmentAttributes = std::vector<int>(),
-					   const std::string& vertexPath = "", 
-                                           const std::vector<int>& vertexAttributes = std::vector<int>());
-
-
-  void clear_gpu_program_cache();
+                                                               const std::vector<int>& fragmentAttributes = std::vector<int>(),
+                                                               const std::string& vertexPath = "", 
+                                                               const std::vector<int>& vertexAttributes = std::vector<int>());
+    
+    
+    void clear_gpu_program_cache();
 
 } } // namespaces GPU, vw
 

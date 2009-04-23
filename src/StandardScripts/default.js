@@ -53,6 +53,9 @@ function pe_render() {
 	 // Update joystick parameters
 	 joystick_render_callback();
 	 
+	 // Update osc parameters
+	 osc_render_callback();
+	 
 	 // Cycle through OB colors
 	 ib_r = 0.5;
 	 ib_g = 0.5;

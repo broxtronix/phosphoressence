@@ -36,8 +36,8 @@ using namespace vw::GPU;
 #include <CoreFoundation/CoreFoundation.h>
 
 
-#define PE_GL_FORMAT GL_RGBA16F_ARB
-//#define PE_GL_FORMAT GL_RGBA
+//#define PE_GL_FORMAT GL_RGBA16F_ARB
+#define PE_GL_FORMAT GL_RGBA
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -377,6 +377,10 @@ void GraphicsEngine::drawImage() {
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 
+  std::ostringstream ostr;
+  ostr << "FPS: " << pe_parameters().get_value("fps");
+  QString fps_str(ostr.str().c_str());
+  this->renderText(20,20,fps_str);
 
   this->swapBuffers();
 
@@ -386,6 +390,9 @@ void GraphicsEngine::drawImage() {
   pe_parameters().set_value("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
+  //
+  
+
   m_fps_last_time = new_time;
   pe_parameters().set_value("frame", pe_parameters().get_value("frame") + 1.0);
 }
@@ -560,7 +567,9 @@ void GraphicsEngine::initializeGL() {
   CFRelease(macPath);
 
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
-  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
+  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl",
+                                                std::vector<int>(),
+                                                resources_dir + "/shaders/backbuffer_vertex.glsl");
 
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);

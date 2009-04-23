@@ -267,11 +267,13 @@ void setup_parameters() {
                                 "Amplitude for horizontal lissajous pattern.");
   pe_parameters().add_parameter("lj_B", false, 1.0,
                                 "Amplitude for vertical lissajous pattern.");
-  pe_parameters().add_parameter("lj_omega_a", false, 1.0,
+  pe_parameters().add_parameter("lj_omega", false, 1.0,
                                 "Angular frequency for horizontal lissajous pattern.");
-  pe_parameters().add_parameter("lj_omega_b", false, 1.0,
+  pe_parameters().add_parameter("lj_ratio_a", false, 1.0,
                                 "Angular frequency for vertical lissajous pattern.");
-  pe_parameters().add_parameter("lj_phase", false, 0.0,
+  pe_parameters().add_parameter("lj_ratio_b", false, 1.0,
+                                "Angular frequency for vertical lissajous pattern.");
+  pe_parameters().add_parameter("lj_phase", false, 1.0,
                                 "Phase shift for horizontal lissajous pattern.");
   
 
