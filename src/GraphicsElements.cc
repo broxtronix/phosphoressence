@@ -27,6 +27,8 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
   m_gpu_backbuffer_program->set_input_float("zoomexp", pe_parameters().get_value("zoomexp"));
   m_gpu_backbuffer_program->set_input_float("rot", pe_parameters().get_value("rot"));
+  m_gpu_backbuffer_program->set_input_float("dx", pe_parameters().get_value("dx"));
+  m_gpu_backbuffer_program->set_input_float("dy", pe_parameters().get_value("dy"));
 
   m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
   m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
@@ -40,9 +42,9 @@ void GraphicsEngine::drawFeedback() {
   // Warp stuff
   float zoom = 1.0;//pe_parameters().get_value("zoom");
   float zoomExp = 1.0;//pe_parameters().get_value("zoomexp");
-  float warpAmount = 0.0; //pe_parameters().get_value("warp");
-  float warpSpeed = 1.0; //pe_parameters().get_value("warp_speed");
-  float warpScale = 1.0; //pe_parameters().get_value("warp_scale");
+  float warpAmount = pe_parameters().get_value("warp");
+  float warpSpeed = pe_parameters().get_value("warp_speed");
+  float warpScale = pe_parameters().get_value("warp_scale");
   float warpTime = pe_parameters().get_value("time") * warpSpeed;
   float warpScaleInv = 1.0f / warpScale;
 
@@ -56,8 +58,8 @@ void GraphicsEngine::drawFeedback() {
   float rot = 0.0; //pe_parameters().get_value("rot");
   float cx = pe_parameters().get_value("cx");
   float cy = pe_parameters().get_value("cy");
-  float dx = pe_parameters().get_value("dx");
-  float dy = pe_parameters().get_value("dy");
+  float dx = 0.0; //pe_parameters().get_value("dx");
+  float dy = 0.0; //pe_parameters().get_value("dy");
   float sx = pe_parameters().get_value("sx");
   float sy = pe_parameters().get_value("sy");
   // glTranslatef(cx, cy, 0);

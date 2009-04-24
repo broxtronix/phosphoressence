@@ -63,18 +63,18 @@ function joystick_receive_callback(path, value) {
     // if (path == "/joystick0/hat0" && value == 0.0) 
     // 	gamma_coefficient = 0.0;
 
-    // waveshape_frequency
-    if (path == "/joystick0/hat0" && value == 4) 
-    	wsfreq_coefficient = -1.0;
-    if (path == "/joystick0/hat0" && value == 1) 
-    	wsfreq_coefficient = 1.0;
-    if (path == "/joystick0/hat0" && value == 8) 
-    	sqfreq_coefficient = -1.0;
+    // Translation
     if (path == "/joystick0/hat0" && value == 2) 
-    	sqfreq_coefficient = 1.0;
+    	dx_coefficient = -1.0;
+    if (path == "/joystick0/hat0" && value == 8) 
+    	dx_coefficient = 1.0;
+    if (path == "/joystick0/hat0" && value == 1) 
+    	dy_coefficient = -1.0;
+    if (path == "/joystick0/hat0" && value == 4) 
+    	dy_coefficient = 1.0;
     if (path == "/joystick0/hat0" && value == 0.0) {
-    	wsfreq_coefficient = 0.0;
-	sqfreq_coefficient = 0.0;
+    	dx_coefficient = 0.0;
+	dy_coefficient = 0.0;
     }
 
     // wave_usedots
@@ -300,8 +300,8 @@ function setup_joystick() {
 
     // Langton bEATS
     bindings.add(joystick, "/joystick0/axis2", "decay", 0.5, 1.05, 0.98);
-    bindings.add(joystick, "/joystick0/axis4", "q5", -3.14159, 3.14159, 0.0);
-    bindings.add(joystick, "/joystick0/axis5", "q6", -3.14159, 3.14159, 0.0);
+    bindings.add(joystick, "/joystick0/axis4", "q1", -3.14159, 3.14159, 0.0);
+    bindings.add(joystick, "/joystick0/axis5", "q2", -3.14159, 3.14159, 0.0);
 
     bindings.add(joystick, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
     bindings.add(joystick, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
@@ -312,6 +312,8 @@ function setup_joystick() {
     cy_coefficient = 0.0;
     warp_coefficient = 0.0;
     gamma_coefficient = 0.0;
+    dx_coefficient = 0.0;
+    dy_coefficient = 0.0;
     wsfreq_coefficient = 0.0;
     sqfreq_coefficient = 0.0;
     color_shift_coefficient = 0.0;
@@ -356,6 +358,23 @@ function joystick_render_callback() {
     // gamma += gamma_stepsize * gamma_coefficient;
     // if (gamma > 1.5) gamma = 1.5;
     // if (gamma < 0.9) gamma = 0.9;
+
+    // Update dx & dy
+    var dx_stepsize = 0.01;
+    if (dx_coefficient > 0)
+	dx += dx_stepsize;
+    else if (dx_coefficient < 0)
+	dx -= dx_stepsize;
+    if (dx > 0.5) dx = 0.5;
+    if (dx < -0.5) dx = -0.5;
+
+    var dy_stepsize = 0.01;
+    if (dy_coefficient > 0)
+	dy += dy_stepsize;
+    else if (dy_coefficient < 0)
+	dy -= dy_stepsize;
+    if (dy > 0.5) dy = 0.5;
+    if (dy < -0.5) dy = -0.5;
 
     // Update wsfreq 
     var wsfreq_stepsize = 1.1;

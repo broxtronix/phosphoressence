@@ -10,6 +10,8 @@ uniform float ifs_mode;
 uniform float zoom;
 uniform float zoomexp;
 uniform float rot;
+uniform float dx;
+uniform float dy;
 
 uniform float q1;
 uniform float q2;
@@ -138,8 +140,10 @@ void main() {
   float theta = atan(y,x);
   float phi = atan(x,y);
 
-  vec2 remapped_coords;
-   if (ifs_mode == 1.0) {
+  // Linear
+  vec2 remapped_coords = vec2(x,y);
+
+  if (ifs_mode == 1.0) {
 
     // 1. Sinusoidal
     remapped_coords = vec2(sin(x),
@@ -258,17 +262,19 @@ void main() {
     remapped_coords = vec2(p * cos(PI*y), 
                            p * sin(PI*y) );
 
-   } else { 
+   } 
 
-     // Linear
-     //     remapped_coords = vec2(x,y);
 
-     // Mobius Transform
-     remapped_coords = mobius_transform(vec2(r,theta), 
-                                        vec2(zoom,rot), // polar      : zoom & rotation
-                                        vec2(q3,q4),    // cartesian  : x & y translation 
-                                        vec2(q5,q6));   // polar      : rotation & orientation of 3D sphere
-   }
+  // Mobius Transform
+  float xx = remapped_coords.x;
+  float yy = remapped_coords.y;
+  float rr = sqrt(xx*xx+yy*yy);
+  float theta2 = atan(yy,xx);
+  
+  remapped_coords = mobius_transform(vec2(rr,theta2), 
+                                     vec2(zoom,rot), // polar      : zoom & rotation
+                                     vec2(dx,dy),    // cartesian  : x & y translation 
+                                     vec2(q5,q6));   // polar      : rotation & orientation of 3D sphere
 
   vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 
                                   remapped_coords.y / (2.0*framebuffer_radius) + 0.5);
