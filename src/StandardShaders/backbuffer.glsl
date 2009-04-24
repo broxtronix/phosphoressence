@@ -7,6 +7,10 @@ uniform float gamma;
 uniform float time;
 uniform float ifs_mode;
 
+uniform float zoom;
+uniform float zoomexp;
+uniform float rot;
+
 uniform float q1;
 uniform float q2;
 uniform float q3;
@@ -20,7 +24,7 @@ uniform float q8;
 #define PI 3.14159
 
 /// RGB->HSV conversion
-vec4 rgb_to_hsv(vec4 rgb) {
+vec4 rgb_to_hsv(in vec4 rgb) {
   float hue;
   float saturation;
   float luminance;
@@ -46,7 +50,7 @@ vec4 rgb_to_hsv(vec4 rgb) {
 }
 
 /// HSV->RGB conversion
-vec4 hsv_to_rgb(vec4 hsv) {
+vec4 hsv_to_rgb(in vec4 hsv) {
   float h = hsv.r;
   float s = hsv.g;
   float v = hsv.b;
@@ -76,21 +80,43 @@ vec4 hsv_to_rgb(vec4 hsv) {
 }
 
 // Multiply two complex number together
-vec2 cmult(vec2 a, vec2 b) {
+vec2 cmult(in vec2 a, in vec2 b) {
   return vec2(a.x*b.x-a.y*b.y,  // Real Part
               a.x*b.y+a.y*b.x); // Complex Part
 }
 
+vec2 cmult_polar(in vec2 a, in vec2 b) {
+  return vec2(a.x*b.x, a.y+b.y);
+}
+
 // Divide two complex numbers
-vec2 cdiv(vec2 a, vec2 b) {
+vec2 cdiv(in vec2 a, in vec2 b) {
   float numerator = b.x*b.x+b.y*b.y;
   return vec2((a.x*b.x+a.y*b.y) / numerator,  // Real Part
               (a.y*b.x-a.x*b.y) / numerator); // Complex Part
 }
 
-vec2 mobius_transform(vec2 z, vec2 a, vec2 b, vec2 c, vec2 d) {
-  vec2 numerator = cmult(a,z) + b;
-  vec2 denominator = cmult(c,z) + d;
+vec2 cdiv_polar(in vec2 a, in vec2 b) {
+  return vec2(a.x/b.x, a.y-b.y);
+}
+
+vec2 polar_to_cartesian(in vec2 a) {
+  return vec2(a.x * cos(a.y), a.x * sin(a.y));
+}
+
+vec2 mobius_transform(in vec2 z, in vec2 a, in vec2 b, in vec2 c) {
+  float z_exp = pow(a.x, -1.0 * pow(zoomexp, 
+                                    z.x * 2.0 * framebuffer_radius - framebuffer_radius));
+
+  vec2 aa = vec2(z_exp, a.y);
+  vec2 numerator = polar_to_cartesian(cmult_polar(aa,z)) + b;
+
+  // Disabling the d parameter.  Seems to me that it's redundant with
+  // the a parameter?
+  // 
+  //   vec2 denominator =  polar_to_cartesian(cmult_polar(c,z)) + d;
+
+  vec2 denominator = polar_to_cartesian(cmult_polar(c,z)) + vec2(1.0,0.0);
   return cdiv(numerator,denominator);
 }
 
@@ -109,8 +135,8 @@ void main() {
   float y = (gl_TexCoord[0].y-0.5) * 2.0 * framebuffer_radius;
   float r = sqrt(x*x+y*y);
   float r_sqr = r*r;
-  float theta = atan(x,y);
-  float phi = atan(y,x);
+  float theta = atan(y,x);
+  float phi = atan(x,y);
 
   vec2 remapped_coords;
    if (ifs_mode == 1.0) {
@@ -238,14 +264,10 @@ void main() {
      //     remapped_coords = vec2(x,y);
 
      // Mobius Transform
-     remapped_coords = mobius_transform(vec2(x,y), 
-                                        vec2(q1*cos(q2),q1*sin(q2)), 
-                                        vec2(q3*cos(q4),q3*sin(q4)), 
-                                        vec2(q5*cos(q6),q5*sin(q6)),
-                                        vec2(q7*cos(q8),q7*sin(q8)));
-     // remapped_coords = mobius_transform(vec2(x,y), 
-     //                                    vec2(q1,q2), vec2(q3,q4), 
-     //                                    vec2(q5,q6), vec2(q7,q8));
+     remapped_coords = mobius_transform(vec2(r,theta), 
+                                        vec2(zoom,rot), // polar      : zoom & rotation
+                                        vec2(q3,q4),    // cartesian  : x & y translation 
+                                        vec2(q5,q6));   // polar      : rotation & orientation of 3D sphere
    }
 
   vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 

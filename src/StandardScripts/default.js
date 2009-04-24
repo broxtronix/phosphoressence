@@ -17,7 +17,7 @@ function pe_load() {
 
     // Switches for debugging
     debug = 0;
-    joy_debug = 0;
+    joy_debug = 1;
 }
 
 // Default initialization handler

@@ -23,6 +23,11 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
 
+  // These are handled by the mobius transform
+  m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
+  m_gpu_backbuffer_program->set_input_float("zoomexp", pe_parameters().get_value("zoomexp"));
+  m_gpu_backbuffer_program->set_input_float("rot", pe_parameters().get_value("rot"));
+
   m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
   m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
   m_gpu_backbuffer_program->set_input_float("q3", pe_parameters().get_value("q3"));
@@ -33,11 +38,11 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("q8", pe_parameters().get_value("q8"));
 
   // Warp stuff
-  float zoom = pe_parameters().get_value("zoom");
-  float zoomExp = pe_parameters().get_value("zoomexp");
-  float warpAmount = pe_parameters().get_value("warp");
-  float warpSpeed = pe_parameters().get_value("warp_speed");
-  float warpScale = pe_parameters().get_value("warp_scale");
+  float zoom = 1.0;//pe_parameters().get_value("zoom");
+  float zoomExp = 1.0;//pe_parameters().get_value("zoomexp");
+  float warpAmount = 0.0; //pe_parameters().get_value("warp");
+  float warpSpeed = 1.0; //pe_parameters().get_value("warp_speed");
+  float warpScale = 1.0; //pe_parameters().get_value("warp_scale");
   float warpTime = pe_parameters().get_value("time") * warpSpeed;
   float warpScaleInv = 1.0f / warpScale;
 
@@ -48,7 +53,7 @@ void GraphicsEngine::drawFeedback() {
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
   // Affine parameters
-  float rot = pe_parameters().get_value("rot");
+  float rot = 0.0; //pe_parameters().get_value("rot");
   float cx = pe_parameters().get_value("cx");
   float cy = pe_parameters().get_value("cy");
   float dx = pe_parameters().get_value("dx");

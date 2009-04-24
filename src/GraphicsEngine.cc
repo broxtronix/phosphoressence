@@ -616,7 +616,7 @@ void GraphicsEngine::initializeGL() {
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(1.0); 
+  m_timer->start(16.0); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
