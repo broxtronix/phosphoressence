@@ -299,7 +299,10 @@ function setup_joystick() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Langton bEATS
-    bindings.add(joystick, "/joystick0/axis2", "decay", 0.15, 1.05, 0.98);
+    bindings.add(joystick, "/joystick0/axis2", "decay", 0.5, 1.05, 0.98);
+    bindings.add(joystick, "/joystick0/axis4", "q1", 0.0, 2.0, 1.0);
+    bindings.add(joystick, "/joystick0/axis5", "q2", 0.0, 6.28, 0.0);
+
     bindings.add(joystick, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
     bindings.add(joystick, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 

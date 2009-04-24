@@ -235,14 +235,14 @@ void main() {
    } else { 
 
      // Linear
-     remapped_coords = vec2(x,y);
+     //     remapped_coords = vec2(x,y);
 
      // Mobius Transform
-     // remapped_coords = mobius_transform(vec2(x,y), 
-     //                                    vec2(q1*cos(q2),q1*sin(q2)), 
-     //                                    vec2(q3*cos(q4),q3*sin(q4)), 
-     //                                    vec2(q5*cos(q6),q5*sin(q6)),
-     //                                    vec2(q7*cos(q8),q7*sin(q8)));
+     remapped_coords = mobius_transform(vec2(x,y), 
+                                        vec2(q1*cos(q2),q1*sin(q2)), 
+                                        vec2(q3*cos(q4),q3*sin(q4)), 
+                                        vec2(q5*cos(q6),q5*sin(q6)),
+                                        vec2(q7*cos(q8),q7*sin(q8)));
      // remapped_coords = mobius_transform(vec2(x,y), 
      //                                    vec2(q1,q2), vec2(q3,q4), 
      //                                    vec2(q5,q6), vec2(q7,q8));
