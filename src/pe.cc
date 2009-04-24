@@ -304,11 +304,11 @@ int main(int argc, char *argv[]) {
 
   // Start up the OSC control thread.  It listens in the background,
   // changing the values in PeParameters as it receives updates.
-  std::cout << "\t--> Initializing OSC driver\n";
-  std::string osc_ip = "10.0.1.2";
-  if (argc == 2) 
-    osc_ip = argv[1];
-  OscController osc_controller("60002", osc_ip.c_str() , "60000");
+  // std::cout << "\t--> Initializing OSC driver\n";
+  // std::string osc_ip = "10.0.1.2";
+  // if (argc == 2) 
+  //   osc_ip = argv[1];
+  // OscController osc_controller("60002", osc_ip.c_str() , "60000");
 
   std::cout << "\t--> Initializing MIDI driver\n";
   MidiController midi_controller;
@@ -327,23 +327,23 @@ int main(int argc, char *argv[]) {
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  //  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
   audio_thread.register_listener(oscope);
   audio_thread.register_listener(phasescope);
   audio_thread.register_listener(spectrograph);
-  // main_window.gl_widget()->register_drawable(oscope);
-  // main_window.gl_widget()->register_drawable(phasescope);
-  // main_window.gl_widget()->register_drawable(spectrograph);
-  main_window.gl_widget()->register_drawable(lissajous);
+  main_window.gl_widget()->register_drawable(oscope);
+  main_window.gl_widget()->register_drawable(phasescope);
+  main_window.gl_widget()->register_drawable(spectrograph);
+  //  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
   boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());
-  script_engine->register_controller(osc_controller, "OscController", "osc");
+  //  script_engine->register_controller(osc_controller, "OscController", "osc");
   script_engine->register_controller(midi_controller, "MidiController", "midi");
   script_engine->register_controller(joystick_controller, "JoystickController", "joystick");
 
   main_window.gl_widget()->register_script_engine(script_engine);
-  osc_controller.register_script_engine(script_engine);
+  //  osc_controller.register_script_engine(script_engine);
   midi_controller.register_script_engine(script_engine);
   joystick_controller.register_script_engine(script_engine);
 

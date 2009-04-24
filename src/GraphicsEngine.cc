@@ -378,15 +378,16 @@ void GraphicsEngine::drawImage() {
   m_gpu_backbuffer_program->uninstall();
 
   std::ostringstream ostr;
-  ostr << "FPS: " << pe_parameters().get_value("fps");
+  ostr << "FPS: " << m_fps_avg;
   QString fps_str(ostr.str().c_str());
   this->renderText(20,20,fps_str);
 
-  this->swapBuffers();
+  //  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
   float fps = 1.0/(new_time - m_fps_last_time);
+  m_fps_avg = 0.01 * fps + 0.99 * m_fps_avg;
   pe_parameters().set_value("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
@@ -435,6 +436,8 @@ void GraphicsEngine::setup() {
   m_feedback_texcoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
+
+  m_fps_avg = 0;
 
   // Set mouse tracking
   this->setMouseTracking(true);
@@ -605,15 +608,15 @@ void GraphicsEngine::initializeGL() {
 #ifdef __APPLE__
   AGLContext aglContext;
   aglContext = aglGetCurrentContext();
-  GLint swapInt = 1;
+  GLint swapInt = 0;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  this->setAutoBufferSwap(false);
+  //  this->setAutoBufferSwap(false);
 #endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(16.0); 
+  m_timer->start(1.0); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {

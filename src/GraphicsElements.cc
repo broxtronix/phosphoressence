@@ -75,7 +75,7 @@ void GraphicsEngine::drawFeedback() {
 
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 
-                                                   sqrtf(u * u + v * v) * 2.0f - 1.0f));
+                                                   sqrtf(u * u + v * v) * 2.0 * framebuffer_radius - framebuffer_radius));
       u = u * zoomCoefficient;
       v = v * zoomCoefficient;
 

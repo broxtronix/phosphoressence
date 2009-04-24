@@ -159,6 +159,7 @@ private:
   // Timers and updates
   QTimer *m_timer;
   double m_fps_last_time;
+  double m_fps_avg;
 
   // Mouse positions and legend information
   QPoint lastPos;

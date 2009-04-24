@@ -27,7 +27,7 @@ function pe_load() {
 // initialized.
 function pe_initialize() {
 
-    setup_osc();
+    // setup_osc();
     setup_joystick();
 
     // Load Milkdrop Presets
@@ -54,7 +54,7 @@ function pe_render() {
 	 joystick_render_callback();
 	 
 	 // Update osc parameters
-	 osc_render_callback();
+	 //	 osc_render_callback();
 	 
 	 // Cycle through OB colors
 	 ib_r = 0.5;

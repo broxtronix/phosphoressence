@@ -58,14 +58,14 @@ function Bindings() {
 
     this.add = function(controller, path, parameter, lo, hi, default_value, mode) {
 	m_bindings[parameter] = new Binding(controller, path, parameter, lo, hi, default_value, mode);
-        this.parameter_to_controller(parameter, default_value);
+	//        this.parameter_to_controller(parameter, default_value);
     }
 
     this.reset = function() {
 	for (var b in m_bindings) {
 	    p.set(m_bindings[b].parameter, param_val);
-	    m_bindings[b].controller.send(m_bindings[b].path, 
-					  m_bindings[b].default_value);
+	    // m_bindings[b].controller.send(m_bindings[b].path, 
+	    // 				  m_bindings[b].default_value);
 	}
     }
 }

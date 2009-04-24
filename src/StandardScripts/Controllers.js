@@ -5,7 +5,7 @@ function osc_receive_callback(path, value) {
 }
 
 function joystick_receive_callback(path, value) {
-    
+
     // -------------------------------------
     // Fixed settings for the langton bEATS!
     // -------------------------------------
@@ -228,7 +228,8 @@ function joystick_receive_callback(path, value) {
     if (joy_debug && (path.search("axis") == -1))
 	print("[JOYSTICK]    Path: " + path + "   Value: " + value);
 
-    bindings.controller_to_parameter(osc, path, value);
+    // Otherwise, delegate to the bindings.
+    bindings.controller_to_parameter(joystick, path, value);
 }
 
 function setup_osc() {
@@ -298,9 +299,9 @@ function setup_joystick() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Langton bEATS
-    bindings.add(osc, "/joystick0/axis2", "decay", 0.15, 1.05, 0.98);
-    bindings.add(osc, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
-    bindings.add(osc, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
+    bindings.add(joystick, "/joystick0/axis2", "decay", 0.15, 1.05, 0.98);
+    bindings.add(joystick, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
+    bindings.add(joystick, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
 
     sx_coefficient = 0.0;
     sy_coefficient = 0.0;
