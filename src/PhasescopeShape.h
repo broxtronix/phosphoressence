@@ -48,8 +48,8 @@ public:
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
         if (idx < AUDIO_SAMPLE_RATE) {
-          left_cache[idx] = *data_ptr++*2.0;
-          right_cache[idx] = *data_ptr++*2.0;
+          left_cache[idx] = *data_ptr++*1.5;
+          right_cache[idx] = *data_ptr++*1.5;
           ++idx;
         } 
 

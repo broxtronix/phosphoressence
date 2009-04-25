@@ -173,11 +173,11 @@ void main() {
   //   //  5. Polar (*)
   //   remapped_coords = vec2(theta/PI, r-framebuffer_radius);
     
-  } else if (ifs_mode == 5.0) {
+  // } else if (ifs_mode == 5.0) {
 
-    // 6. Handkerchief
-    remapped_coords = vec2(r*sin(theta+r), 
-                           r*cos(theta-r));
+  //   // 6. Handkerchief
+  //   remapped_coords = vec2(r*sin(theta+r), 
+  //                          r*cos(theta-r));
 
   // } else if (ifs_mode == 6.0) {
 
@@ -210,13 +210,13 @@ void main() {
   //   remapped_coords = vec2( sin(theta)*cos(r), 
   //                           cos(theta)*sin(r) );
 
-  } else if (ifs_mode == 6.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 12. Ex
-    float p0 = sin(theta+r); 
-    float p1 = cos(theta-r);
-    remapped_coords = vec2( r * (p0*p0*p0 + p1*p1*p1),
-                            r * (p0*p0*p0 - p1*p1*p1) );
+  //   // 12. Ex
+  //   float p0 = sin(theta+r); 
+  //   float p1 = cos(theta-r);
+  //   remapped_coords = vec2( r * (p0*p0*p0 + p1*p1*p1),
+  //                           r * (p0*p0*p0 - p1*p1*p1) );
 
   // } else if (ifs_mode == 13.0) {
 
@@ -226,28 +226,28 @@ void main() {
   //   remapped_coords = vec2( root_r * cos(theta/2.0 + omega),
   //                           root_r * sin(theta/2.0 + omega) );
 
-  } else if (ifs_mode == 7.0) {
+  // } else if (ifs_mode == 7.0) {
 
-    // 14. Bent
-    if (x >= 0.0 && y >= 0.0)
-      remapped_coords = vec2(x,y);
-    else if (x < 0.0 && y >= 0.0)
-      remapped_coords = vec2(2.0*x,y);
-    else if (x >= 0.0 && y < 0.0)
-      remapped_coords = vec2(x,y/2.0);
-    else
-      remapped_coords = vec2(2.0*x,y/2.0);
+  //   // 14. Bent
+  //   if (x >= 0.0 && y >= 0.0)
+  //     remapped_coords = vec2(x,y);
+  //   else if (x < 0.0 && y >= 0.0)
+  //     remapped_coords = vec2(2.0*x,y);
+  //   else if (x >= 0.0 && y < 0.0)
+  //     remapped_coords = vec2(x,y/2.0);
+  //   else
+  //     remapped_coords = vec2(2.0*x,y/2.0);
 
   // } else if (ifs_mode == 15.0) {
 
   //   // 15. Waves (dependent)
   //   remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
 
-  } else if (ifs_mode == 8.0) {
+  // } else if (ifs_mode == 8.0) {
 
-    // 16. Fisheye
-    float p = 2.0 / (r + 1.0);
-    remapped_coords = vec2(p * y, p * x);
+  //   // 16. Fisheye
+  //   float p = 2.0 / (r + 1.0);
+  //   remapped_coords = vec2(p * y, p * x);
 
   // } else if (ifs_mode == 17.0) {
 
@@ -275,10 +275,11 @@ void main() {
                                      vec2(dx,dy),    // cartesian  : x & y translation 
                                      vec2(q5,q6));   // polar      : rotation & orientation of 3D sphere
 
-  vec2 unnormalized_coords = vec2(remapped_coords.x / (2.0*framebuffer_radius) + 0.5, 
-                                  remapped_coords.y / (2.0*framebuffer_radius) + 0.5);
-
-  // Wrap the textures around so that the pattern repeats if necessary.
+  // Remap the coordinates back into texture coordinate space: [0.0,1.0]
+  vec2 unnormalized_coords = vec2(remapped_coords.x / 
+                                  (2.0*framebuffer_radius) + 0.5, 
+                                  remapped_coords.y / 
+                                  (2.0*framebuffer_radius) + 0.5);
 
   // Texture Flip
   // float xmodval = mod(unnormalized_coords.x,2.0);
@@ -306,11 +307,12 @@ void main() {
     src.b = src.b * -1.0 + 1.0;
   }
   
-  // Apply gain
+  // Apply gain.  This is done in the HSV color space so that the hue
+  // can cycle when the image becomes saturated.
   vec4 g = vec4(decay, decay, decay, 1.0);
   vec4 hsv_texel = g * rgb_to_hsv(src);
-  hsv_texel.r = mod(hsv_texel.r,1.0);    // Wrap hue
-  hsv_texel = clamp(hsv_texel,0.0,1.0);  // Clamp saturation & luminance
+  hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
+  hsv_texel = clamp(hsv_texel,0.0,1.0);     // Clamp saturation & luminance
   vec4 final_texel = hsv_to_rgb(hsv_texel);
 
   // NaNs are the bane of our existence here!  We replace them with

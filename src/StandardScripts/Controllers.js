@@ -25,24 +25,27 @@ function joystick_receive_callback(path, value) {
     // IFS Mode
     if (path == "/joystick0/button0" && value == 1) {
 	ifs_mode = ifs_mode + 1;
-	if (ifs_mode > 8)
+	if (ifs_mode > 4)
 	    ifs_mode = 0;
     }
 
-    // Edge extension
+
     if (path == "/joystick0/button6" && value == 1) {
-	if (edge_extend == 1.0) edge_extend = 0.0;
-	else edge_extend = 1.0;
+	ifs_mode = ifs_mode - 1;
+	if (ifs_mode < 0)
+	    ifs_mode = 4;
     }
 
-    // PRECIOUS BUTTONS!!
+    // Squareshape Enable
     if (path == "/joystick0/button1" && value == 1) {
-	
+	if (square_a) square_a = 0.0;
+	else square_a = 1.0;	
     }
 
-    // PRECIOUS BUTTONS!!
+    // Border Enable
     if (path == "/joystick0/button2" && value == 1) {
-
+	if (ib_a) ib_a = 0.0;
+	else ib_a = 1.0;	
     }
 
     
@@ -53,26 +56,18 @@ function joystick_receive_callback(path, value) {
 	else invert = 1.0;
     }
 
-    // // Gamma
-    // if (path == "/joystick0/hat0" && value == 4) 
-    // 	gamma_coefficient = 1.0;
-    // if (path == "/joystick0/hat0" && value == 1.0) 
-    // 	gamma_coefficient = -1.0;
-    // if (path == "/joystick0/hat0" && value == 0.0) 
-    // 	gamma_coefficient = 0.0;
-
     // Translation
     if (path == "/joystick0/hat0" && value == 2) 
-    	dx_coefficient = -1.0;
+    	square_thick_coeff = 1.0;
     if (path == "/joystick0/hat0" && value == 8) 
-    	dx_coefficient = 1.0;
+    	square_thick_coeff = -1.0;
     if (path == "/joystick0/hat0" && value == 1) 
-    	dy_coefficient = -1.0;
+    	square_scale_coeff = 1.0;
     if (path == "/joystick0/hat0" && value == 4) 
-    	dy_coefficient = 1.0;
+    	square_scale_coeff = -1.0;
     if (path == "/joystick0/hat0" && value == 0.0) {
-    	dx_coefficient = 0.0;
-	dy_coefficient = 0.0;
+    	square_thick_coeff = 0.0;
+	square_scale_coeff = 0.0;
     }
 
     // wave_usedots
@@ -87,8 +82,8 @@ function joystick_receive_callback(path, value) {
 	var delta = -(value-0.5) * rot_gain;
 	if (Math.abs(value-0.5) > 0.05) {
 	    rot += -delta;
-	    if (rot > 0.785) rot = 0.785;
-	    if (rot < -0.785) rot = -0.785;
+	    // if (rot > 0.785) rot = 0.785;   // Turn off rotation 
+	    // if (rot < -0.785) rot = -0.785; // limits for now.
 	}
     }
 
@@ -184,10 +179,9 @@ function joystick_receive_callback(path, value) {
 	dx = 0.0;
 	dy = 0.0;
     	wave_enabled = 1;
-	wave_mode = 1;
-	square_a = 0.0;
-	ib_size=10.0;
-	ib_a = 1.0;
+	wave_mode = 0;
+	square_a = 1.0;
+	ib_a = 0.0;
     }
 
     // Warp
@@ -203,29 +197,23 @@ function joystick_receive_callback(path, value) {
 
     // Wave mode
     if (path == "/joystick0/button8" && value == 1) {
-    	wave_mode = 1;
+    	wave_mode = 0;
     	wave_enabled = 1;
     } else if (path == "/joystick0/button9" && value == 1) {
-    	wave_mode = 2;
+    	wave_mode = 1;
     	wave_enabled = 1;
     } else if (path == "/joystick0/button10" && value == 1) {
-    	wave_mode = 0;
+    	wave_mode = 2;
     	wave_enabled = 1;
     }
 
-    // Inner border width
+    // PRECIOUS UPPER SWITCH 
     if (path == "/joystick0/button11" && value == 1) {
-	ib_size=0.0;
-	ib_a = 0.0;
-	square_a = 1.0;
+
     } else if (path == "/joystick0/button12" && value == 1) {
-    	ib_size = 1.0;
-	ib_a = 1.0;
-	square_a = 0.0;
+
     } else if (path == "/joystick0/button13" && value == 1) {
-    	ib_size = 10.0;
-	ib_a = 1.0;
-	square_a = 0.0;
+
     }
 
     // Debugging
@@ -233,11 +221,7 @@ function joystick_receive_callback(path, value) {
 	print("[JOYSTICK]    Path: " + path + "   Value: " + value);
 
     // Otherwise, delegate to the bindings.
-    if (path == "/joystick1/axis3")
-	// THIS IS TERRIBLE!   DON'T DO THIS NORMALLY!
-	bindings.controller_to_parameter(joystick, path, value-0.349);
-    else
-	bindings.controller_to_parameter(joystick, path, value);
+    bindings.controller_to_parameter(joystick, path, value);
 }
 
 function setup_osc() {
@@ -307,11 +291,10 @@ function setup_joystick() {
     joystick.receive_callback = joystick_receive_callback;
 
     // Langton bEATS
-    bindings.add(joystick, "/joystick0/axis2", "decay", 0.5, 1.05, 0.98);
-    bindings.add(joystick, "/joystick0/axis4", "q1", 0, 1.0, 0.2);
+    bindings.add(joystick, "/joystick0/axis2", "decay", 0.75, 1.05, 0.98);
+    bindings.add(joystick, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0);
+    bindings.add(joystick, "/joystick0/axis5", "warp_scale", 0.25, 2.0);
 
-    bindings.add(joystick, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
-    bindings.add(joystick, "/joystick0/axis5", "wave_frequency", 1000.0, 0.1, "log10");
     sx_coefficient = 0.0;
     sy_coefficient = 0.0;
     cx_coefficient = 0.0;
@@ -324,11 +307,14 @@ function setup_joystick() {
     color_shift_coefficient = 0.0;
     mv_l_coeff = 0.0;
 
+    square_scale_coeff = 0.0;
+    square_thick_coeff = 0.0;
+
     wave_enabled = 1;
-    wave_mode = 1;
-    square_a = 0.0;
+    wave_mode = 0;
+    square_a = 1.0;
     ib_size=10.0;
-    ib_a = 1.0;
+    ib_a = 0.0;
 
     mv_a = 1.0;
     mv_x = 0;
@@ -341,7 +327,7 @@ function setup_joystick() {
 function joystick_render_callback() {
 
     // Update scaling
-    var scaling_stepsize = 1/100.0;
+    var scaling_stepsize = 0.0005;
     sx += scaling_stepsize * sx_coefficient;
     sy += scaling_stepsize * sy_coefficient;
     if (sx > 1.5) sx = 1.5;
@@ -359,10 +345,25 @@ function joystick_render_callback() {
     if (cy < -1.5) cy = -1.5;
 
     // Update warp
-    var warp_stepsize = 1/30.0;
-    warp += warp_stepsize * warp_coefficient;
-    if (warp > 2.0) warp = 2.0;
-    if (warp < 0.0) warp = 0.0;
+    // var warp_stepsize = 1/30.0;
+    // warp += warp_stepsize * warp_coefficient;
+    // if (warp > 2.0) warp = 2.0;
+    // if (warp < 0.0) warp = 0.0;
+
+    // Update Square Scale
+    var square_scale_stepsize = 0.05;
+    square_scale += square_scale_stepsize * square_scale_coeff;
+    if (square_scale > 4.0) square_scale = 4.0;
+    if (square_scale < 0.25) square_scale = 0.25;
+
+    // Update Square Thickness
+    var square_thick_stepsize = 1.2;
+    if (square_thick_coeff == 1.0)
+	square_thick *= square_thick_stepsize;
+    if (square_thick_coeff == -1.0)
+	square_thick /= square_thick_stepsize;
+    if (square_thick > 500.0) square_thick = 500.0;
+    if (square_thick < 1.0) square_thick = 1.0;
 
     // Update gamma
     // var gamma_stepsize = 1/100.0;
@@ -407,6 +408,6 @@ function joystick_render_callback() {
     // Update MV length
     var mv_l_stepsize = 1/20.0;
     mv_l += mv_l_stepsize * mv_l_coeff;
-    if (mv_l > 2.0) mv_l = 2.0;
+    if (mv_l > 1.5) mv_l = 1.5;
     if (mv_l < 0.0) mv_l = 0.0;
 }

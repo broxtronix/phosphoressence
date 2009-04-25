@@ -92,6 +92,21 @@ void setup_parameters() {
                                 ">0 (readonly)         -same, but for mids (middle frequencies)");
   pe_parameters().add_parameter("treb_att", true, 0.0,
                                 ">0 (readonly)         -same, but for treble (high) frequencies");
+
+  pe_parameters().add_parameter("bass_r", true, 0.0,
+                                ">0 (readonly)       retrieves the current amount of bass.  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass");
+  pe_parameters().add_parameter("mid_r", true, 0.0,
+                                ">0 (readonly)         -same, but for mids (middle frequencies)");
+  pe_parameters().add_parameter("treb_r", true, 0.0,
+                                ">0 (readonly)         -same, but for treble (high) frequencies");
+  pe_parameters().add_parameter("bass_att_r", true, 0.0,
+                                ">0 (readonly)       retrieves an attenuated reading on the bass, meaning that it is damped in time and doesn't change so rapidly.");
+  pe_parameters().add_parameter("mid_att_r", true, 0.0,
+                                ">0 (readonly)         -same, but for mids (middle frequencies)");
+  pe_parameters().add_parameter("treb_att_r", true, 0.0,
+                                ">0 (readonly)         -same, but for treble (high) frequencies");
+
+
   // pe_parameters().add_parameter("meshx", true, 0.0,
   //                               "8-128 (readonly)  tells you the user's mesh size in the X direction.  always an integer value.");
   // pe_parameters().add_parameter("meshy", true, 0.0,
@@ -154,7 +169,7 @@ void setup_parameters() {
   //                               "waveform; for example, it could control angle at which the waveform was drawn.)");
   pe_parameters().add_parameter("wave_usedots", false, 0.0,
                                 "0/1    if 1, the waveform is drawn as dots (instead of lines)");
-  pe_parameters().add_parameter("wave_thick", false, 0.0,
+  pe_parameters().add_parameter("wave_thick", false, 1.0,
                                 "0/1    if 1, the waveform's lines (or dots) are drawn with double thickness");
   // pe_parameters().add_parameter("wave_additive", false, 0.0,
   //                               "if 1, the wave is drawn additively, saturating the image at white");
@@ -261,6 +276,12 @@ void setup_parameters() {
                                 "amount of blue color in the wave (0..1)");
   pe_parameters().add_parameter("square_a", false, 1.0, 
                                 "opacity of the wave (0..1) [0=transparent, 1=opaque]");
+  pe_parameters().add_parameter("square_thick", false, 1.0,
+                                "<FILL ME IN>");
+  pe_parameters().add_parameter("square_scale", false, 1.0,
+                                "<FILL ME IN>");
+
+
 
   pe_parameters().add_parameter("edge_extend", false, 1.0,
                                 "Turn edge extension on and off.");
@@ -329,14 +350,14 @@ int main(int argc, char *argv[]) {
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  //  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
   audio_thread.register_listener(oscope);
   audio_thread.register_listener(phasescope);
   audio_thread.register_listener(spectrograph);
-  main_window.gl_widget()->register_drawable(oscope);
   main_window.gl_widget()->register_drawable(phasescope);
-  //  main_window.gl_widget()->register_drawable(spectrograph);
-  main_window.gl_widget()->register_drawable(lissajous);
+  main_window.gl_widget()->register_drawable(spectrograph);
+  main_window.gl_widget()->register_drawable(oscope);
+  //  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
   boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());

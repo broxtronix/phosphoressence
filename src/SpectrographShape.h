@@ -27,8 +27,10 @@
 
 class SpectrographShape : public AudioListener, public Drawable {
   FFT m_fft;
-  float samples[NUM_FFT_SAMPLES];
-  float spectrum[NUM_FFT_SAMPLES];
+  float left_samples[NUM_FFT_SAMPLES];
+  float left_spectrum[NUM_FFT_SAMPLES];
+  float right_samples[NUM_FFT_SAMPLES];
+  float right_spectrum[NUM_FFT_SAMPLES];
   int m_sample_index;
 public:
   SpectrographShape() : AudioListener(5.0), m_sample_index(0) {
@@ -45,13 +47,14 @@ public:
       vw::Mutex::Lock lock(m_mutex);
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
-        samples[m_sample_index++] = *data_ptr++; // left
-        *data_ptr++; // right
+        left_samples[m_sample_index] = *data_ptr++;    // left
+        right_samples[m_sample_index++] = *data_ptr++; // right
         
         // Draw the waveshape
         if (m_sample_index == NUM_FFT_SAMPLES) {
           m_sample_index = 0;
-          m_fft.time_to_frequency_domain(samples, spectrum);
+          m_fft.time_to_frequency_domain(left_samples, left_spectrum);
+          m_fft.time_to_frequency_domain(right_samples, right_spectrum);
 
           // Set up the GL parameters for drawing
           glLoadIdentity();
@@ -99,8 +102,14 @@ public:
             // Draw the bar as more red as the volume increases
             //            std::cout << spectrum[i] << "\n";
             glColor4f(norm_color[0], norm_color[1], norm_color[2], wave_a );
+
+            // Left
             glVertex2d(horiz_pos, -1.0);
-            glVertex2d(horiz_pos, spectrum[i]*20-1.0);
+            glVertex2d(horiz_pos, left_spectrum[i]*80-1.0);
+
+            // Right
+            glVertex2d(horiz_pos, 1.0);
+            glVertex2d(horiz_pos, -(right_spectrum[i]*80-1.0));
           }
           glEnd();
           
@@ -127,26 +136,40 @@ class SoundStatsListener : public QObject, public AudioListener {
   QTimer* m_timer;
   FFT m_fft;
   int m_sample_index;
-  float samples[FFT_SAMPLES];
-  float spectrum[FFT_SAMPLES];
+  float left_samples[FFT_SAMPLES];
+  float right_samples[FFT_SAMPLES];
+  float left_spectrum[FFT_SAMPLES];
+  float right_spectrum[FFT_SAMPLES];
   int m_nFrames;
 
-  float imm[3];			// bass, mids, treble (absolute)
-  float	imm_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
-  float	avg[3];			// bass, mids, treble (absolute)
-  float	avg_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
-  float	long_avg[3];	        // bass, mids, treble (absolute)
+  float left_imm[3];			// bass, mids, treble (absolute)
+  float	left_imm_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
+  float	left_avg[3];			// bass, mids, treble (absolute)
+  float	left_avg_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
+  float	left_long_avg[3];	        // bass, mids, treble (absolute)
+
+  float right_imm[3];			// bass, mids, treble (absolute)
+  float	right_imm_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
+  float	right_avg[3];			// bass, mids, treble (absolute)
+  float	right_avg_rel[3];		// bass, mids, treble (relative to song; 1=avg, 0.9~below, 1.1~above)
+  float	right_long_avg[3];	        // bass, mids, treble (absolute)
 
 public:
   SoundStatsListener() : AudioListener(5.0), m_sample_index(0) {
     m_fft.Init(FFT_SAMPLES, FFT_SAMPLES);
     m_nFrames		= 0;
     
-    memset(imm      , 0, sizeof(float)*3);
-    memset(imm_rel  , 0, sizeof(float)*3);
-    memset(avg      , 0, sizeof(float)*3);
-    memset(avg_rel  , 0, sizeof(float)*3);
-    memset(long_avg , 0, sizeof(float)*3);
+    memset(left_imm      , 0, sizeof(float)*3);
+    memset(left_imm_rel  , 0, sizeof(float)*3);
+    memset(left_avg      , 0, sizeof(float)*3);
+    memset(left_avg_rel  , 0, sizeof(float)*3);
+    memset(left_long_avg , 0, sizeof(float)*3);
+
+    memset(right_imm      , 0, sizeof(float)*3);
+    memset(right_imm_rel  , 0, sizeof(float)*3);
+    memset(right_avg      , 0, sizeof(float)*3);
+    memset(right_avg_rel  , 0, sizeof(float)*3);
+    memset(right_long_avg , 0, sizeof(float)*3);
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -160,13 +183,14 @@ public slots:
 
     float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
     while (m_data.read_index != m_data.write_index) {
-      samples[m_sample_index++] = *data_ptr++; // left
-      *data_ptr++; // right
+      left_samples[m_sample_index] = *data_ptr++; // left
+      right_samples[m_sample_index++] = *data_ptr++; // right
 
       // If we have collected a full window of data, we process it!
       if (m_sample_index == FFT_SAMPLES) {
         m_sample_index = 0;
-	m_fft.time_to_frequency_domain(samples, spectrum);
+	m_fft.time_to_frequency_domain(left_samples, left_spectrum);
+	m_fft.time_to_frequency_domain(right_samples, right_spectrum);
 
 	// sum spectrum up into 3 bands
 	for (unsigned i=0; i<3; i++) {
@@ -174,35 +198,55 @@ public slots:
           int start = FFT_SAMPLES*i/6;
           int end   = FFT_SAMPLES*(i+1)/6;
           
-          imm[i] = 0;
+          left_imm[i] = 0;
+          right_imm[i] = 0;
           
           for (unsigned j=start; j<end; j++) {
-            imm[i] += spectrum[j];
+            left_imm[i] += left_spectrum[j];
+            right_imm[i] += right_spectrum[j];
           }
 	}
         
 	// do temporal blending to create attenuated and super-attenuated versions
 	for (unsigned i=0; i<3; i++) {
-          if (imm[i] > avg[i])
-            avg[i] = avg[i]*0.2f + imm[i]*0.8f;
+          if (left_imm[i] > left_avg[i])
+            left_avg[i] = left_avg[i]*0.2f + left_imm[i]*0.8f;
           else
-            avg[i] = avg[i]*0.5f + imm[i]*0.5f;
+            left_avg[i] = left_avg[i]*0.5f + left_imm[i]*0.5f;
 
-          if (m_nFrames < 50)
-            long_avg[i] = long_avg[i]*0.900f + imm[i]*0.100f;
+          if (right_imm[i] > right_avg[i])
+            right_avg[i] = right_avg[i]*0.2f + right_imm[i]*0.8f;
           else
-            long_avg[i] = long_avg[i]*0.992f + imm[i]*0.008f;
+            right_avg[i] = right_avg[i]*0.5f + right_imm[i]*0.5f;
+
+          if (m_nFrames < 50) {
+            left_long_avg[i] = left_long_avg[i]*0.900f + left_imm[i]*0.100f;
+            right_long_avg[i] = right_long_avg[i]*0.900f + right_imm[i]*0.100f;
+          } else {
+            left_long_avg[i] = left_long_avg[i]*0.992f + left_imm[i]*0.008f;
+            right_long_avg[i] = right_long_avg[i]*0.992f + right_imm[i]*0.008f;
+          }
 
           // also get bass/mid/treble levels *relative to the past*
-          if (fabsf(long_avg[i]) < 0.001f)
-            imm_rel[i] = 1.0f;
+          if (fabsf(left_long_avg[i]) < 0.001f)
+            left_imm_rel[i] = 1.0f;
           else
-            imm_rel[i]  = imm[i] / long_avg[i];
+            left_imm_rel[i]  = left_imm[i] / left_long_avg[i];
+
+          if (fabsf(right_long_avg[i]) < 0.001f)
+            right_imm_rel[i] = 1.0f;
+          else
+            right_imm_rel[i]  = right_imm[i] / right_long_avg[i];
           
-          if (fabsf(long_avg[i]) < 0.001f)
-            avg_rel[i]  = 1.0f;
+          if (fabsf(left_long_avg[i]) < 0.001f)
+            left_avg_rel[i]  = 1.0f;
           else
-            avg_rel[i]  = avg[i] / long_avg[i];
+            left_avg_rel[i]  = left_avg[i] / left_long_avg[i];
+
+          if (fabsf(right_long_avg[i]) < 0.001f)
+            right_avg_rel[i]  = 1.0f;
+          else
+            right_avg_rel[i]  = right_avg[i] / right_long_avg[i];
 	}
 
         m_nFrames++;
@@ -220,12 +264,19 @@ public slots:
     }
     
     // Update the various PE Parameters
-    pe_parameters().set_value("bass", avg[0]);
-    pe_parameters().set_value("mid", avg[1]);
-    pe_parameters().set_value("treb", avg[2]);
-    pe_parameters().set_value("bass_att",avg_rel[0]);
-    pe_parameters().set_value("mid_att", avg_rel[1]);
-    pe_parameters().set_value("treb_att", avg_rel[2]);
+    pe_parameters().set_value("bass", left_avg[0]);
+    pe_parameters().set_value("mid", left_avg[1]);
+    pe_parameters().set_value("treb", left_avg[2]);
+    pe_parameters().set_value("bass_att",left_avg_rel[0]);
+    pe_parameters().set_value("mid_att", left_avg_rel[1]);
+    pe_parameters().set_value("treb_att", left_avg_rel[2]);
+
+    pe_parameters().set_value("bass_r", right_avg[0]);
+    pe_parameters().set_value("mid_r", right_avg[1]);
+    pe_parameters().set_value("treb_r", right_avg[2]);
+    pe_parameters().set_value("bass_att_r",right_avg_rel[0]);
+    pe_parameters().set_value("mid_att_r", right_avg_rel[1]);
+    pe_parameters().set_value("treb_att_r", right_avg_rel[2]);
   }
 };
 

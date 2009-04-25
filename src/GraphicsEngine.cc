@@ -36,8 +36,8 @@ using namespace vw::GPU;
 #include <CoreFoundation/CoreFoundation.h>
 
 
-//#define PE_GL_FORMAT GL_RGBA16F_ARB
-#define PE_GL_FORMAT GL_RGBA
+#define PE_GL_FORMAT GL_RGBA16F_ARB
+//#define PE_GL_FORMAT GL_RGBA
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -268,21 +268,19 @@ void GraphicsEngine::drawImage() {
 
 
     Matrix<double,2,4> shape_vertices;
-    shape_vertices(0,0) = -0.25;
-    shape_vertices(1,0) = -0.25;
-    shape_vertices(0,1) = -0.25;
-    shape_vertices(1,1) = 0.25;
-    shape_vertices(0,2) = 0.25;
-    shape_vertices(1,2) = 0.25;
-    shape_vertices(0,3) = 0.25;
-    shape_vertices(1,3) = -0.25;
+    float square_scale = pe_parameters().get_value("square_scale");
+    shape_vertices(0,0) = -0.25 * square_scale;
+    shape_vertices(1,0) = -0.25 * square_scale;
+    shape_vertices(0,1) = -0.25 * square_scale;
+    shape_vertices(1,1) = 0.25 * square_scale;
+    shape_vertices(0,2) = 0.25 * square_scale;
+    shape_vertices(1,2) = 0.25 * square_scale;
+    shape_vertices(0,3) = 0.25 * square_scale;
+    shape_vertices(1,3) = -0.25 * square_scale;
   
     Matrix<double,2,4> vertices = rotation*shape_vertices;
   
-    if (pe_parameters().get_value("wave_thick")) 
-      glLineWidth(2.0);
-    else 
-      glLineWidth(1.0);
+    glLineWidth(pe_parameters().get_value("square_thick"));
       
     float wave_r = pe_parameters().get_value("square_r");
     float wave_g = pe_parameters().get_value("square_g");
@@ -296,14 +294,14 @@ void GraphicsEngine::drawImage() {
 
     // We will draw the image as a texture on this quad.
     glBegin(GL_LINES);
-    glVertex2d( vertices(0,0), vertices(1,0) );
-    glVertex2d( vertices(0,1), vertices(1,1) );
-    glVertex2d( vertices(0,1), vertices(1,1) );
-    glVertex2d( vertices(0,2), vertices(1,2) );
-    glVertex2d( vertices(0,2), vertices(1,2) );
-    glVertex2d( vertices(0,3), vertices(1,3) );
-    glVertex2d( vertices(0,3), vertices(1,3) );
-    glVertex2d( vertices(0,0), vertices(1,0) );
+    glVertex2f( vertices(0,0), vertices(1,0) );
+    glVertex2f( vertices(0,1), vertices(1,1) );
+    glVertex2f( vertices(0,1), vertices(1,1) );
+    glVertex2f( vertices(0,2), vertices(1,2) );
+    glVertex2f( vertices(0,2), vertices(1,2) );
+    glVertex2f( vertices(0,3), vertices(1,3) );
+    glVertex2f( vertices(0,3), vertices(1,3) );
+    glVertex2f( vertices(0,0), vertices(1,0) );
     glEnd();
   }
 
@@ -384,7 +382,7 @@ void GraphicsEngine::drawImage() {
   QString fps_str(fps_cstr);
   this->renderText(20,20,fps_str);
 
-  //this->swapBuffers();
+  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -610,15 +608,15 @@ void GraphicsEngine::initializeGL() {
 #ifdef __APPLE__
   AGLContext aglContext;
   aglContext = aglGetCurrentContext();
-  GLint swapInt = 0;
+  GLint swapInt = 1;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  this->setAutoBufferSwap(true);
+  this->setAutoBufferSwap(false);
 #endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(33.); 
+  m_timer->start(10.0); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
