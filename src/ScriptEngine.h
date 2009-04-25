@@ -67,9 +67,9 @@ public:
     v8::HandleScope handle_scope;
     v8::Context::Scope context_scope(m_context);
     
-    // For now we create a string and execute it, which may lead to some
-    // loss of precision in the floating point number.  This is a
-    // cop-out for now, I suppose, until a better solution can be found.
+    // For now we create a string and execute it, which may lead to
+    // some loss of precision in the floating point number.  This is
+    // fine for now, I suppose, until a better solution can be found.
     std::ostringstream ostr;
     ostr << function << "(\"" << arg1 << "\", " << arg2 << ");";
     

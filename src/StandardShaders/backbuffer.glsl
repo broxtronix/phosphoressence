@@ -292,6 +292,7 @@ void main() {
   // Texture Wrap
   unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
   unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
   // Apply invert

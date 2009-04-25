@@ -110,11 +110,6 @@ void GraphicsEngine::drawFeedback() {
       u -= dx;
       v -= dy;
 
-      // typedef std::list<boost::shared_ptr<ScriptEngine> >::iterator iter_type;
-      // for (iter_type iter = m_script_engines.begin(); iter != m_script_engines.end(); ++iter ) {
-      //   (*iter)->execute_js("per_pixel_equations", u, v);
-      // }
-
       m_warped_screencoords(i,j)[0] = u;
       m_warped_screencoords(i,j)[1] = v;
     }

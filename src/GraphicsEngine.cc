@@ -377,9 +377,11 @@ void GraphicsEngine::drawImage() {
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 
-  std::ostringstream ostr;
-  ostr << "FPS: " << m_fps_avg;
-  QString fps_str(ostr.str().c_str());
+  //  std::ostringstream ostr;
+  // ostr << "FPS: " << m_fps_avg;
+  char fps_cstr[255];
+  sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
+  QString fps_str(fps_cstr);
   this->renderText(20,20,fps_str);
 
   //  this->swapBuffers();
