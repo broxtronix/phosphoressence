@@ -384,7 +384,7 @@ void GraphicsEngine::drawImage() {
   QString fps_str(fps_cstr);
   this->renderText(20,20,fps_str);
 
-  //  this->swapBuffers();
+  //this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -612,13 +612,13 @@ void GraphicsEngine::initializeGL() {
   aglContext = aglGetCurrentContext();
   GLint swapInt = 0;
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  //  this->setAutoBufferSwap(false);
+  this->setAutoBufferSwap(true);
 #endif
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(16.0); 
+  m_timer->start(33.); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {

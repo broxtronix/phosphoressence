@@ -21,12 +21,12 @@
 class OScopeShape : public AudioListener, public Drawable {
   float m_time;
   float m_time_slice;
-  float old_left;
+  float old_x;
   
 public:
   OScopeShape() : AudioListener(5.0), m_time(0) {
     m_time_slice = 1.0f / this->sample_rate();
-    old_left = 0.0;
+    old_x = 0.0;
   }
 
   virtual void draw(float time, float gain) {
@@ -65,6 +65,7 @@ public:
     float beta = (1-exp(-dt_draw/tau_decay));  // TODO: Move tau_decay to pe_parameters()
 
     // Read the values into a local audio cache
+    float x_cache[int(AUDIO_SAMPLE_RATE)];
     float left_cache[int(AUDIO_SAMPLE_RATE)];
     float right_cache[int(AUDIO_SAMPLE_RATE)];
     int idx = 0;
@@ -78,11 +79,11 @@ public:
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
         if (idx < AUDIO_SAMPLE_RATE) {
-          left_cache[idx] = old_left + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
-          if (left_cache[idx] > aspect) left_cache[idx] -= 2.0*aspect;
-          *data_ptr++;  // Left
-          right_cache[idx] = *data_ptr++;
-          old_left = left_cache[idx];
+          x_cache[idx] = old_x + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
+          if (x_cache[idx] > aspect) x_cache[idx] -= 2.0*aspect;
+          left_cache[idx] = *data_ptr++;   // left audio channel
+          right_cache[idx] = *data_ptr++;  // right audio channel
+          old_x = x_cache[idx];
           ++idx;
         } 
 
@@ -97,11 +98,10 @@ public:
 
     // Now draw the wave by traversing the buffer in reverse
     // order.
-    float one_minus_beta_accum = 1.0;
     for (int i = 1; i < idx; ++i) {
 
       // Compute the phosphor color
-      float d = sqrt(pow(left_cache[i]-left_cache[i-1],2) + 
+      float d = sqrt(pow(x_cache[i]-x_cache[i-1],2) + 
                      pow(right_cache[i]-right_cache[i-1],2));
       float dt_phosphor = dt_draw/d;
       float alpha = 1-exp(-dt_phosphor/tau_excite);
@@ -111,13 +111,15 @@ public:
       float b = norm_color[2] * alpha * beta_factor;
       glColor4f(r, g, b, wave_a );
 
-      //      one_minus_beta_accum *= (1-beta);
-      
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)
-      if (left_cache[i-1] < left_cache[i]) {
-        glVertex2d(left_cache[i-1],  right_cache[i-1]);
-        glVertex2d(left_cache[i], right_cache[i]);
+      if (x_cache[i-1] < x_cache[i]) {
+        glVertex2d(x_cache[i-1],  left_cache[i-1]+0.5);
+        glVertex2d(x_cache[i], left_cache[i]+0.5);
+
+        glVertex2d(x_cache[i-1],  right_cache[i-1]-0.5);
+        glVertex2d(x_cache[i], right_cache[i]-0.5);
+
       }
     }
     glEnd();

@@ -158,7 +158,7 @@ void setup_parameters() {
                                 "0/1    if 1, the waveform's lines (or dots) are drawn with double thickness");
   // pe_parameters().add_parameter("wave_additive", false, 0.0,
   //                               "if 1, the wave is drawn additively, saturating the image at white");
-  pe_parameters().add_parameter("wave_brighten", false, 0.0, 
+  pe_parameters().add_parameter("wave_brighten", false, 1.0, 
                                 "0/1    if 1, all 3 r/g/b colors will be scaled up until at least one reaches 1.0");
   pe_parameters().add_parameter("wave_enabled", false, 0.0,
                                 "Enable the audio waveform rendered on screen.");
@@ -262,6 +262,8 @@ void setup_parameters() {
   pe_parameters().add_parameter("square_a", false, 1.0, 
                                 "opacity of the wave (0..1) [0=transparent, 1=opaque]");
 
+  pe_parameters().add_parameter("edge_extend", false, 1.0,
+                                "Turn edge extension on and off.");
 
   pe_parameters().add_parameter("lj_A", false, 1.0,
                                 "Amplitude for horizontal lissajous pattern.");
@@ -327,14 +329,14 @@ int main(int argc, char *argv[]) {
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  //  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
   audio_thread.register_listener(oscope);
   audio_thread.register_listener(phasescope);
   audio_thread.register_listener(spectrograph);
   main_window.gl_widget()->register_drawable(oscope);
   main_window.gl_widget()->register_drawable(phasescope);
-  main_window.gl_widget()->register_drawable(spectrograph);
-  //  main_window.gl_widget()->register_drawable(lissajous);
+  //  main_window.gl_widget()->register_drawable(spectrograph);
+  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
   boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());

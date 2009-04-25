@@ -18,6 +18,7 @@ function Bindings() {
 	for (var b in m_bindings) {
 	    match = m_bindings[b];
 	    if (match.controller == controller && match.path == path) {
+	      
 		// Mode == linear (the default)
 		gain = match.hi - match.lo;
 		offset = match.lo;

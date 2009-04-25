@@ -6,6 +6,7 @@ uniform float invert;
 uniform float gamma;
 uniform float time;
 uniform float ifs_mode;
+uniform float edge_extend;
 
 uniform float zoom;
 uniform float zoomexp;
@@ -152,11 +153,9 @@ void main() {
   } else if (ifs_mode == 2.0) {
 
     // 2. Spherical
-     remapped_coords = vec2(x/(q1*r_sqr),
-                            y/(q1*r_sqr));
-    // remapped_coords = vec2(x/r_sqr,
-    //                        y/r_sqr);
-                           
+     remapped_coords = vec2(x/(0.26*r_sqr),
+                            y/(0.26*r_sqr));
+
   } else if (ifs_mode == 3.0) {
 
     // 3. Swirl (variation 3)
@@ -169,49 +168,49 @@ void main() {
     remapped_coords = vec2(1.0/r * (x-y)*(x+y), 
                            1.0/r * 2.0*x*y);
     
-  } else if (ifs_mode == 5.0) {
+  // } else if (ifs_mode == 5.0) {
 
-    //  5. Polar (*)
-    remapped_coords = vec2(theta/PI, r-1.0);
+  //   //  5. Polar (*)
+  //   remapped_coords = vec2(theta/PI, r-framebuffer_radius);
     
-  } else if (ifs_mode == 6.0) {
+  } else if (ifs_mode == 5.0) {
 
     // 6. Handkerchief
     remapped_coords = vec2(r*sin(theta+r), 
                            r*cos(theta-r));
 
-  } else if (ifs_mode == 7.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 7. Heart (*)
-    remapped_coords = vec2(r*sin(theta*r), 
-                           -r*cos(theta*r));
+  //   // 7. Heart (*)
+  //   remapped_coords = vec2(r*sin(theta*r), 
+  //                          -r*cos(theta*r));
 
-  } else if (ifs_mode == 8.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 8. Disc
-    remapped_coords = vec2(theta/PI*sin(theta*r), 
-                           theta/PI*cos(theta*r));
+  //   // 8. Disc
+  //   remapped_coords = vec2(theta/PI*sin(theta*r), 
+  //                          theta/PI*cos(theta*r));
 
 
-  } else if (ifs_mode == 9.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 9. Spiral
-    remapped_coords = vec2(1.0 / r * (cos(theta)+sin(r)),
-                           1.0 / r * (sin(theta)-cos(r)));
+  //   // 9. Spiral
+  //   remapped_coords = vec2(1.0 / r * (cos(theta)+sin(r)),
+  //                          1.0 / r * (sin(theta)-cos(r)));
 
-  } else if (ifs_mode == 10.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 10. Hyperbolic
-    remapped_coords = vec2( sin(theta) / r, 
-                            r * cos(theta) );
+  //   // 10. Hyperbolic
+  //   remapped_coords = vec2( sin(theta) / r, 
+  //                           r * cos(theta) );
 
-  } else if (ifs_mode == 11.0) {
+  // } else if (ifs_mode == 6.0) {
 
-    // 11. Diamond
-    remapped_coords = vec2( sin(theta)*cos(r), 
-                            cos(theta)*sin(r) );
+  //   // 11. Diamond
+  //   remapped_coords = vec2( sin(theta)*cos(r), 
+  //                           cos(theta)*sin(r) );
 
-  } else if (ifs_mode == 12.0) {
+  } else if (ifs_mode == 6.0) {
 
     // 12. Ex
     float p0 = sin(theta+r); 
@@ -219,15 +218,15 @@ void main() {
     remapped_coords = vec2( r * (p0*p0*p0 + p1*p1*p1),
                             r * (p0*p0*p0 - p1*p1*p1) );
 
-  } else if (ifs_mode == 13.0) {
+  // } else if (ifs_mode == 13.0) {
 
-    // 13. Julia
-    float root_r = sqrt(r);
-    float omega = 0.0;     // NEED TO IMPLEMENT
-    remapped_coords = vec2( root_r * cos(theta/2.0 + omega),
-                            root_r * sin(theta/2.0 + omega) );
+  //   // 13. Julia
+  //   float root_r = sqrt(r);
+  //   float omega = 0.0;     // NEED TO IMPLEMENT
+  //   remapped_coords = vec2( root_r * cos(theta/2.0 + omega),
+  //                           root_r * sin(theta/2.0 + omega) );
 
-  } else if (ifs_mode == 14.0) {
+  } else if (ifs_mode == 7.0) {
 
     // 14. Bent
     if (x >= 0.0 && y >= 0.0)
@@ -239,28 +238,28 @@ void main() {
     else
       remapped_coords = vec2(2.0*x,y/2.0);
 
-  } else if (ifs_mode == 15.0) {
+  // } else if (ifs_mode == 15.0) {
 
-    // 15. Waves (dependent)
-    remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
+  //   // 15. Waves (dependent)
+  //   remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
 
-  } else if (ifs_mode == 16.0) {
+  } else if (ifs_mode == 8.0) {
 
     // 16. Fisheye
     float p = 2.0 / (r + 1.0);
     remapped_coords = vec2(p * y, p * x);
 
-  } else if (ifs_mode == 17.0) {
+  // } else if (ifs_mode == 17.0) {
 
-    // 17. Popcorn (dependent)
-    remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
+  //   // 17. Popcorn (dependent)
+  //   remapped_coords = vec2(x,y);   // NEED TO IMPLEMENT
 
-  } else if (ifs_mode == 18.0) {
+  // } else if (ifs_mode == 18.0) {
 
-    // 18. Exponential
-    float p = exp(x-1.0);
-    remapped_coords = vec2(p * cos(PI*y), 
-                           p * sin(PI*y) );
+  //   // 18. Exponential
+  //   float p = exp(x);
+  //   remapped_coords = vec2(p * cos(PI*y), 
+  //                          p * sin(PI*y) );
 
    } 
 
@@ -272,7 +271,7 @@ void main() {
   float theta2 = atan(yy,xx);
   
   remapped_coords = mobius_transform(vec2(rr,theta2), 
-                                     vec2(zoom,rot), // polar      : zoom & rotation
+                                     vec2(zoom,0.0), // polar      : zoom & rotation
                                      vec2(dx,dy),    // cartesian  : x & y translation 
                                      vec2(q5,q6));   // polar      : rotation & orientation of 3D sphere
 
@@ -290,8 +289,13 @@ void main() {
   //   unnormalized_coords.y = 2.0 - ymodval;
 
   // Texture Wrap
-  unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
-  unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  if (edge_extend == 1.0) {
+    unnormalized_coords.x = mod(unnormalized_coords.x,1.0);
+    unnormalized_coords.y = mod(unnormalized_coords.y,1.0);
+  } else {
+    unnormalized_coords.x = clamp(unnormalized_coords.x,0.0,1.0);
+    unnormalized_coords.y = clamp(unnormalized_coords.y,0.0,1.0);
+  } 
   
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
 

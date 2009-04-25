@@ -22,6 +22,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("invert", pe_parameters().get_value("invert"));
   m_gpu_backbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
+  m_gpu_backbuffer_program->set_input_float("edge_extend", pe_parameters().get_value("edge_extend"));
 
   // These are handled by the mobius transform
   m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
@@ -55,18 +56,13 @@ void GraphicsEngine::drawFeedback() {
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
   // Affine parameters
-  float rot = 0.0; //pe_parameters().get_value("rot");
+  float rot = pe_parameters().get_value("rot");
   float cx = pe_parameters().get_value("cx");
   float cy = pe_parameters().get_value("cy");
   float dx = 0.0; //pe_parameters().get_value("dx");
   float dy = 0.0; //pe_parameters().get_value("dy");
   float sx = pe_parameters().get_value("sx");
   float sy = pe_parameters().get_value("sy");
-  // glTranslatef(cx, cy, 0);
-  // glRotatef(rot, 0.0f, 0.0f, 1.0f);
-  // glScalef(sx, sy, 0.0f);
-  // glTranslatef(-1.0f * cx, -1.0f * cy, 0);
-  // glTranslatef(dx, dy, 0);
 	
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate
   // mesh distortion.  THIS IS WHERE THE MAGIC HAPPENS, FOLKS
@@ -74,11 +70,6 @@ void GraphicsEngine::drawFeedback() {
     for (int j = 0; j < VERT_MESH_SIZE + 1; j++) {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
-
-      // pe_parameters().set_value("x",u);
-      // pe_parameters().set_value("y",v);
-      // pe_parameters().set_value("rad",sqrt(u*u+v*v));
-      // pe_parameters().set_value("ang",atan2(v,u));
 
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 

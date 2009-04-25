@@ -22,32 +22,30 @@ function joystick_receive_callback(path, value) {
 	sx=0.999;
     }
 
+    // IFS Mode
     if (path == "/joystick0/button0" && value == 1) {
 	ifs_mode = ifs_mode + 1;
-	if (ifs_mode > 18)
+	if (ifs_mode > 8)
 	    ifs_mode = 0;
     }
 
+    // Edge extension
     if (path == "/joystick0/button6" && value == 1) {
-	ifs_mode = ifs_mode - 1;
-	if (ifs_mode < 0)
-	    ifs_mode = 18;
+	if (edge_extend == 1.0) edge_extend = 0.0;
+	else edge_extend = 1.0;
     }
 
-    // Square shape enable
+    // PRECIOUS BUTTONS!!
     if (path == "/joystick0/button1" && value == 1) {
-	if (square_a) square_a = 0.0;
-	else square_a = 1.0;
+	
     }
 
-    // wave enable
+    // PRECIOUS BUTTONS!!
     if (path == "/joystick0/button2" && value == 1) {
-	if (wave_enabled) {
-	    wave_enabled = 0.0;
-	} else {
-	    wave_enabled = 1.0;
-	}
+
     }
+
+    
 
     // Invert
     if (path == "/joystick0/button4" && value == 1) {
@@ -84,9 +82,9 @@ function joystick_receive_callback(path, value) {
     }
 
     // Rotation
-    var rot_gain = 0.005;
+    var rot_gain = 0.01;
     if (path == "/joystick0/axis0") {
-	var delta = (value-0.5) * rot_gain;
+	var delta = -(value-0.5) * rot_gain;
 	if (Math.abs(value-0.5) > 0.05) {
 	    rot += -delta;
 	    if (rot > 0.785) rot = 0.785;
@@ -135,22 +133,22 @@ function joystick_receive_callback(path, value) {
 
     // Center of rotation
     if (path == "/joystick0/button23" && value == 1.0) 
-	cx_coefficient = 1.0;
+    	dx_coefficient = -1.0;
     if (path == "/joystick0/button23" && value == 0.0) 
-	cx_coefficient = 0.0;
+    	dx_coefficient = 0.0;
     if (path == "/joystick0/button25" && value == 1.0) 
-	cx_coefficient = -1.0;
+	dx_coefficient = 1.0;
     if (path == "/joystick0/button25" && value == 0.0) 
-	cx_coefficient = 0.0;
+	dx_coefficient = 0.0;
 
     if (path == "/joystick0/button22" && value == 1.0) 
-	cy_coefficient = 1.0;
+	dy_coefficient = -1.0;
     if (path == "/joystick0/button22" && value == 0.0) 
-	cy_coefficient = 0.0;
+	dy_coefficient = 0.0;
     if (path == "/joystick0/button24" && value == 1.0) 
-	cy_coefficient = -1.0;
+	dy_coefficient = 1.0;
     if (path == "/joystick0/button24" && value == 0.0) 
-	cy_coefficient = 0.0;
+	dy_coefficient = 0.0;
 
     // Motion Vectors
     if (path == "/joystick0/button15" && value == 1.0) 
@@ -183,10 +181,13 @@ function joystick_receive_callback(path, value) {
     if (path == "/joystick0/button5" && value == 1.0) {
 	sx= 1.0;
 	sy= 1.0;
-	cx = 0.0;
-	cy = 0.0;
-	rot = 0;
-	zoomexp = 1.0;
+	dx = 0.0;
+	dy = 0.0;
+    	wave_enabled = 1;
+	wave_mode = 1;
+	square_a = 0.0;
+	ib_size=10.0;
+	ib_a = 1.0;
     }
 
     // Warp
@@ -202,13 +203,13 @@ function joystick_receive_callback(path, value) {
 
     // Wave mode
     if (path == "/joystick0/button8" && value == 1) {
-    	wave_mode = 0;
-    	wave_enabled = 1;
-    } else if (path == "/joystick0/button9" && value == 1) {
     	wave_mode = 1;
     	wave_enabled = 1;
-    } else if (path == "/joystick0/button10" && value == 1) {
+    } else if (path == "/joystick0/button9" && value == 1) {
     	wave_mode = 2;
+    	wave_enabled = 1;
+    } else if (path == "/joystick0/button10" && value == 1) {
+    	wave_mode = 0;
     	wave_enabled = 1;
     }
 
@@ -216,12 +217,15 @@ function joystick_receive_callback(path, value) {
     if (path == "/joystick0/button11" && value == 1) {
 	ib_size=0.0;
 	ib_a = 0.0;
+	square_a = 1.0;
     } else if (path == "/joystick0/button12" && value == 1) {
     	ib_size = 1.0;
 	ib_a = 1.0;
+	square_a = 0.0;
     } else if (path == "/joystick0/button13" && value == 1) {
     	ib_size = 10.0;
 	ib_a = 1.0;
+	square_a = 0.0;
     }
 
     // Debugging
@@ -229,7 +233,11 @@ function joystick_receive_callback(path, value) {
 	print("[JOYSTICK]    Path: " + path + "   Value: " + value);
 
     // Otherwise, delegate to the bindings.
-    bindings.controller_to_parameter(joystick, path, value);
+    if (path == "/joystick1/axis3")
+	// THIS IS TERRIBLE!   DON'T DO THIS NORMALLY!
+	bindings.controller_to_parameter(joystick, path, value-0.349);
+    else
+	bindings.controller_to_parameter(joystick, path, value);
 }
 
 function setup_osc() {
@@ -237,16 +245,16 @@ function setup_osc() {
     osc.receive_callback = osc_receive_callback;
 
     // Set up some basic control bindings
-    bindings.add(osc, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10");
-    bindings.add(osc, "/1/xy/0", "zoom", 0.5, 1.5, 1.0);
-    bindings.add(osc, "/1/xy/1", "rot", 0.785, -0.785, 0.0);
-    bindings.add(osc, "/1/fader2", "warp", 0.0, 2.0, 0.0);
-    bindings.add(osc, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10");
-    bindings.add(osc, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0);
-    bindings.add(osc, "/1/fader4", "zoomexp", 0.25, 5.0, 1.0, "log10");  
-    bindings.add(osc, "/1/push1", "ib_size", 0, 0, 0);  
-    bindings.add(osc, "/1/push2", "ib_size", 1, 1, 0);  
-    bindings.add(osc, "/1/push3", "ib_size", 10, 10, 0);  
+    // bindings.add(osc, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10");
+    // bindings.add(osc, "/1/xy/0", "zoom", 0.5, 1.5, 1.0);
+    // bindings.add(osc, "/1/xy/1", "rot", 0.785, -0.785, 0.0);
+    // bindings.add(osc, "/1/fader2", "warp", 0.0, 2.0, 0.0);
+    // bindings.add(osc, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10");
+    // bindings.add(osc, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0);
+    // bindings.add(osc, "/1/fader4", "zoomexp", 0.25, 5.0, 1.0, "log10");  
+    // bindings.add(osc, "/1/push1", "ib_size", 0, 0, 0);  
+    // bindings.add(osc, "/1/push2", "ib_size", 1, 1, 0);  
+    // bindings.add(osc, "/1/push3", "ib_size", 10, 10, 0);  
 
     // bindings.add(osc, "/2/fader1", "sx", 0.5, 1.5, 1.0);
     // bindings.add(osc, "/2/fader2", "sy", 0.5, 1.5, 1.0);
@@ -265,21 +273,21 @@ function setup_osc() {
     // bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0);
     // bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01);
 
-    bindings.add(osc, "/2/fader1", "lj_A", 0, 1.0, 1.0); 
-    bindings.add(osc, "/2/fader2", "lj_B", 0, 1.0, 1.0); 
-    bindings.add(osc, "/2/fader3", "lj_omega", 0.01, 10000.0, 1.0, "log10"); 
-    bindings.add(osc, "/2/fader4", "lj_ratio_a", 1.0, 10.0, "log10"); 
-    bindings.add(osc, "/2/fader5", "lj_ratio_b", 1.0, 10.0, "log10"); 
-    bindings.add(osc, "/2/fader6", "lj_phase", 0.9, 1.1, 1.0);     
+    // bindings.add(osc, "/2/fader1", "lj_A", 0, 1.0, 1.0); 
+    // bindings.add(osc, "/2/fader2", "lj_B", 0, 1.0, 1.0); 
+    // bindings.add(osc, "/2/fader3", "lj_omega", 0.01, 10000.0, 1.0, "log10"); 
+    // bindings.add(osc, "/2/fader4", "lj_ratio_a", 1.0, 10.0, "log10"); 
+    // bindings.add(osc, "/2/fader5", "lj_ratio_b", 1.0, 10.0, "log10"); 
+    // bindings.add(osc, "/2/fader6", "lj_phase", 0.9, 1.1, 1.0);     
 
-    bindings.add(osc, "/3/fader1", "q1", 0, 2, 1.0); // a
-    bindings.add(osc, "/3/fader2", "q2", 0, 6.28, 0.0);
-    bindings.add(osc, "/3/fader3", "q3", -2, 2, 0.0); // b
-    bindings.add(osc, "/3/fader4", "q4", 0, 6.28, 0.0);
-    bindings.add(osc, "/3/fader5", "q5", 0, 2, 0.0); // c
-    bindings.add(osc, "/3/fader6", "q6", 0, 6.28, 0.0);
-    bindings.add(osc, "/3/fader7", "q7", -2, 2, 1.0); // d
-    bindings.add(osc, "/3/fader8", "q8", 0, 6.28, 0.0);
+    // bindings.add(osc, "/3/fader1", "q1", 0, 2, 1.0); // a
+    // bindings.add(osc, "/3/fader2", "q2", 0, 6.28, 0.0);
+    // bindings.add(osc, "/3/fader3", "q3", -2, 2, 0.0); // b
+    // bindings.add(osc, "/3/fader4", "q4", 0, 6.28, 0.0);
+    // bindings.add(osc, "/3/fader5", "q5", 0, 2, 0.0); // c
+    // bindings.add(osc, "/3/fader6", "q6", 0, 6.28, 0.0);
+    // bindings.add(osc, "/3/fader7", "q7", -2, 2, 1.0); // d
+    // bindings.add(osc, "/3/fader8", "q8", 0, 6.28, 0.0);
 
     // pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
     // pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);
@@ -300,12 +308,10 @@ function setup_joystick() {
 
     // Langton bEATS
     bindings.add(joystick, "/joystick0/axis2", "decay", 0.5, 1.05, 0.98);
-    bindings.add(joystick, "/joystick0/axis4", "q1", -3.14159, 3.14159, 0.0);
-    bindings.add(joystick, "/joystick0/axis5", "q2", -3.14159, 3.14159, 0.0);
+    bindings.add(joystick, "/joystick0/axis4", "q1", 0, 1.0, 0.2);
 
     bindings.add(joystick, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0);
-    bindings.add(joystick, "/joystick0/axis5", "warp_scale", 2.0, 0.16);
-
+    bindings.add(joystick, "/joystick0/axis5", "wave_frequency", 1000.0, 0.1, "log10");
     sx_coefficient = 0.0;
     sy_coefficient = 0.0;
     cx_coefficient = 0.0;
@@ -314,10 +320,15 @@ function setup_joystick() {
     gamma_coefficient = 0.0;
     dx_coefficient = 0.0;
     dy_coefficient = 0.0;
-    wsfreq_coefficient = 0.0;
     sqfreq_coefficient = 0.0;
     color_shift_coefficient = 0.0;
     mv_l_coeff = 0.0;
+
+    wave_enabled = 1;
+    wave_mode = 1;
+    square_a = 0.0;
+    ib_size=10.0;
+    ib_a = 1.0;
 
     mv_a = 1.0;
     mv_x = 0;
@@ -376,14 +387,6 @@ function joystick_render_callback() {
     if (dy > 0.5) dy = 0.5;
     if (dy < -0.5) dy = -0.5;
 
-    // Update wsfreq 
-    var wsfreq_stepsize = 1.1;
-    if (wsfreq_coefficient > 0)
-	wave_frequency *= wsfreq_stepsize;
-    else if (wsfreq_coefficient < 0)
-	wave_frequency /= wsfreq_stepsize;
-    if (wave_frequency > 400) wave_frequency = 400;
-    if (wave_frequency < 0.01) wave_frequency = 0.01;
 
     // Update sqfreq 
     // var sqfreq_stepsize = 1.05;
