@@ -81,8 +81,8 @@ public:
         if (idx < AUDIO_SAMPLE_RATE) {
           x_cache[idx] = old_x + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
           if (x_cache[idx] > aspect) x_cache[idx] -= 2.0*aspect;
-          left_cache[idx] = *data_ptr++;   // left audio channel
-          right_cache[idx] = *data_ptr++;  // right audio channel
+          left_cache[idx] = *data_ptr++/2.0;   // left audio channel
+          right_cache[idx] = *data_ptr++/2.0;  // right audio channel
           old_x = x_cache[idx];
           ++idx;
         } 

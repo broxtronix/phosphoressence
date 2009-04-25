@@ -285,6 +285,8 @@ void setup_parameters() {
 
   pe_parameters().add_parameter("edge_extend", false, 1.0,
                                 "Turn edge extension on and off.");
+  pe_parameters().add_parameter("show_fps", false, 0.0,
+                                "Turn fps display on and off.");
 
   pe_parameters().add_parameter("lj_A", false, 1.0,
                                 "Amplitude for horizontal lissajous pattern.");

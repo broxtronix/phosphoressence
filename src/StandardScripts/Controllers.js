@@ -58,9 +58,11 @@ function joystick_receive_callback(path, value) {
 
     // Translation
     if (path == "/joystick0/hat0" && value == 2) 
-    	square_thick_coeff = 1.0;
+	square_thick_coeff = 1.0;
+    //	wave_frequency_coeff = 1.0;
     if (path == "/joystick0/hat0" && value == 8) 
-    	square_thick_coeff = -1.0;
+	square_thick_coeff = -1.0;
+    //	wave_frequency_coeff = -1.0;
     if (path == "/joystick0/hat0" && value == 1) 
     	square_scale_coeff = 1.0;
     if (path == "/joystick0/hat0" && value == 4) 
@@ -68,12 +70,13 @@ function joystick_receive_callback(path, value) {
     if (path == "/joystick0/hat0" && value == 0.0) {
     	square_thick_coeff = 0.0;
 	square_scale_coeff = 0.0;
+	wave_frequency_coeff = 0.0;
     }
 
-    // wave_usedots
+    // Gamma
     if (path == "/joystick0/button7" && value == 1) {
-	if (wave_usedots) wave_usedots = 0.0;
-	else wave_usedots = 1.0;
+	if (gamma == 1.0) gamma = 2.2;
+	else gamma = 1.0;
     }
 
     // Rotation
@@ -172,7 +175,7 @@ function joystick_receive_callback(path, value) {
     if (path == "/joystick0/button16" && value == 0.0) 
 	mv_l_coeff = 0.0;
 
-    // Reset center of rotation & scaling
+    // Reset center of rotation, scaling, and zoom exponent
     if (path == "/joystick0/button5" && value == 1.0) {
 	sx= 1.0;
 	sy= 1.0;
@@ -182,6 +185,7 @@ function joystick_receive_callback(path, value) {
 	wave_mode = 0;
 	square_a = 1.0;
 	ib_a = 0.0;
+	zoomexp = 1.0;
     }
 
     // Warp
@@ -209,11 +213,14 @@ function joystick_receive_callback(path, value) {
 
     // PRECIOUS UPPER SWITCH 
     if (path == "/joystick0/button11" && value == 1) {
-
+	wave_frequency = 0.03;
+	wave_mode=2;
     } else if (path == "/joystick0/button12" && value == 1) {
-
+	wave_frequency = 0.5;
+	wave_mode=2;
     } else if (path == "/joystick0/button13" && value == 1) {
-
+	wave_frequency = 10.0;
+	wave_mode=2;
     }
 
     // Debugging
@@ -304,6 +311,7 @@ function setup_joystick() {
     dx_coefficient = 0.0;
     dy_coefficient = 0.0;
     sqfreq_coefficient = 0.0;
+    wave_frequency_coeff = 0.0;
     color_shift_coefficient = 0.0;
     mv_l_coeff = 0.0;
 
@@ -389,15 +397,14 @@ function joystick_render_callback() {
     if (dy < -0.5) dy = -0.5;
 
 
-    // Update sqfreq 
-    // var sqfreq_stepsize = 1.05;
-    // if (sqfreq_coefficient > 0)
-    //     square_frequency *= sqfreq_stepsize;
-    // else if (sqfreq_coefficient < 0)
-    //     square_frequency /= sqfreq_stepsize;
-    // if (square_frequency > 0.05) square_frequency = 0.05;
-    // if (square_frequency < 0.001) square_frequency = 0.001;
-    // print(square_frequency);
+    // Update wave_frequency
+    // var wave_frequency_stepsize = 1.1;
+    // if (wave_frequency_coeff > 0)
+    //     wave_frequency *= wave_frequency_stepsize;
+    // else if (wave_frequency_coeff < 0)
+    //     wave_frequency /= wave_frequency_stepsize;
+    // if (wave_frequency > 10.0) wave_frequency = 10.0;
+    // if (wave_frequency < 0.03) wave_frequency = 0.03;
 
     // Update color_shift
     var color_shift_stepsize = 1/100.0;

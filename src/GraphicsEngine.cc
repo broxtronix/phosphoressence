@@ -374,14 +374,15 @@ void GraphicsEngine::drawImage() {
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
+  
+  if (pe_parameters().get_value("show_fps") != 0) {
+    char fps_cstr[255];
+    sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
+    QString fps_str(fps_cstr);
+    this->renderText(20,20,fps_str);
+  }
 
-  //  std::ostringstream ostr;
-  // ostr << "FPS: " << m_fps_avg;
-  char fps_cstr[255];
-  sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
-  QString fps_str(fps_cstr);
-  this->renderText(20,20,fps_str);
-
+  // Swap the buffer and render to the screen.
   this->swapBuffers();
 
   // Recompute FPS
