@@ -20,6 +20,8 @@ function joystick_receive_callback(path, value) {
 	mv_l = 0;
 	rot = -0.001;
 	sx=0.999;
+	wave_mode=0;
+    	wave_enabled = 1;
     }
 
     // IFS Mode
@@ -75,7 +77,7 @@ function joystick_receive_callback(path, value) {
 
     // Gamma
     if (path == "/joystick0/button7" && value == 1) {
-	if (gamma == 1.0) gamma = 2.2;
+	if (gamma == 1.0) gamma = 1.5;
 	else gamma = 1.0;
     }
 
