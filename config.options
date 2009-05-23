@@ -13,6 +13,6 @@ ENABLE_APP_PHOSPHORESSENCE=yes
 ###   lib/include directories for packages in non-standard locations.
 
 PKG_PATHS="  \
-  $HOME/projects/VisionWorkbench/trunk/build/    \
+  $HOME/projects/visionworkbench/build/    \
   $HOME/local \
 "
