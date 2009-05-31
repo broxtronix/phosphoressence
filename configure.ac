@@ -1,24 +1,6 @@
 # __BEGIN_LICENSE__
-#
-# Copyright (C) 2006 United States Government as represented by the
-# Administrator of the National Aeronautics and Space Administration
-# (NASA).  All Rights Reserved.
-#
-# Copyright 2006 Carnegie Mellon University. All rights reserved.
-#
-# This software is distributed under the NASA Open Source Agreement
-# (NOSA), version 1.3.  The NOSA has been approved by the Open Source
-# Initiative.  See the file COPYING at the top of the distribution
-# directory tree for the complete NOSA document.
-#
-# THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY
-# KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT
-# LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO
-# SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
-# A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT, ANY WARRANTY THAT
-# THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT
-# DOCUMENTATION, IF PROVIDED, WILL CONFORM TO THE SUBJECT SOFTWARE.
-#
+# Copyright (C) 2009 Michael J. Broxton
+# All Rights Reserved.
 # __END_LICENSE__
 
 ##################################################
@@ -26,12 +8,12 @@
 ##################################################
 
 dnl TODO BEFORE RELEASE: update package version
-AC_INIT([NASA Ames Stereo Pipeline], [2.1], [asp@nx.arc.nasa.gov], [StereoPipeline])
+AC_INIT([PhosphorEssence], [0.2], [], [PhosphorEssence])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE([nostdinc])
-AX_CONFIG_HEADER_PREFIX([src/asp_config.h], [ASP_])
+AX_CONFIG_HEADER_PREFIX([src/pe_config.h], [PE_])
 
 dnl TODO BEFORE RELEASE: update libtool version
 dnl if abi changes in any way:
@@ -92,7 +74,7 @@ AX_COMMON_OPTIONS
 AX_PKG_PTHREADS
 
 AX_PKG_BOOST
-AX_PKG_BOOST_CHECK_VERSION([ASP_])
+AX_PKG_BOOST_CHECK_VERSION([PE_])
 
 AC_MSG_NOTICE([Stereo will be built using Boost version $BOOST_VERSION])
 AX_PKG_BOOST_LIB(PROGRAM_OPTIONS, [-lboost_program_options], [boost/program_options.hpp])
@@ -195,21 +177,21 @@ AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE, [test "$MAKE_APP_PHOSPHORESSENCE" = "ye
 # final processing
 ##################################################
 
-ASP_CPPFLAGS="-I\${top_srcdir}/src $OTHER_CPPFLAGS"
-ASP_LDFLAGS="$OTHER_LDFLAGS"
+PE_CPPFLAGS="-I\${top_srcdir}/src $OTHER_CPPFLAGS"
+PE_LDFLAGS="$OTHER_LDFLAGS"
 
 if test "yes" = "$ENABLE_VERBOSE" ; then
   AC_MSG_NOTICE([using CPPFLAGS=$CPPFLAGS])
-  AC_MSG_NOTICE([using ASP_CPPFLAGS=$ASP_CPPFLAGS])
+  AC_MSG_NOTICE([using PE_CPPFLAGS=$PE_CPPFLAGS])
   AC_MSG_NOTICE([using CFLAGS=$CFLAGS])
   AC_MSG_NOTICE([using CXXFLAGS=$CXXFLAGS])
   AC_MSG_NOTICE([using LDFLAGS=$LDFLAGS])
-  AC_MSG_NOTICE([using ASP_LDFLAGS=$ASP_LDFLAGS])
-  AC_MSG_NOTICE([using ASP_ENABLE_EXCEPTIONS=$ENABLE_EXCEPTIONS])
+  AC_MSG_NOTICE([using PE_LDFLAGS=$PE_LDFLAGS])
+  AC_MSG_NOTICE([using PE_ENABLE_EXCEPTIONS=$ENABLE_EXCEPTIONS])
 fi
 
-AC_SUBST(ASP_CPPFLAGS)
-AC_SUBST(ASP_LDFLAGS)
+AC_SUBST(PE_CPPFLAGS)
+AC_SUBST(PE_LDFLAGS)
 
 
 

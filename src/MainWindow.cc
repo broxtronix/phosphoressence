@@ -5,16 +5,15 @@
 
 /// \file MainWindow.cc
 ///
-/// The Vision Workbench image viewer main window class. 
-///
-#include <QtGui>
-#include <vw/config.h>
+#include <pe_config.h>
 #include <MainWindow.h>
 #include <GraphicsEngine.h>
 
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Image/Statistics.h>
 #include <vw/Image/PixelMask.h>
+
+#include <QtGui>
 
 #include <sstream>
 
@@ -87,10 +86,10 @@ void MainWindow::update_status_bar(std::string const& s) {
 
 void MainWindow::about() {
   std::ostringstream about_text;
-  about_text << "<h3>Vision Workbench Image Viewer (vwv)</h3>"
-             << "<p>Version " << VW_PACKAGE_VERSION << "</p>"
-             << "<p>Copyright &copy; 2008 NASA Ames Research Center</p>";
-  QMessageBox::about(this, tr("About Vision Workbench Viewer"),
+  about_text << "<h3>PhosphorEssence</h3>"
+             << "<p>Version " << PE_PACKAGE_VERSION << "</p>"
+             << "<p>Copyright &copy; 2009 Michael J. Broxton</p>";
+  QMessageBox::about(this, tr("About PhosphorEssence"),
                      tr(about_text.str().c_str()));
                        
 }
