@@ -389,17 +389,8 @@ ScriptEngine::ScriptEngine() {
 
   // Load the default.js file.
   std::cout << "\t--> Loading default PhosphorEssence preset script\n";
-
-  CFURLRef appUrlRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-  CFStringRef macPath = CFURLCopyFileSystemPath(appUrlRef,
-                                                kCFURLPOSIXPathStyle);
-  std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
-  std::string resources_dir = bundle_base_str + + "/Contents/Resources";
+  std::string resources_dir = pe_resources_directory();
   std::string defaults_file = resources_dir + "/scripts/default.js";
-  std::cout << "\t    " << defaults_file << "\n";
-  CFRelease(appUrlRef);
-  CFRelease(macPath);
-
   v8::Handle<v8::String> source = ReadFile(defaults_file.c_str());
   if (source.IsEmpty()) {
     v8::ThrowException(v8::String::New("Error loading file"));
@@ -408,13 +399,14 @@ ScriptEngine::ScriptEngine() {
     v8::ThrowException(v8::String::New("Error executing file"));
   }
 
-  // Add the parameters object to the context
+  // Add the parameters object to the JavaScript context
   setup_pe_parameters();
 
-  // As a last step, call the javascript initialize_callback() to give
-  // use a chance to set everything up in the javascript VM.
+  // As a last step, we set the RESOURCES directory and call the
+  // javascript pe_load() to give use a chance to set everything up in
+  // the javascript VM.
   std::ostringstream ostr;
-  ostr << "var RESOURCES = \"" + resources_dir + "\";";
+  ostr << "var PE_RESOURCES = \"" + resources_dir + "\";";
   execute_js(ostr.str());
   execute_js("pe_load()");
 

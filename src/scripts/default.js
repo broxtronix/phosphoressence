@@ -5,9 +5,9 @@
 function pe_load() {
     
     // Load various javascript modules
-    load(RESOURCES + "/scripts/PresetFunctions.js");
-    load(RESOURCES + "/scripts/Controllers.js");
-    load(RESOURCES + "/scripts/Bindings.js");
+    load(PE_RESOURCES + "/scripts/PresetFunctions.js");
+    load(PE_RESOURCES + "/scripts/Controllers.js");
+    load(PE_RESOURCES + "/scripts/Bindings.js");
 
     // Set up bindings object
     bindings = new Bindings();
@@ -32,7 +32,7 @@ function pe_initialize() {
     setup_joystick();
 
     // Load Milkdrop Presets
-    //    load(RESOURCES + "/presets/milkdrop/milk_presets.js");
+    // load(PE_RESOURCES + "/presets/milkdrop/milk_presets.js");
 }
 
 
@@ -92,8 +92,6 @@ function pe_render() {
 	 mv_r += 0.5 * Math.sin(15/10.0*time);
 	 mv_g += 0.5 * Math.sin(19/10.0*time);
 	 mv_b += 0.5 * Math.sin(14/10.0*time);
-
-	 //	 q7 = 2*Math.sin(time/5.0);
      }
 }
 

@@ -95,6 +95,6 @@ for f in files:
     js_file.close()
 
     master_file.write("print(\"Loading " + preset_name + ".js\");\n");
-    master_file.write("load(RESOURCES + \"/presets/milkdrop/" + preset_name + ".js\");\n");
+    master_file.write("load(PE_RESOURCES + \"/presets/milkdrop/" + preset_name + ".js\");\n");
 
 master_file.close();
