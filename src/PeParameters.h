@@ -13,31 +13,133 @@
 #include <list>
 
 #include <vw/Core/Thread.h>
+#include <vw/Math/Vector.h>
 
-class PeParameters {
 
-  struct Parameter {
-    std::string name;
-    bool read_only;
-    float value;
-    float default_value;
-    std::string description;
+// -----------------------------------------------------------
+// Utilities
+// -----------------------------------------------------------
 
-    Parameter(std::string name_, bool read_only_, float default_value_, std::string description_) :
-      name(name_), read_only(read_only_), value(default_value_), default_value(default_value_), description(description_) {}
-  };
-    
-  std::list<Parameter> m_parameters;
+// Returns the base directory where phosphoressence scripts, shaders,
+// and presets are stored.
+std::string pe_resources_directory();
+
+// Erases a file suffix if one exists and returns the base string
+std::string prefix_from_filename(std::string const& filename);
+
+// ---------------------------------------------------------------------
+// PeTime
+// ---------------------------------------------------------------------
+
+class PeTime {
   float m_time;
   long long m_last_time;
   vw::Mutex m_mutex;
 
 public:
-  PeParameters();
+  PeTime();
+  double operator()();
+};
 
-  void add_parameter(std::string name, bool read_only, float default_value, std::string description);
+/// Return the singleton instance of the PhosphorEssence time
+/// structure.  The time struct is created the first time this method
+/// is invoked and initialized to time = 0.  You should *always* access
+/// the time using this function.
+double pe_time();
+
+
+// ---------------------------------------------------------------------
+// VectorSpaceDimension
+// ---------------------------------------------------------------------
+
+class VectorSpaceDimension {
+
+  // Class enums
+
+  enum ControlType  { eAutomation, eController }; 
+
+  // Class private members
+
+  std::string m_name;
+  std::string m_description;
+
+  double m_value;               // Current value of the parameter
+                                // (could be in mid-animation)
+
+  double m_default_value;       // Default value for this parameter
+
+  bool m_read_only;             // true if the parameter is read-only
+
+  ControlType m_control_mode;   // [ automation, controller ] 
+
+  float m_controller_timeout;   // Amount of time (seconds) left
+                                // before automation can
+                                // resume. Counts down to zero.
+  double m_last_poll_time;
+
+  
+  // Sets the actual value of the parameter, clamping to the limits if
+  // necessary.
+  void set_internal(double val);
+
+public:
+
+  VectorSpaceDimension(std::string name, std::string description,
+                       double default_value, bool read_only); 
+
+  // Return the name
+  std::string name() const { return m_name; }
+
+  // Return the default value
+  double default_value() const { return m_default_value; }
+
+  // Return the description
+  std::string description() const { return m_description; }
+
+  // Reset the parameter to the default value;
+  void reset();
+
+
+  // Set the value of the parameter as part of an automated routine.
+  // Automation con be overriden if a user starts to control this
+  // parameter with a control.
+  void set_automate(double val);
+
+  // Set the value of the parameter using a human operated control.
+  // Controls can overide
+  void set_control(double val);
+
+  // Set the value of the parameter using a human operated control.
+  // Controls can overide
+  void set_readonly(double val);
+
+  // Force the parameter to return to automated control.
+  void automate();
+
+  // Get the current value for a parameter
+  // 
+  // Can be overriden by a subclass to, e.g., return an interpolated
+  // or animated value.
+  virtual double operator()();
+};
+
+// ---------------------------------------------------------------------
+// PeParameters
+// ---------------------------------------------------------------------
+
+class PeParameters {
+
+  std::list<VectorSpaceDimension> m_parameters;
+  vw::Mutex m_mutex;
+
+public:
+  void add_parameter(std::string name, 
+                     bool read_only, 
+                     float default_value, 
+                     std::string description);
 
   void set_value(std::string name, float val);
+  void set_readonly(std::string name, float val);
   float get_value(std::string name);
   void reset_value(std::string name);
   void reset_all();
@@ -47,20 +149,6 @@ public:
 
   // Print out a list of parameters and their limits to the screen.
   void print_list();
-  // template <class FuncT>
-  // void map(FuncT const& func) {
-  //   vw::Mutex::Lock lock(m_mutex);
-    
-  //   std::list<Binding>::iterator iter = m_bindings.begin();
-  //   while (iter != m_bindings.end()) {
-  //     std::string path = iter->path;
-  //     float ratio = (iter->hi - iter->lo);
-  //     float value_x = (iter->x-iter->lo)/ratio;
-  //     float value_y = (iter->y-iter->lo)/ratio;
-  //     func(path, value_x, value_y, iter->dual_axis);
-  //     ++iter;
-  //   }
-  // }
 };
 
 /// Return the singleton instance of the PhosphorEssence parameters
@@ -68,5 +156,65 @@ public:
 /// method is invoked.  You should *always* access the settings
 /// through this function.
 PeParameters& pe_parameters();
+
+
+
+//------------------ Parameter Refactor below this line -----------------------
+// (under construction...)
+//------------------ ---------------------------------- -----------------------
+
+
+// // A wrapper class that animates parameter transitions with a simple
+// // linear interpolation over a given duration.
+// class AnimatedVectorSpaceDimension {
+  
+//   double m_val;              // the current value
+//   double m_start;            // the start value of our animation
+//   double m_end;              // the target value of our animation
+//   double m_interp_progress;  // a value between [0,1]
+//   double m_duration;         // duration of the animation
+//   double m_start_time;       // duration of the animation
+
+
+//   void setup_animation(double target_val, double duration = 0) {
+//     m_start = m_val;
+//     m_end = target_val;
+//     m_duration = duration;
+//     m_start_time = pe_time();
+//   }
+
+//   double do_animation() {
+//     double current_time = pe_time();
+//     double elapsed = current_time - m_start_time;
+    
+//     if (elapsed > m_duration) 
+//       return m_end;
+//     else {
+//       double progress = elapsed / m_duration;
+//       return progress * (m_end-m_start) + m_start;
+//     }
+//   }
+
+// public:
+
+//   AnimatedVectorSpaceDimension(double duration) {
+//     m_duration = duration;
+//   }
+
+//   // Fetch the parameter automation value
+//   virtual void set_automate(double val) {
+//     setup_animation(val);
+//     VectorSpaceDimension.set_automate(m_start);
+//   }
+
+//   // Fetch the parameter control value
+//   virtual void set_control(double val) {
+//     setup_animation(val);
+//     VectorSpaceDimension.set_automate(m_start);
+//   }
+  
+//   // Fetch the current parameter value.
+//   virtual double operator()() const { return do_animation(); }
+// };
 
 #endif // __PE_PARAMETERS_H__

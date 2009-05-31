@@ -33,9 +33,8 @@ using namespace vw;
 using namespace vw::GPU;
 
 #include <fstream>
-#include <CoreFoundation/CoreFoundation.h>
 
-
+// Switch from uin8 to floating point textures
 #define PE_GL_FORMAT GL_RGBA16F_ARB
 //#define PE_GL_FORMAT GL_RGBA
 
@@ -389,14 +388,14 @@ void GraphicsEngine::drawImage() {
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
   float fps = 1.0/(new_time - m_fps_last_time);
   m_fps_avg = 0.01 * fps + 0.99 * m_fps_avg;
-  pe_parameters().set_value("fps", fps);
+  pe_parameters().set_readonly("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
   //
   
 
   m_fps_last_time = new_time;
-  pe_parameters().set_value("frame", pe_parameters().get_value("frame") + 1.0);
+  pe_parameters().set_readonly("frame", pe_parameters().get_value("frame") + 1.0);
 }
 
 void GraphicsEngine::drawLegend(QPainter* painter) {
@@ -562,14 +561,7 @@ void GraphicsEngine::saveFeedback() {
 void GraphicsEngine::initializeGL() {  
 
   // Set up the GLSL fragment shader.
-  CFURLRef appUrlRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-  CFStringRef macPath = CFURLCopyFileSystemPath(appUrlRef,
-                                                kCFURLPOSIXPathStyle);
-  std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
-  std::string resources_dir = bundle_base_str + "/Contents/Resources";
-  CFRelease(appUrlRef);
-  CFRelease(macPath);
-
+  std::string resources_dir = pe_resources_directory();
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
   m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl",
                                                 std::vector<int>(),
@@ -626,7 +618,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Set the current viewport width/height
   m_viewport_width = width;
   m_viewport_height = height;
-  pe_parameters().set_value("aspect", float(m_viewport_width) / m_viewport_height);
+  pe_parameters().set_readonly("aspect", float(m_viewport_width) / m_viewport_height);
 
   // Compute framebuffer dimensions.  The framebuffer is a square that
   // circumscribes the circle that circumscribes the rectangle of the

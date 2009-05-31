@@ -264,19 +264,19 @@ public slots:
     }
     
     // Update the various PE Parameters
-    pe_parameters().set_value("bass", left_avg[0]);
-    pe_parameters().set_value("mid", left_avg[1]);
-    pe_parameters().set_value("treb", left_avg[2]);
-    pe_parameters().set_value("bass_att",left_avg_rel[0]);
-    pe_parameters().set_value("mid_att", left_avg_rel[1]);
-    pe_parameters().set_value("treb_att", left_avg_rel[2]);
+    pe_parameters().set_readonly("bass", left_avg[0]);
+    pe_parameters().set_readonly("mid", left_avg[1]);
+    pe_parameters().set_readonly("treb", left_avg[2]);
+    pe_parameters().set_readonly("bass_att",left_avg_rel[0]);
+    pe_parameters().set_readonly("mid_att", left_avg_rel[1]);
+    pe_parameters().set_readonly("treb_att", left_avg_rel[2]);
 
-    pe_parameters().set_value("bass_r", right_avg[0]);
-    pe_parameters().set_value("mid_r", right_avg[1]);
-    pe_parameters().set_value("treb_r", right_avg[2]);
-    pe_parameters().set_value("bass_att_r",right_avg_rel[0]);
-    pe_parameters().set_value("mid_att_r", right_avg_rel[1]);
-    pe_parameters().set_value("treb_att_r", right_avg_rel[2]);
+    pe_parameters().set_readonly("bass_r", right_avg[0]);
+    pe_parameters().set_readonly("mid_r", right_avg[1]);
+    pe_parameters().set_readonly("treb_r", right_avg[2]);
+    pe_parameters().set_readonly("bass_att_r",right_avg_rel[0]);
+    pe_parameters().set_readonly("mid_att_r", right_avg_rel[1]);
+    pe_parameters().set_readonly("treb_att_r", right_avg_rel[2]);
   }
 };
 

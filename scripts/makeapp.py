@@ -134,8 +134,8 @@ def install_libraries(executable, appname):
                 
 # MAIN
 executable = "src/pe"
-scripts = "src/StandardScripts"
-shaders = "src/StandardShaders"
+scripts = "src/scripts"
+shaders = "src/shaders"
 presets = "src/presets"
 appname = "PhosphorEssence"
 print "------------------------------------------------------"
