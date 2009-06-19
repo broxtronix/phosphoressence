@@ -465,7 +465,8 @@ float ScriptEngine::fetch_parameter(const char* name) {
   // It is a Number; cast it to a Number
   v8::Handle<v8::Number> result_num = v8::Handle<v8::Number>::Cast(result_val);
 
-  return result_num->Value();
+  // return result_num->Value();
+  return 0.0;
 }
 
 ScriptEngine::~ScriptEngine() {

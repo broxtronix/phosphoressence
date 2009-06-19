@@ -110,8 +110,7 @@ public:
   // Controls can overide
   void set_control(double val);
 
-  // Set the value of the parameter using a human operated control.
-  // Controls can overide
+  // Set the value of a readonly parameter
   void set_readonly(double val);
 
   // Force the parameter to return to automated control.

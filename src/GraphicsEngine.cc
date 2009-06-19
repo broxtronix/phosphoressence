@@ -555,8 +555,8 @@ void GraphicsEngine::initializeGL() {
   glEnable(GL_MULTISAMPLE);
   
   // Set the grid size
-  pe_parameters().set_value("meshx", HORIZ_MESH_SIZE);
-  pe_parameters().set_value("meshy", VERT_MESH_SIZE);
+  pe_parameters().set_readonly("meshx", HORIZ_MESH_SIZE);
+  pe_parameters().set_readonly("meshy", VERT_MESH_SIZE);
 
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);

@@ -96,5 +96,30 @@ parameters = [
  parameter({ name : "sy",
 	     description : ">0     controls amount of constant vertical stretching; " + 
 	     " 0.99=shrink 1%, 1=normal, 1.01=stretch 1%",
-	     default_value : 1.0 })
-];
+	     default_value : 1.0 }),
+ 
+ parameter({ name : "q1",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q2",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q3",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q4",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q5",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q6",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q7",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." }),
+ parameter({ name : "q8",
+	     description : "Used to carry information between the per-frame code " + 
+	     "and per-pixel code." })
+ ];
