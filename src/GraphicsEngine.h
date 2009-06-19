@@ -74,7 +74,16 @@ class GraphicsEngine : public QGLWidget {
 public:
   
   // Constructors/Destructor
-  GraphicsEngine(QWidget *parent) : QGLWidget(parent) {
+  GraphicsEngine(QWidget *parent, QGLFormat const& frmt) : 
+    QGLWidget(frmt, parent) {
+
+     if (!format().sampleBuffers())
+       std::cout << "\n\nCould not activate FSAA; results will be suboptimal\n\n";
+     if (!format().doubleBuffer())
+       std::cout << "\n\nCould not set double buffering; results will be suboptimal\n\n";
+
+     std::cout << "\n***\nBuffers: " << format().sampleBuffers() << "\n***\n";
+
     setup();
   }
   virtual ~GraphicsEngine();

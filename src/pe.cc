@@ -98,6 +98,7 @@ void setup_parameters() {
   // -------------------------------------------------------------------------------
   //                           READ/WRITE PARAMETERS
   // -------------------------------------------------------------------------------
+
   pe_parameters().add_parameter("decay", false, 0.98,
                                 "0..1   controls the eventual fade to black; 1=no fade, 0.9=strong fade, 0.98=recommended");
   pe_parameters().add_parameter("invert", false, 0.0,

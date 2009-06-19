@@ -34,6 +34,12 @@ using namespace vw::GPU;
 
 #include <fstream>
 
+#include <cuda.h>
+#include <cudaGL.h>
+#include <cuda_runtime_api.h>
+#include <cuda_gl_interop.h>
+
+
 // Switch from uin8 to floating point textures
 #define PE_GL_FORMAT GL_RGBA16F_ARB
 //#define PE_GL_FORMAT GL_RGBA
@@ -131,7 +137,7 @@ void GraphicsEngine::drawImage() {
   makeCurrent();
   
   // ------------------------ <FrameBuffer> -------------------------
-
+ 
   // Activate the framebuffer.  All of the following drawing is done
   // in the framebuffer so that we have a larger area available to
   // draw in.
@@ -349,6 +355,7 @@ void GraphicsEngine::drawImage() {
 
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
+  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
   m_gpu_frontbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
   m_gpu_frontbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
         
@@ -455,68 +462,9 @@ void GraphicsEngine::saveFeedback() {
   // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   // glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
-  // // Render to texture1 using texture0
-  // //  glFinish();
-  // //  double start_time = double(vw::Stopwatch::microtime()) / 1.0e6;
-  // m_gpu_blur_program->install();
-  // m_gpu_blur_program->set_input_int("feedback_texture", 0);
-  // m_gpu_blur_program->set_input_float("framebuffer_width", m_framebuffer_width);
-  // m_gpu_blur_program->set_input_float("framebuffer_height", m_framebuffer_height);
-  // m_gpu_blur_program->set_input_float("blur_amount", pe_parameters().get_value("rd_blur") );
-
-  // float aspect = float(m_viewport_width) / m_viewport_height;
-  // float framebuffer_radius = sqrt(1+pow(aspect,2));
-  // glEnable( GL_TEXTURE_2D );
-  // glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
-  // qglColor(Qt::white);
-  // glBegin(GL_QUADS);
-  // glTexCoord2f( 0.0, 0.0 );
-  // glVertex2d( -framebuffer_radius, -framebuffer_radius);
-  // glTexCoord2f( 1.0, 0.0 );
-  // glVertex2d( framebuffer_radius, -framebuffer_radius);
-  // glTexCoord2f( 1.0, 1.0 );
-  // glVertex2d( framebuffer_radius, framebuffer_radius);
-  // glTexCoord2f( 0.0, 1.0 );
-  // glVertex2d( -framebuffer_radius, framebuffer_radius);
-  // glEnd() ;
-  // glBindTexture( GL_TEXTURE_2D, 0 );
-  // glDisable( GL_TEXTURE_2D );
-  // m_gpu_blur_program->uninstall();
-  
-
-  // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-  // glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-
-  // // RD Stuff
-  // m_gpu_rd_program->install();
-
-  // m_gpu_blur_program->set_input_int("feedback_texture", 0);
-  // m_gpu_blur_program->set_input_float("framebuffer_width", m_framebuffer_width);
-  // m_gpu_blur_program->set_input_float("framebuffer_height", m_framebuffer_height);
-  // m_gpu_rd_program->set_input_float("width", pe_parameters().get_value("rd_width") );
-  // m_gpu_rd_program->set_input_float("D_g", pe_parameters().get_value("rd_D_g") );
-  // m_gpu_rd_program->set_input_float("D_b", pe_parameters().get_value("rd_D_b") );
-  // m_gpu_rd_program->set_input_float("s", pe_parameters().get_value("rd_s") );
-  // m_gpu_rd_program->set_input_float("beta", pe_parameters().get_value("rd_beta") );
-
-  // glEnable( GL_TEXTURE_2D );
-  // glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture1 );
-  // qglColor(Qt::white);
-  // glBegin(GL_QUADS);
-  // glTexCoord2f( 0.0, 0.0 );
-  // glVertex2d( -framebuffer_radius, -framebuffer_radius);
-  // glTexCoord2f( 1.0, 0.0 );
-  // glVertex2d( framebuffer_radius, -framebuffer_radius);
-  // glTexCoord2f( 1.0, 1.0 );
-  // glVertex2d( framebuffer_radius, framebuffer_radius);
-  // glTexCoord2f( 0.0, 1.0 );
-  // glVertex2d( -framebuffer_radius, framebuffer_radius);
-  // glEnd() ;
-  // glBindTexture( GL_TEXTURE_2D, 0 );
-  // glDisable( GL_TEXTURE_2D );
-  // m_gpu_rd_program->uninstall();
-
+  // -------------------------------------------
   // Old Code for saving the feedback texture...
+  // -------------------------------------------
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
   glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -524,7 +472,7 @@ void GraphicsEngine::saveFeedback() {
   // -- Save Feedback --
   // glBindBuffer(GL_PIXEL_PACK_BUFFER, m_feedback_pbo);
   // glReadPixels(0,0,m_framebuffer_width,m_framebuffer_height,GL_BGRA,GL_UNSIGNED_BYTE,NULL);
-  // glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0);
+  // glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
   // -- Debug --
   // vw::uint8* data = (vw::uint8*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
@@ -540,8 +488,8 @@ void GraphicsEngine::saveFeedback() {
   // -- Debug --
   
   // -- CUDA --
-  //  pboRegister(m_feedback_pbo);
-  //  copy_image(m_feedback_pbo, m_framebuffer_width, m_framebuffer_height);
+  // pboRegister(m_feedback_pbo);
+  // copy_image(m_feedback_pbo, m_framebuffer_width, m_framebuffer_height);
 
   // According to the CUDA API reference, you must unbind the buffer
   // object before writing to it.  You can rebind it immediately
@@ -605,6 +553,8 @@ void GraphicsEngine::initializeGL() {
   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
   this->setAutoBufferSwap(false);
 #endif
+
+  glEnable(GL_MULTISAMPLE);
   
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
@@ -644,11 +594,12 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Allocate two pixel buffer object to store (and modify) the
   // feedback texture.  One of these is the input into the cuda
   // shaders, and one is the output.
+  // cudaGLSetGLDevice ( 0 );
   // glGenBuffers(1, &m_feedback_pbo);
   // glBindBuffer(GL_ARRAY_BUFFER, m_feedback_pbo);
   // glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_COPY);
   // glBindBuffer(GL_ARRAY_BUFFER, 0);
-  //  pboRegister(m_feedback_pbo);
+  // pboRegister(m_feedback_pbo);
 
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);

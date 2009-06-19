@@ -31,7 +31,7 @@ if MAKE_APP_PHOSPHORESSENCE
 	            ScriptEngine.cc PeParameters.cc Controller.cc	\
 	            OscController.cc MidiController.cc			\
 	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
-	            $(header_sources)
+	            $(header_sources) 
 
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS)
 endif
