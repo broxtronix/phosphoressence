@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 #include <list>
 
 #include <vw/Core/Thread.h>
@@ -129,7 +130,7 @@ public:
 
 class PeParameters {
 
-  std::list<VectorSpaceDimension> m_parameters;
+  std::map<std::string, VectorSpaceDimension> m_parameters;
   vw::Mutex m_mutex;
 
 public:

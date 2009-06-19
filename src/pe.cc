@@ -53,7 +53,7 @@ void setup_parameters() {
                                 "Retrieves the x-position of the current pixel (for per-pixel equations)");
   pe_parameters().add_parameter("time", true, 0.0,
                                 "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running");
-  pe_parameters().add_parameter("fps", true, 0.0,
+  pe_parameters().add_parameter("fps", true, 30.0,
                                 ">0 (readonly)       retrieves the current framerate, in frames per second.");
   pe_parameters().add_parameter("frame", true, 0.0,
                                 "(readonly) retrieves the number of frames of animation elapsed since the program started");
@@ -89,10 +89,10 @@ void setup_parameters() {
                                 ">0 (readonly)         -same, but for treble (high) frequencies");
 
 
-  // pe_parameters().add_parameter("meshx", true, 0.0,
-  //                               "8-128 (readonly)  tells you the user's mesh size in the X direction.  always an integer value.");
-  // pe_parameters().add_parameter("meshy", true, 0.0,
-  //                               "6-96   tells you the user's mesh size in the Y direction.  always an integer value.");
+  pe_parameters().add_parameter("meshx", true, 0.0,
+                                "8-128 (readonly)  tells you the user's mesh size in the X direction.  always an integer value.");
+  pe_parameters().add_parameter("meshy", true, 0.0,
+                                "6-96   tells you the user's mesh size in the Y direction.  always an integer value.");
 
 
   // -------------------------------------------------------------------------------
@@ -105,34 +105,34 @@ void setup_parameters() {
                                 "0/1    inverts the colors in the image");
   pe_parameters().add_parameter("gamma", false, 1.0,
                                 ">0     controls display brightness; 1=normal, 2=double, 3=triple, etc.");
-  pe_parameters().add_parameter("color_shift", false, 0.0,
-                                ">0     controls display color shift in the feedback texture.");
+
+  // pe_parameters().add_parameter("zoom", false, 1.0, 
+  //                               "controls inward/outward motion.  0.9=zoom out 10% per frame, 1.0=no zoom, 1.1=zoom in 10%");
+  // pe_parameters().add_parameter("zoomexp", false, 1.0, 
+  //                               ">0     controls the curvature of the zoom; 1=normal");
+  // pe_parameters().add_parameter("rot", false, 0.0,
+  //                               "controls the amount of rotation.  0=none, 0.1=slightly right, -0.1=slightly clockwise, 0.1=CCW");
+  // pe_parameters().add_parameter("warp", false, 0.0, 
+  //                               "controls the magnitude of the warping; 0=none, 1=normal, 2=major warping...\n");
+  // pe_parameters().add_parameter("warp_speed", false, 1.0, 
+  //                               "controls the speed of the warping;");
+  // pe_parameters().add_parameter("warp_scale", false, 1.0, 
+  //                               "controls the size of the warp effects.");
+  // pe_parameters().add_parameter("cx", false, 0.0, 
+  //                               "0..1   controls where the center of rotation and stretching is, horizontally.  0=left, 0.5=center, 1=right");
+  // pe_parameters().add_parameter("cy", false, 0.0,
+  //                               "0..1   controls where the center of rotation and stretching is, vertically.  0=top, 0.5=center, 1=bottom");
+  // pe_parameters().add_parameter("dx", false, 0.0, 
+  //                               "controls amount of constant horizontal motion; -0.01 = move left 1% per frame, 0=none, 0.01 = move right 1%");
+  // pe_parameters().add_parameter("dy", false, 0.0,
+  //                               "controls amount of constant vertical motion; -0.01 = move up 1% per frame, 0=none, 0.01 = move down 1%");
+  // pe_parameters().add_parameter("sx", false, 1.0,
+  //                               ">0     controls amount of constant horizontal stretching; 0.99=shrink 1%, 1=normal, 1.01=stretch 1%");
+  // pe_parameters().add_parameter("sy", false, 1.0,
+  //                               ">0     controls amount of constant vertical stretching; 0.99=shrink 1%, 1=normal, 1.01=stretch 1%");
 
 
-  pe_parameters().add_parameter("zoom", false, 1.0, 
-                                "controls inward/outward motion.  0.9=zoom out 10% per frame, 1.0=no zoom, 1.1=zoom in 10%");
-  pe_parameters().add_parameter("zoomexp", false, 1.0, 
-                                ">0     controls the curvature of the zoom; 1=normal");
-  pe_parameters().add_parameter("rot", false, 0.0,
-                                "controls the amount of rotation.  0=none, 0.1=slightly right, -0.1=slightly clockwise, 0.1=CCW");
-  pe_parameters().add_parameter("warp", false, 0.0, 
-                                "controls the magnitude of the warping; 0=none, 1=normal, 2=major warping...\n");
-  pe_parameters().add_parameter("warp_speed", false, 1.0, 
-                                "controls the speed of the warping;");
-  pe_parameters().add_parameter("warp_scale", false, 1.0, 
-                                "controls the size of the warp effects.");
-  pe_parameters().add_parameter("cx", false, 0.0, 
-                                "0..1   controls where the center of rotation and stretching is, horizontally.  0=left, 0.5=center, 1=right");
-  pe_parameters().add_parameter("cy", false, 0.0,
-                                "0..1   controls where the center of rotation and stretching is, vertically.  0=top, 0.5=center, 1=bottom");
-  pe_parameters().add_parameter("dx", false, 0.0, 
-                                "controls amount of constant horizontal motion; -0.01 = move left 1% per frame, 0=none, 0.01 = move right 1%");
-  pe_parameters().add_parameter("dy", false, 0.0,
-                                "controls amount of constant vertical motion; -0.01 = move up 1% per frame, 0=none, 0.01 = move down 1%");
-  pe_parameters().add_parameter("sx", false, 1.0,
-                                ">0     controls amount of constant horizontal stretching; 0.99=shrink 1%, 1=normal, 1.01=stretch 1%");
-  pe_parameters().add_parameter("sy", false, 1.0,
-                                ">0     controls amount of constant vertical stretching; 0.99=shrink 1%, 1=normal, 1.01=stretch 1%");
+
   pe_parameters().add_parameter("wave_mode", false, 0, 
                                 "0,1,2,3,4,5,6,7  controls which of the 8 types of waveform is drawn");
   pe_parameters().add_parameter("wave_x", false, 0.5,
@@ -345,19 +345,13 @@ int main(int argc, char *argv[]) {
   //  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
-  boost::shared_ptr<ScriptEngine> script_engine(new ScriptEngine());
-  //  script_engine->register_controller(osc_controller, "OscController", "osc");
-  script_engine->register_controller(midi_controller, "MidiController", "midi");
-  script_engine->register_controller(joystick_controller, "JoystickController", "joystick");
-
-  main_window.gl_widget()->register_script_engine(script_engine);
-  //  osc_controller.register_script_engine(script_engine);
-  midi_controller.register_script_engine(script_engine);
-  joystick_controller.register_script_engine(script_engine);
+  //  pe_script_engine().register_controller(osc_controller, "OscController", "osc");
+  pe_script_engine().register_controller(midi_controller, "MidiController", "midi");
+  pe_script_engine().register_controller(joystick_controller, "JoystickController", "joystick");
 
   // As a last step, call the javascript initialize_callback() to give
   // use a chance to set everything up in the javascript VM.
-  script_engine->execute_js("pe_initialize()");
+  pe_script_engine().execute_js("pe_initialize()");
 
   // Enter the run loop
   main_window.show();

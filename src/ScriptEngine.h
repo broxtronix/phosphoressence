@@ -79,7 +79,17 @@ public:
                                 true);  
   }
 
+  float fetch_parameter(const char* name);
+
 };
+
+/// Return the singleton instance of the PhosphorEssence parameters
+/// structure.  The parameters struct is created the first time this
+/// method is invoked.  You should *always* access the script engine
+/// through this function.
+ScriptEngine& pe_script_engine();
+
+
 
 #endif // __SCRIPT_ENGINE_H__
 

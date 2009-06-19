@@ -8,20 +8,9 @@
 #include <Controller.h>
 #include <ScriptEngine.h>
 
-void Controller::register_script_engine(boost::shared_ptr<ScriptEngine> script_engine) {
-  m_script_engine = script_engine;
-}
-
 void Controller::receive_callback(std::string path, float value) {
-  if (m_script_engine) {
-    m_script_engine->execute_js(m_name + ".receive_callback", path, value);
-  }
+  pe_script_engine().execute_js(m_name + ".receive_callback", path, value);
 }
-
-
-
-// #include <vw/Core/Thread.h>
-// #include <fstream>
 
 
 

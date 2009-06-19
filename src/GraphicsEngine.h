@@ -101,17 +101,8 @@ public:
     m_drawables.push_back(drawable);
   }
 
-  // Managing script engines
-  void register_script_engine(boost::shared_ptr<ScriptEngine> script_engine) {
-    m_script_engines.push_back(script_engine);
-  }
-
   void clear_drawables() {
     m_drawables.clear();
-  }
-
-  void clear_script_engines() {
-    m_script_engines.clear();
   }
 
 public slots:
@@ -163,7 +154,6 @@ private:
 
   // Drawables & Script Engines
   std::list<boost::shared_ptr<Drawable> > m_drawables;
-  std::list<boost::shared_ptr<ScriptEngine> > m_script_engines;
   
   // Timers and updates
   QTimer *m_timer;

@@ -3,8 +3,12 @@
 // This function is called when the virtual machine is created.  It
 // loads the basic set of PhosphorEssence javascript scripts.
 function pe_load() {
+    // Make a reference to the global object
+    GLOBAL = this;
     
     // Load various javascript modules
+    load(PE_RESOURCES + "/scripts/Utilities.js");
+    load(PE_RESOURCES + "/scripts/Parameters.js");
     load(PE_RESOURCES + "/scripts/PresetFunctions.js");
     load(PE_RESOURCES + "/scripts/Controllers.js");
     load(PE_RESOURCES + "/scripts/Bindings.js");
@@ -18,7 +22,8 @@ function pe_load() {
     // Switches for debugging
     debug = 0;
     joy_debug = 0;
-    show_fps = 0;
+    show_fps = 1;
+
 }
 
 // Default initialization handler
@@ -43,6 +48,22 @@ function pe_initialize() {
 // PhosphorEssence parameters.
 function pe_render() {
     
+    //    cxz = 200.0;
+    //    zoom2 = 2;
+    //    print(zoom2.description);
+    // cxz.foo = 10;
+    // cxz.name = "test";
+
+    // t0 = time;
+    // i = 0;
+    // while (i < 1000) {
+    // 	cxz = 220+i;
+    // 	i += 1;
+    // }
+    // t1 = time;
+    // print("Javascript elapsed: " + ((t1-t0)*1000.0) + " usecs/call");
+    
+
      if ( run_preset ) {
 
     	// Milkdrop preset mode

@@ -25,44 +25,78 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_parameters().get_value("edge_extend"));
 
   // These are handled by the mobius transform
-  m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
-  m_gpu_backbuffer_program->set_input_float("zoomexp", pe_parameters().get_value("zoomexp"));
-  m_gpu_backbuffer_program->set_input_float("rot", pe_parameters().get_value("rot"));
-  m_gpu_backbuffer_program->set_input_float("dx", pe_parameters().get_value("dx"));
-  m_gpu_backbuffer_program->set_input_float("dy", pe_parameters().get_value("dy"));
+  // m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
+  // m_gpu_backbuffer_program->set_input_float("zoomexp", pe_parameters().get_value("zoomexp"));
+  // m_gpu_backbuffer_program->set_input_float("rot", pe_parameters().get_value("rot"));
+  // m_gpu_backbuffer_program->set_input_float("dx", pe_parameters().get_value("dx"));
+  // m_gpu_backbuffer_program->set_input_float("dy", pe_parameters().get_value("dy"));
 
-  m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
-  m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
-  m_gpu_backbuffer_program->set_input_float("q3", pe_parameters().get_value("q3"));
-  m_gpu_backbuffer_program->set_input_float("q4", pe_parameters().get_value("q4"));
-  m_gpu_backbuffer_program->set_input_float("q5", pe_parameters().get_value("q5"));
-  m_gpu_backbuffer_program->set_input_float("q6", pe_parameters().get_value("q6"));
-  m_gpu_backbuffer_program->set_input_float("q7", pe_parameters().get_value("q7"));
-  m_gpu_backbuffer_program->set_input_float("q8", pe_parameters().get_value("q8"));
+  // m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
+  // m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
+  // m_gpu_backbuffer_program->set_input_float("q3", pe_parameters().get_value("q3"));
+  // m_gpu_backbuffer_program->set_input_float("q4", pe_parameters().get_value("q4"));
+  // m_gpu_backbuffer_program->set_input_float("q5", pe_parameters().get_value("q5"));
+  // m_gpu_backbuffer_program->set_input_float("q6", pe_parameters().get_value("q6"));
+  // m_gpu_backbuffer_program->set_input_float("q7", pe_parameters().get_value("q7"));
+  // m_gpu_backbuffer_program->set_input_float("q8", pe_parameters().get_value("q8"));
 
-  // Warp stuff
-  float zoom = 1.0;//pe_parameters().get_value("zoom");
-  float zoomExp = 1.0;//pe_parameters().get_value("zoomexp");
-  float warpAmount = pe_parameters().get_value("warp");
-  float warpSpeed = pe_parameters().get_value("warp_speed");
-  float warpScale = pe_parameters().get_value("warp_scale");
-  float warpTime = pe_parameters().get_value("time") * warpSpeed;
-  float warpScaleInv = 1.0f / warpScale;
+  // Time
+  //  float time = pe_parameters().get_value("time");
 
-  float f[4];
-  f[0] = 11.68f + 4.0f*cosf(warpTime*1.413f + 10);
-  f[1] =  8.77f + 3.0f*cosf(warpTime*1.113f + 7);
-  f[2] = 10.54f + 3.0f*cosf(warpTime*1.233f + 3);
-  f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
+  // {
+  //   vw::Stopwatch sw;
+  //   sw.start();
+  //   for (unsigned int i = 0; i < 1000; ++i) {
+  //     float test = pe_parameters().get_value("cx");
+  //   }
+  //   sw.stop();
+  //   std::cout << "Get_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
+  // }
 
-  // Affine parameters
-  float rot = pe_parameters().get_value("rot");
-  float cx = pe_parameters().get_value("cx");
-  float cy = pe_parameters().get_value("cy");
-  float dx = 0.0; //pe_parameters().get_value("dx");
-  float dy = 0.0; //pe_parameters().get_value("dy");
-  float sx = pe_parameters().get_value("sx");
-  float sy = pe_parameters().get_value("sy");
+  // {
+  //   vw::Stopwatch sw;
+  //   sw.start();
+  //   for (unsigned int i = 0; i < 1000; ++i) {
+  //     pe_parameters().set_value("cx", .2);
+  //   }
+  //   sw.stop();
+  //   std::cout << "Set_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
+  // }
+
+  // {
+  //   vw::Stopwatch sw;
+  //   sw.start();
+
+  //   float cxz;
+  //   for (unsigned int i = 0; i < 1000; ++i) {
+  //     cxz = pe_script_engine().fetch_parameter("zoom");
+  //   }
+  //   sw.stop();
+  //   std::cout << "FetchParameter: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
+  // }
+
+      // Extract the parameters we need
+      float zoom = pe_script_engine().fetch_parameter("zoom");
+      float zoomExp = pe_script_engine().fetch_parameter("zoomexp");
+      float warpAmount = pe_script_engine().fetch_parameter("warp");
+      float warpSpeed = pe_script_engine().fetch_parameter("warp_speed");
+      float warpScale = pe_script_engine().fetch_parameter("warp_scale");
+      float warpTime = pe_parameters().get_value("time") * warpSpeed;
+      float warpScaleInv = 1.0f / warpScale;
+
+      float f[4];
+      f[0] = 11.68f + 4.0f*cosf(warpTime*1.413f + 10);
+      f[1] =  8.77f + 3.0f*cosf(warpTime*1.113f + 7);
+      f[2] = 10.54f + 3.0f*cosf(warpTime*1.233f + 3);
+      f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
+
+      float rot = pe_script_engine().fetch_parameter("rot");
+      float cx = pe_script_engine().fetch_parameter("cx");
+      float cy = pe_script_engine().fetch_parameter("cy");
+      float dx = pe_script_engine().fetch_parameter("dx");
+      float dy = pe_script_engine().fetch_parameter("dy");
+      float sx = pe_script_engine().fetch_parameter("sx");
+      float sy = pe_script_engine().fetch_parameter("sy");
 	
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate
   // mesh distortion.  THIS IS WHERE THE MAGIC HAPPENS, FOLKS
@@ -71,9 +105,22 @@ void GraphicsEngine::drawFeedback() {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
 
+      // Before we call the per-pixel equations, we need to set the
+      // per-pixel parameters.
+      pe_parameters().set_value("x",u);
+      pe_parameters().set_value("y",v);
+      pe_parameters().set_value("rad",sqrt(u*u+v*v));
+      pe_parameters().set_value("ang",atan2(v,u));
+      
+      // Call the per-pixel equations
+      // sy = .9;
+      // float zoom = zoom0 - pe_parameters.get_value("rad")*.1;
+      // float rot = rot0 + .6 + .39*sin((rot0 + pe_parameters.get_value("rad")*.2)+time);
+
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 
-                                                   sqrtf(u * u + v * v) * 2.0 * framebuffer_radius - framebuffer_radius));
+                                                   sqrtf(u * u + v * v) * 2.0 * 
+                                                   framebuffer_radius - framebuffer_radius));
       u = u * zoomCoefficient;
       v = v * zoomCoefficient;
 

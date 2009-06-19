@@ -8,6 +8,24 @@
 #include <ostream>
 #include <CoreFoundation/CoreFoundation.h>
 
+// -----------------------------------------------------------
+// Create a single instance of the Parameters and Time Structs
+// -----------------------------------------------------------
+
+namespace {
+  vw::RunOnce pe_script_engine_once = VW_RUNONCE_INIT;
+  boost::shared_ptr<ScriptEngine> pe_script_engine_ptr;
+  void init_pe_script_engine() {
+    pe_script_engine_ptr = boost::shared_ptr<ScriptEngine>(new ScriptEngine());
+  }
+}
+
+ScriptEngine& pe_script_engine() {
+  pe_script_engine_once.run( init_pe_script_engine );
+  return *pe_script_engine_ptr;
+}
+
+
 // ---------------------------------------------------------------------
 //      C++ Callbacks & Basic JavaScript Utility Functions
 // ---------------------------------------------------------------------
@@ -428,6 +446,26 @@ void ScriptEngine::execute_js(std::string const& code_string) {
                               v8::String::New("(shell)"),
                               true,
                               true);
+}
+
+float ScriptEngine::fetch_parameter(const char* name) {
+  vw::Mutex::Lock lock(m_mutex);
+
+  // Set up the proper handle scope and enter the correct context.
+  v8::HandleScope handle_scope;
+  v8::Context::Scope context_scope(m_context);
+
+  v8::Handle<v8::String> object_name = v8::String::New(name);
+  v8::Handle<v8::Value> result_val = m_context->Global()->Get(object_name);
+
+  // If there is no object by this name, or it is not a number, then
+  // we bail out.
+  if (!result_val->IsNumber()) return 0.0;
+
+  // It is a Number; cast it to a Number
+  v8::Handle<v8::Number> result_num = v8::Handle<v8::Number>::Cast(result_val);
+
+  return result_num->Value();
 }
 
 ScriptEngine::~ScriptEngine() {

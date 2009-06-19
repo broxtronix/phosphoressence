@@ -189,47 +189,27 @@ void PeParameters::add_parameter(std::string name,
   VectorSpaceDimension p(name, description, default_value, read_only);
 
   vw::Mutex::Lock lock(m_mutex);
-  m_parameters.push_back(p);
+  m_parameters.insert(std::pair<std::string, VectorSpaceDimension>(name, p));
 }
 
 void PeParameters::set_value(std::string name, float val) {
   vw::Mutex::Lock lock(m_mutex);
   
-  VectorSpaceDimension* match = NULL;
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
-  while (iter != m_parameters.end()) {
-    if (iter->name() == name) {
-      match = &(*iter);
-      break;
-    }
-    ++iter;
-  }
-
-  if (match) {
-    match->set_automate(val);
-  } else {
+  std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
+  if(match == m_parameters.end())
     std::cout << "Warning in Parameter::set_value() -- Unknown parameter: " << name << "\n";
-  }
+   else 
+    match->second.set_automate(val);
 }
 
 void PeParameters::set_readonly(std::string name, float val) {
   vw::Mutex::Lock lock(m_mutex);
   
-  VectorSpaceDimension* match = NULL;
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
-  while (iter != m_parameters.end()) {
-    if (iter->name() == name) {
-      match = &(*iter);
-      break;
-    }
-    ++iter;
-  }
-
-  if (match) {
-    match->set_readonly(val);
-  } else {
+  std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
+  if(match == m_parameters.end())
     std::cout << "Warning in Parameter::set_value() -- Unknown parameter: " << name << "\n";
-  }
+   else 
+    match->second.set_readonly(val);
 }
 
 float PeParameters::get_value(std::string name) {
@@ -238,53 +218,30 @@ float PeParameters::get_value(std::string name) {
   }
 
   vw::Mutex::Lock lock(m_mutex);
-  VectorSpaceDimension* match = NULL;
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
-  while (iter != m_parameters.end()) {
-    if (iter->name() == name) {
-      match = &(*iter);
-      break;
-    }
-    ++iter;
-  }
 
-  if (match) {
-    return (*match)();
-  } else {
+  std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
+  if(match == m_parameters.end())
     std::cout << "Warning in Parameter::get_value() -- Unknown parameter: " << name << "\n";
-  }
-
-  // Fail silently for now?
-  return 0;
+  else 
+    return (match->second)();
 }
 
 void PeParameters::reset_value(std::string name) {
   vw::Mutex::Lock lock(m_mutex);
   
-  VectorSpaceDimension* match = NULL;
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
-  while (iter != m_parameters.end()) {
-    if (iter->name() == name) {
-      match = &(*iter);
-      break;
-    }
-    ++iter;
-  }
-
-  if (match) {
-    match->reset();
-  } else {
-    std::cout << "Warning in Parameter::set_value() -- Unknown parameter: " << name << "\n";
-  }
+  std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
+  if(match == m_parameters.end())
+    std::cout << "Warning in Parameter::reset_value() -- Unknown parameter: " << name << "\n";
+  else 
+    match->second.reset();
 }
 
 void PeParameters::reset_all() {
   vw::Mutex::Lock lock(m_mutex);
   
-  VectorSpaceDimension* match = NULL;
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
+  std::map<std::string, VectorSpaceDimension>::iterator iter = m_parameters.begin();
   while (iter != m_parameters.end()) {
-    iter->reset();
+    iter->second.reset();
     ++iter;
   }
 }
@@ -293,9 +250,9 @@ std::list<std::string> PeParameters::param_list() {
   vw::Mutex::Lock lock(m_mutex);
   std::list<std::string> result;
 
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
+  std::map<std::string, VectorSpaceDimension>::iterator iter = m_parameters.begin();
   while (iter != m_parameters.end()) {
-    result.push_back(iter->name());
+    result.push_back(iter->second.name());
     ++iter;
   }
   return result;
@@ -306,11 +263,11 @@ void PeParameters::print_list() {
 
   std::cout << "Here are the knobs you can tweak:\n\n";
     
-  std::list<VectorSpaceDimension>::iterator iter = m_parameters.begin();
+  std::map<std::string, VectorSpaceDimension>::iterator iter = m_parameters.begin();
   while (iter != m_parameters.end()) {
-    std::cout << "\tName: " << iter->name();
-    std::cout << "\tValue: " << (*iter)();
-    std::cout << "\t(" << iter->default_value() << ")\n";
+    std::cout << "\tName: " << iter->second.name();
+    std::cout << "\tValue: " << (iter->second)();
+    std::cout << "\t(" << iter->second.default_value() << ")\n";
     ++iter;
   }
 }

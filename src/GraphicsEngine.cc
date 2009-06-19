@@ -127,10 +127,7 @@ void GraphicsEngine::drawImage() {
   // Call out to any PhosphorScripts that are running on the
   // JavaScript VM, allowing them to update parameters if they would
   // like.
-  typedef std::list<boost::shared_ptr<ScriptEngine> >::iterator iter_type;
-  for (iter_type iter = m_script_engines.begin(); iter != m_script_engines.end(); ++iter ) {
-    (*iter)->execute_js("pe_render();");
-  }
+  pe_script_engine().execute_js("pe_render();");
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -554,8 +551,13 @@ void GraphicsEngine::initializeGL() {
   this->setAutoBufferSwap(false);
 #endif
 
+  // Enable hardware anti-aliasing
   glEnable(GL_MULTISAMPLE);
   
+  // Set the grid size
+  pe_parameters().set_value("meshx", HORIZ_MESH_SIZE);
+  pe_parameters().set_value("meshy", VERT_MESH_SIZE);
+
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
@@ -731,16 +733,10 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
   
   switch (event->key()) {
   case Qt::Key_Left: 
-    typedef std::list<boost::shared_ptr<ScriptEngine> >::iterator iter_type;
-    for (iter_type iter = m_script_engines.begin(); iter != m_script_engines.end(); ++iter ) {
-      (*iter)->execute_js("prev_preset();");
-    }
+    pe_script_engine().execute_js("prev_preset();");
     break;
   case Qt::Key_Right:  
-    typedef std::list<boost::shared_ptr<ScriptEngine> >::iterator iter_type;
-    for (iter_type iter = m_script_engines.begin(); iter != m_script_engines.end(); ++iter ) {
-      (*iter)->execute_js("next_preset();");
-    }
+    pe_script_engine().execute_js("next_preset();");
     break;
 
   case Qt::Key_Up:  

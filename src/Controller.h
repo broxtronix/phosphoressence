@@ -46,19 +46,14 @@
   
 // }
 
-// Forward Declaration
-class ScriptEngine;
-
 // Controller Base class
 class Controller {
 
   std::string m_name;
-  boost::shared_ptr<ScriptEngine> m_script_engine;
-  
+
 public:
   Controller(std::string name) : m_name(name) {}
   virtual ~Controller() {}
-  void register_script_engine(boost::shared_ptr<ScriptEngine> script_engine);
   void receive_callback(std::string path, float value);
  
   virtual void send(std::string path, float value) = 0;

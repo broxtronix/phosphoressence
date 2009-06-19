@@ -314,7 +314,6 @@ function setup_joystick() {
     dy_coefficient = 0.0;
     sqfreq_coefficient = 0.0;
     wave_frequency_coeff = 0.0;
-    color_shift_coefficient = 0.0;
     mv_l_coeff = 0.0;
 
     square_scale_coeff = 0.0;
@@ -407,12 +406,6 @@ function joystick_render_callback() {
     //     wave_frequency /= wave_frequency_stepsize;
     // if (wave_frequency > 10.0) wave_frequency = 10.0;
     // if (wave_frequency < 0.03) wave_frequency = 0.03;
-
-    // Update color_shift
-    var color_shift_stepsize = 1/100.0;
-    color_shift += color_shift_stepsize * color_shift_coefficient;
-    if (color_shift > 1.0) color_shift = 1.0;
-    if (color_shift < -1.0) color_shift = -1.0;
 
     // Update MV length
     var mv_l_stepsize = 1/20.0;
