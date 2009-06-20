@@ -63,20 +63,21 @@ void GraphicsEngine::drawFeedback() {
   //   std::cout << "Set_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
   // }
 
-  {
-    vw::Stopwatch sw;
-    sw.start();
+  // {
+  //   vw::Stopwatch sw;
+  //   sw.start();
 
-    float cxz;
-    for (unsigned int i = 0; i < 1000; ++i) {
-      cxz = pe_script_engine().fetch_parameter("zoom");
-    }
-    sw.stop();
-    std::cout << "FetchParameter: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
-  }
+  //   float cxz;
+  //   for (unsigned int i = 0; i < 1000; ++i) {
+  //     cxz = pe_script_engine().get_parameter("zoom");
+  //   }
+  //   sw.stop();
+  //   std::cout << "FetchParameter: " << (sw.elapsed_microseconds()/1000.0) << " per call  " << cxz << "\n";
+  //   sleep(2);
+  // }
   
-  float warpSpeed = pe_script_engine().fetch_parameter("warp_speed");
-  float warpScale = pe_script_engine().fetch_parameter("warp_scale");
+  float warpSpeed = pe_script_engine().get_parameter("warp_speed");
+  float warpScale = pe_script_engine().get_parameter("warp_scale");
   float warpTime = pe_parameters().get_value("time") * warpSpeed;
   float warpScaleInv = 1.0f / warpScale;
 
@@ -101,17 +102,17 @@ void GraphicsEngine::drawFeedback() {
       pe_parameters().set_value("ang",atan2(v,u));
 
       // Extract the per-pixel parameters
-      float zoom = pe_script_engine().fetch_parameter("zoom");
-      float zoomExp = pe_script_engine().fetch_parameter("zoomexp");
-      float warpAmount = pe_script_engine().fetch_parameter("warp");
+      float zoom = pe_script_engine().get_parameter("zoom");
+      float zoomExp = pe_script_engine().get_parameter("zoomexp");
+      float warpAmount = pe_script_engine().get_parameter("warp");
       
-      float rot = pe_script_engine().fetch_parameter("rot");
-      float cx = pe_script_engine().fetch_parameter("cx");
-      float cy = pe_script_engine().fetch_parameter("cy");
-      float dx = pe_script_engine().fetch_parameter("dx");
-      float dy = pe_script_engine().fetch_parameter("dy");
-      float sx = pe_script_engine().fetch_parameter("sx");
-      float sy = pe_script_engine().fetch_parameter("sy");
+      float rot = pe_script_engine().get_parameter("rot");
+      float cx = pe_script_engine().get_parameter("cx");
+      float cy = pe_script_engine().get_parameter("cy");
+      float dx = pe_script_engine().get_parameter("dx");
+      float dy = pe_script_engine().get_parameter("dy");
+      float sx = pe_script_engine().get_parameter("sx");
+      float sy = pe_script_engine().get_parameter("sy");
       
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 

@@ -33,11 +33,11 @@ if MAKE_APP_PHOSPHORESSENCE
 	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
 	            $(header_sources) 
 
-  pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS)
+  pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 
-AM_CPPFLAGS = @PE_CPPFLAGS@ -I/opt/local/include/SDL
-AM_LDFLAGS  = @PE_LDFLAGS@ -L/opt/local/lib -lSDL
+AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/opt/local/include/SDL
+AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL
 
 ##############################################################################
 #                             Tests					     #

@@ -6,81 +6,41 @@
 #ifndef __SCRIPT_ENGINE_H__
 #define __SCRIPT_ENGINE_H__
 
+#include <Python.h>
+#include <iostream>
+#include <vw/Core/Stopwatch.h>
 #include <vw/Core/Thread.h>
-#include <v8.h>
-#include <Controller.h>
-
-struct ScriptEngineBase {
-  // Execute an arbitrary string of javascript on the V8 instance.
-  virtual void execute_js(std::string const& code_string) = 0;
-};
 
 /// CommandPromptThread
 ///
 /// This thread runs a simple read-eval-print loop that forwards
-/// commands to our instance of the V8 virtual machine.
+/// commands to our embedded python interpreter.
 // 
 class CommandPromptTask {
-  ScriptEngineBase* m_script_engine;
-
+  PyObject *m_global_dict, *m_main_module;
+  bool m_interpreter_active;
+  
 public:
-  CommandPromptTask(ScriptEngineBase* script_engine) : m_script_engine(script_engine) {}
+  CommandPromptTask() : m_interpreter_active(false) {}
   void operator()();
+
+  PyObject* global_dict() const { return m_global_dict; }
+  bool active() const { return m_interpreter_active; }
 };
 
-/// ScriptEngine
-///
-/// This object creates an instance of Google's V8 Javascript engine.
-///
-/// Note: you can only have one V8 instance per process, so you should
-/// not try to create more than one instance of this class.  At some
-/// point I should guard this with a singleton method, but for now be
-/// careful!
-class ScriptEngine : public ScriptEngineBase {
+class ScriptEngine {
+
   vw::Mutex m_mutex;
   boost::shared_ptr<CommandPromptTask> m_command_prompt_task;
   boost::shared_ptr<vw::Thread> m_thread;
-  v8::Persistent<v8::Context> m_context;
 
-  void setup_pe_parameters();
-  
-public:
+public: 
   ScriptEngine();
   ~ScriptEngine();
 
-  void register_controller(Controller& controller, 
-                           std::string class_name, 
-                           std::string instance_name);
-
-  static bool ExecuteString(v8::Handle<v8::String> source,
-                            v8::Handle<v8::Value> name,
-                            bool print_result,
-                            bool report_exceptions);
-
-  virtual void execute_js(std::string const& code_string);
-
-  template <class Arg1T, class Arg2T>
-  void execute_js(std::string const& function, Arg1T arg1, Arg2T arg2) {
-    vw::Mutex::Lock lock(m_mutex);
-    
-    // Set up the proper handle scope and enter the correct context.
-    v8::HandleScope handle_scope;
-    v8::Context::Scope context_scope(m_context);
-    
-    // For now we create a string and execute it, which may lead to
-    // some loss of precision in the floating point number.  This is
-    // fine for now, I suppose, until a better solution can be found.
-    std::ostringstream ostr;
-    ostr << function << "(\"" << arg1 << "\", " << arg2 << ");";
-    
-    ScriptEngine::ExecuteString(v8::String::New(ostr.str().c_str()),
-                                v8::String::New("(shell)"),
-                                true,
-                                true);  
-  }
-
-  float fetch_parameter(const char* name);
-
+  double get_parameter(const char* name);
+  void set_parameter(const char* name, double value);  
+  virtual void execute(std::string const& cmd);
 };
 
 /// Return the singleton instance of the PhosphorEssence parameters
@@ -88,8 +48,6 @@ public:
 /// method is invoked.  You should *always* access the script engine
 /// through this function.
 ScriptEngine& pe_script_engine();
-
-
 
 #endif // __SCRIPT_ENGINE_H__
 

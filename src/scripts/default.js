@@ -48,20 +48,20 @@ function pe_initialize() {
 // PhosphorEssence parameters.
 function pe_render() {
     
-    //    cxz = 200.0;
+    cxz = 200.0;
     //    zoom2 = 2;
     //    print(zoom2.description);
     // cxz.foo = 10;
     // cxz.name = "test";
 
-    // t0 = time;
-    // i = 0;
-    // while (i < 1000) {
-    // 	cxz = 220+i;
-    // 	i += 1;
-    // }
-    // t1 = time;
-    // print("Javascript elapsed: " + ((t1-t0)*1000.0) + " usecs/call");
+    t0 = time;
+    i = 0;
+    while (i < 1000) {
+    	cxz = 220+i;
+    	i += 1;
+    }
+    t1 = time;
+    print("Javascript elapsed: " + ((t1-t0)*1000.0) + " usecs/call");
     
 
      if ( run_preset ) {

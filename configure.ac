@@ -65,7 +65,10 @@ AC_PROG_MAKE_SET
 AC_LANG(C++)
 AX_COMMON_OPTIONS
 
-
+# Look for the python stuff
+AM_PATH_PYTHON([2.4], [HAVE_PYTHON=yes], [HAVE_PYTHON=no])
+AC_PYTHON_DEVEL([HAVE_PYTHON=yes], [HAVE_PYTHON=no])
+AC_SUBST(HAVE_PYTHON)
 
 ##################################################
 # package checks

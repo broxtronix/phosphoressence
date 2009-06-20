@@ -127,7 +127,7 @@ void GraphicsEngine::drawImage() {
   // Call out to any PhosphorScripts that are running on the
   // JavaScript VM, allowing them to update parameters if they would
   // like.
-  pe_script_engine().execute_js("pe_render();");
+  //  pe_script_engine().execute("pe_render();");
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -733,10 +733,10 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
   
   switch (event->key()) {
   case Qt::Key_Left: 
-    pe_script_engine().execute_js("prev_preset();");
+    pe_script_engine().execute("prev_preset();");
     break;
   case Qt::Key_Right:  
-    pe_script_engine().execute_js("next_preset();");
+    pe_script_engine().execute("next_preset();");
     break;
 
   case Qt::Key_Up:  

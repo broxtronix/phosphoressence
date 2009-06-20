@@ -345,13 +345,14 @@ int main(int argc, char *argv[]) {
   //  main_window.gl_widget()->register_drawable(lissajous);
 
   // Create the script engine & start the command interpreter
+  
   //  pe_script_engine().register_controller(osc_controller, "OscController", "osc");
-  pe_script_engine().register_controller(midi_controller, "MidiController", "midi");
-  pe_script_engine().register_controller(joystick_controller, "JoystickController", "joystick");
+  // pe_script_engine().register_controller(midi_controller, "MidiController", "midi");
+  // pe_script_engine().register_controller(joystick_controller, "JoystickController", "joystick");
 
   // As a last step, call the javascript initialize_callback() to give
   // use a chance to set everything up in the javascript VM.
-  pe_script_engine().execute_js("pe_initialize()");
+  //  pe_script_engine().execute_js("pe_initialize()");
 
   // Enter the run loop
   main_window.show();
