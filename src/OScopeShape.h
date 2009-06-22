@@ -15,6 +15,7 @@
 
 #include <AudioEngine.h>
 #include <PeParameters.h>
+#include <ScriptEngine.h>
 
 #include <vw/Math/Vector.h>
 
@@ -31,37 +32,37 @@ public:
 
   virtual void draw(float time, float gain) {
     glLoadIdentity();
-    float wave_x = pe_parameters().get_value("wave_x")*2-1;
-    float wave_y = pe_parameters().get_value("wave_y")*2-1;
+    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
+    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
     glTranslatef(wave_x, wave_y, 0);
 
-    if (pe_parameters().get_value("wave_thick")) {
+    if (pe_script_engine().get_parameter("wave_thick")) {
       glLineWidth(2.0);
       glPointSize(3.0);
     } else {
       glLineWidth(0.25);
       glPointSize(1.0);
     }
-    float wave_r = pe_parameters().get_value("wave_r");
-    float wave_g = pe_parameters().get_value("wave_g");
-    float wave_b = pe_parameters().get_value("wave_b");
-    float wave_a = pe_parameters().get_value("wave_a");
+    float wave_r = pe_script_engine().get_parameter("wave_r");
+    float wave_g = pe_script_engine().get_parameter("wave_g");
+    float wave_b = pe_script_engine().get_parameter("wave_b");
+    float wave_a = pe_script_engine().get_parameter("wave_a");
     vw::Vector3 color(wave_r, wave_g, wave_b);
     vw::Vector3 norm_color = color;
-    if (pe_parameters().get_value("wave_brighten")) 
+    if (pe_script_engine().get_parameter("wave_brighten")) 
       norm_color = normalize(color);
 
     glEnable(GL_BLEND);
     glBlendFunc (GL_ONE, GL_ZERO);
 
-    if (pe_parameters().get_value("wave_usedots")) 
+    if (pe_script_engine().get_parameter("wave_usedots")) 
       glBegin(GL_POINTS);
     else 
       glBegin(GL_LINES);
     
     float dt_draw = 1/AUDIO_SAMPLE_RATE;       // TODO : Replace with call to sample_rate()
     float tau_excite = 3e-5;                   // TODO : Move to parameters
-    float tau_decay = -(1/30.0)/log(pe_parameters().get_value("decay")); // TODO: Avoid using fixed frame rate!
+    float tau_decay = -(1/30.0)/log(pe_script_engine().get_parameter("decay")); // TODO: Avoid using fixed frame rate!
     float beta = (1-exp(-dt_draw/tau_decay));  // TODO: Move tau_decay to pe_parameters()
 
     // Read the values into a local audio cache
@@ -73,7 +74,7 @@ public:
       vw::Mutex::Lock lock(m_mutex);
 
       // Fetch the wave frequency
-      float f = pe_parameters().get_value("wave_frequency");    
+      float f = pe_script_engine().get_parameter("wave_frequency");    
       float aspect = pe_parameters().get_value("aspect");    
 
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);

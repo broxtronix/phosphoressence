@@ -82,7 +82,7 @@ public:
      if (!format().doubleBuffer())
        std::cout << "\n\nCould not set double buffering; results will be suboptimal\n\n";
 
-     std::cout << "\n***\nBuffers: " << format().sampleBuffers() << "\n***\n";
+     //     std::cout << "\n***\nBuffers: " << format().sampleBuffers() << "\n***\n";
 
     setup();
   }

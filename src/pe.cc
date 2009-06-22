@@ -60,6 +60,8 @@ void setup_parameters() {
   // pe_parameters().add_parameter("progress", true, 0.0,
   //                               "0..1 (readonly)     progress through the current preset; if preset was just loaded, this is closer to 0; if preset is about to end, this is closer to 1."
   //                               "-note that if Scroll Lock is on, 'progress' will freeze!");
+  pe_parameters().add_parameter("aspect", true, 1.0,
+                                "Aspect ratio of the screen.  The screen coordinates vary horizontally from [-aspect +aspect] and vertically from [-1 +1]");
 
 
   pe_parameters().add_parameter("bass", true, 0.0,
@@ -99,12 +101,12 @@ void setup_parameters() {
   //                           READ/WRITE PARAMETERS
   // -------------------------------------------------------------------------------
 
-  pe_parameters().add_parameter("decay", false, 0.98,
-                                "0..1   controls the eventual fade to black; 1=no fade, 0.9=strong fade, 0.98=recommended");
-  pe_parameters().add_parameter("invert", false, 0.0,
-                                "0/1    inverts the colors in the image");
-  pe_parameters().add_parameter("gamma", false, 1.0,
-                                ">0     controls display brightness; 1=normal, 2=double, 3=triple, etc.");
+  // pe_parameters().add_parameter("decay", false, 0.98,
+  //                               "0..1   controls the eventual fade to black; 1=no fade, 0.9=strong fade, 0.98=recommended");
+  // pe_parameters().add_parameter("invert", false, 0.0,
+  //                               "0/1    inverts the colors in the image");
+  // pe_parameters().add_parameter("gamma", false, 1.0,
+  //                               ">0     controls display brightness; 1=normal, 2=double, 3=triple, etc.");
 
   // pe_parameters().add_parameter("zoom", false, 1.0, 
   //                               "controls inward/outward motion.  0.9=zoom out 10% per frame, 1.0=no zoom, 1.1=zoom in 10%");
@@ -132,36 +134,37 @@ void setup_parameters() {
   //                               ">0     controls amount of constant vertical stretching; 0.99=shrink 1%, 1=normal, 1.01=stretch 1%");
 
 
+ 
+  // pe_parameters().add_parameter("wave_mode", false, 0, 
+  //                               "0,1,2,3,4,5,6,7  controls which of the 8 types of waveform is drawn");
+  // pe_parameters().add_parameter("wave_x", false, 0.5,
+  //                               "position of the waveform: 0 = far left edge of screen, 0.5 = center, 1 = far right");
+  // pe_parameters().add_parameter("wave_y", false, 0.5,
+  //                               "position of the waveform: 0 = very bottom of screen, 0.5 = center, 1 = top");
+  // pe_parameters().add_parameter("wave_r", false, 0.0,
+  //                               "amount of red color in the wave (0..1)");
+  // pe_parameters().add_parameter("wave_g", false, 1.0,         
+  //                               "amount of green color in the wave (0..1)");
+  // pe_parameters().add_parameter("wave_b", false, 0.0, 
+  //                               "amount of blue color in the wave (0..1)");
+  // pe_parameters().add_parameter("wave_a", false, 1.0, 
+  //                               "opacity of the wave (0..1) [0=transparent, 1=opaque]");
 
-  pe_parameters().add_parameter("wave_mode", false, 0, 
-                                "0,1,2,3,4,5,6,7  controls which of the 8 types of waveform is drawn");
-  pe_parameters().add_parameter("wave_x", false, 0.5,
-                                "position of the waveform: 0 = far left edge of screen, 0.5 = center, 1 = far right");
-  pe_parameters().add_parameter("wave_y", false, 0.5,
-                                "position of the waveform: 0 = very bottom of screen, 0.5 = center, 1 = top");
-  pe_parameters().add_parameter("wave_r", false, 0.0,
-                                "amount of red color in the wave (0..1)");
-  pe_parameters().add_parameter("wave_g", false, 1.0,         
-                                "amount of green color in the wave (0..1)");
-  pe_parameters().add_parameter("wave_b", false, 0.0, 
-                                "amount of blue color in the wave (0..1)");
-  pe_parameters().add_parameter("wave_a", false, 1.0, 
-                                "opacity of the wave (0..1) [0=transparent, 1=opaque]");
   // pe_parameters().add_parameter("wave_mystery", false, 0.0,
   //                               "-1..1  what this parameter does is a mystery.  (honestly, though, this value does different things for each "
   //                               "waveform; for example, it could control angle at which the waveform was drawn.)");
-  pe_parameters().add_parameter("wave_usedots", false, 0.0,
-                                "0/1    if 1, the waveform is drawn as dots (instead of lines)");
-  pe_parameters().add_parameter("wave_thick", false, 1.0,
-                                "0/1    if 1, the waveform's lines (or dots) are drawn with double thickness");
-  // pe_parameters().add_parameter("wave_additive", false, 0.0,
-  //                               "if 1, the wave is drawn additively, saturating the image at white");
-  pe_parameters().add_parameter("wave_brighten", false, 1.0, 
-                                "0/1    if 1, all 3 r/g/b colors will be scaled up until at least one reaches 1.0");
-  pe_parameters().add_parameter("wave_enabled", false, 0.0,
-                                "Enable the audio waveform rendered on screen.");
-  pe_parameters().add_parameter("wave_frequency", false, 0.1,
-                                "Frequency of the waveshape drawing loop.");
+  // pe_parameters().add_parameter("wave_usedots", false, 0.0,
+  //                               "0/1    if 1, the waveform is drawn as dots (instead of lines)");
+  // pe_parameters().add_parameter("wave_thick", false, 1.0,
+  //                               "0/1    if 1, the waveform's lines (or dots) are drawn with double thickness");
+  // // pe_parameters().add_parameter("wave_additive", false, 0.0,
+  // //                               "if 1, the wave is drawn additively, saturating the image at white");
+  // pe_parameters().add_parameter("wave_brighten", false, 1.0, 
+  //                               "0/1    if 1, all 3 r/g/b colors will be scaled up until at least one reaches 1.0");
+  // pe_parameters().add_parameter("wave_enabled", false, 0.0,
+  //                               "Enable the audio waveform rendered on screen.");
+  // pe_parameters().add_parameter("wave_frequency", false, 0.1,
+  //                               "Frequency of the waveshape drawing loop.");
 
   // // Outer border
   // pe_parameters().add_parameter("ob_size", false, 0.01,
@@ -176,36 +179,36 @@ void setup_parameters() {
   //                               "0..1   opacity of the outer border (0=transparent, 1=opaque)");
 
   // Inner border
-  pe_parameters().add_parameter("ib_size", false, 0.25,
-                                "0..0.5 thickness of the inner border drawn at the edges of the screen every frame");
-  pe_parameters().add_parameter("ib_r", false, 0.0,
-                                "0..1   amount of red color in the inner border");
-  pe_parameters().add_parameter("ib_g", false, 0.0,
-                                "0..1   amount of green color in the inner border");
-  pe_parameters().add_parameter("ib_b", false, 0.0,
-                                "0..1   amount of blue color in the inner border");
-  pe_parameters().add_parameter("ib_a", false, 0.0,
-                                "0..1   opacity of the inner border (0=transparent, 1=opaque)");
+  // pe_parameters().add_parameter("ib_size", false, 0.25,
+  //                               "0..0.5 thickness of the inner border drawn at the edges of the screen every frame");
+  // pe_parameters().add_parameter("ib_r", false, 0.0,
+  //                               "0..1   amount of red color in the inner border");
+  // pe_parameters().add_parameter("ib_g", false, 0.0,
+  //                               "0..1   amount of green color in the inner border");
+  // pe_parameters().add_parameter("ib_b", false, 0.0,
+  //                               "0..1   amount of blue color in the inner border");
+  // pe_parameters().add_parameter("ib_a", false, 0.0,
+  //                               "0..1   opacity of the inner border (0=transparent, 1=opaque)");
 
-  // Motion Vectors
-  pe_parameters().add_parameter("mv_r", false, 0.5, 
-                                "0..1   amount of red color in the motion vectors");
-  pe_parameters().add_parameter("mv_g", false, 0.5,
-                                "0..1   amount of green color in the motion vectors");
-  pe_parameters().add_parameter("mv_b", false, 0.5,
-                                "0..1   amount of blue color in the motion vectors");
-  pe_parameters().add_parameter("mv_a", false, 0.0,
-                                "0..1   opacity of the motion vectors (0=transparent, 1=opaque)");
-  pe_parameters().add_parameter("mv_x", false, 64.0,
-                                "the number of motion vectors in the X direction");
-  pe_parameters().add_parameter("mv_y", false, 48.0,
-                                "0..48  the number of motion vectors in the Y direction");
-  pe_parameters().add_parameter("mv_l", false, 1.0,
-                                "the length of the motion vectors (0=no trail, 1=normal, 2=double...)");
-  pe_parameters().add_parameter("mv_dx", false, 0.0,
-                                "-1..1  horizontal placement offset of the motion vectors");
-  pe_parameters().add_parameter("mv_dy", false, 0.0,
-                                "-1..1  vertical placement offset of the motion vectors");
+  // // Motion Vectors
+  // pe_parameters().add_parameter("mv_r", false, 0.5, 
+  //                               "0..1   amount of red color in the motion vectors");
+  // pe_parameters().add_parameter("mv_g", false, 0.5,
+  //                               "0..1   amount of green color in the motion vectors");
+  // pe_parameters().add_parameter("mv_b", false, 0.5,
+  //                               "0..1   amount of blue color in the motion vectors");
+  // pe_parameters().add_parameter("mv_a", false, 0.0,
+  //                               "0..1   opacity of the motion vectors (0=transparent, 1=opaque)");
+  // pe_parameters().add_parameter("mv_x", false, 64.0,
+  //                               "the number of motion vectors in the X direction");
+  // pe_parameters().add_parameter("mv_y", false, 48.0,
+  //                               "0..48  the number of motion vectors in the Y direction");
+  // pe_parameters().add_parameter("mv_l", false, 1.0,
+  //                               "the length of the motion vectors (0=no trail, 1=normal, 2=double...)");
+  // pe_parameters().add_parameter("mv_dx", false, 0.0,
+  //                               "-1..1  horizontal placement offset of the motion vectors");
+  // pe_parameters().add_parameter("mv_dy", false, 0.0,
+  //                               "-1..1  vertical placement offset of the motion vectors");
 
   // pe_parameters().add_parameter("echo_zoom", false, 1.0,
   //                               ">0     controls the size of the second graphics layer");
@@ -223,10 +226,10 @@ void setup_parameters() {
   //                               "0/1    darkens the brighter parts of the image (nonlinear; squaring filter)");
   // pe_parameters().add_parameter("solarize", false, 0.0,
   //                               "0/1    emphasizes mid-range colors");
-  pe_parameters().add_parameter("monitor", false, 0.0,
-                                "any    set this value for debugging your preset code; if you hit the 'N' key, "
-                                "the value of 'monitor' will be posted in the upper-right corner of milkdrop.  "
-                                "for example, setting \"monitor = q3;\" would let you keep an eye on q3's value. ");
+  // pe_parameters().add_parameter("monitor", false, 0.0,
+  //                               "any    set this value for debugging your preset code; if you hit the 'N' key, "
+  //                               "the value of 'monitor' will be posted in the upper-right corner of milkdrop.  "
+  //                               "for example, setting \"monitor = q3;\" would let you keep an eye on q3's value. ");
   
   // pe_parameters().add_parameter("q1", false, 1.0,
   //                               "Used to carry information between the per-frame code and per-pixel code.");
@@ -246,62 +249,48 @@ void setup_parameters() {
   //                               "Used to carry information between the per-frame code and per-pixel code.");
  
 
-  pe_parameters().add_parameter("ifs_mode", false, 0.0,
-                                "Select IFS (fractal feedback) mode.");
+  // pe_parameters().add_parameter("ifs_mode", false, 0.0,
+  //                               "Select IFS (fractal feedback) mode.");
 
-  pe_parameters().add_parameter("square_frequency", false, 0.01,
-                                "Speed of rotation of the square shape.");
-  pe_parameters().add_parameter("square_r", false, 0.0,
-                                "amount of red color in the wave (0..1)");
-  pe_parameters().add_parameter("square_g", false, 1.0,         
-                                "amount of green color in the wave (0..1)");
-  pe_parameters().add_parameter("square_b", false, 0.0, 
-                                "amount of blue color in the wave (0..1)");
-  pe_parameters().add_parameter("square_a", false, 1.0, 
-                                "opacity of the wave (0..1) [0=transparent, 1=opaque]");
-  pe_parameters().add_parameter("square_thick", false, 1.0,
-                                "<FILL ME IN>");
-  pe_parameters().add_parameter("square_scale", false, 1.0,
-                                "<FILL ME IN>");
+  // pe_parameters().add_parameter("square_frequency", false, 0.01,
+  //                               "Speed of rotation of the square shape.");
+  // pe_parameters().add_parameter("square_r", false, 0.0,
+  //                               "amount of red color in the wave (0..1)");
+  // pe_parameters().add_parameter("square_g", false, 1.0,         
+  //                               "amount of green color in the wave (0..1)");
+  // pe_parameters().add_parameter("square_b", false, 0.0, 
+  //                               "amount of blue color in the wave (0..1)");
+  // pe_parameters().add_parameter("square_a", false, 1.0, 
+  //                               "opacity of the wave (0..1) [0=transparent, 1=opaque]");
+  // pe_parameters().add_parameter("square_thick", false, 1.0,
+  //                               "<FILL ME IN>");
+  // pe_parameters().add_parameter("square_scale", false, 1.0,
+  //                               "<FILL ME IN>");
 
 
 
-  pe_parameters().add_parameter("edge_extend", false, 1.0,
-                                "Turn edge extension on and off.");
-  pe_parameters().add_parameter("show_fps", false, 0.0,
-                                "Turn fps display on and off.");
+  // pe_parameters().add_parameter("edge_extend", false, 1.0,
+  //                               "Turn edge extension on and off.");
+  // pe_parameters().add_parameter("show_fps", false, 0.0,
+  //                               "Turn fps display on and off.");
 
-  pe_parameters().add_parameter("lj_A", false, 1.0,
-                                "Amplitude for horizontal lissajous pattern.");
-  pe_parameters().add_parameter("lj_B", false, 1.0,
-                                "Amplitude for vertical lissajous pattern.");
-  pe_parameters().add_parameter("lj_omega", false, 1.0,
-                                "Angular frequency for horizontal lissajous pattern.");
-  pe_parameters().add_parameter("lj_ratio_a", false, 1.0,
-                                "Angular frequency for vertical lissajous pattern.");
-  pe_parameters().add_parameter("lj_ratio_b", false, 1.0,
-                                "Angular frequency for vertical lissajous pattern.");
-  pe_parameters().add_parameter("lj_phase", false, 1.0,
-                                "Phase shift for horizontal lissajous pattern.");
-  
-
-  pe_parameters().add_parameter("aspect", true, 1.0,
-                                "Aspect ratio of the screen.  The screen coordinates vary horizontally from [-aspect +aspect] and vertically from [-1 +1]");
-
-  // pe_parameters().add_parameter("warpSpeed", "/2/fader1", 0.0, 1.0, 0.5);
-  // pe_parameters().add_parameter("warpScale", "/2/fader2", 0.01, 1.0, 1.0);
-
-  // pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0);
-  // pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25);
-  // pe_parameters().add_parameter("rd_D_b", "/3/fader3", 0.0, 0.5, 0.0625);
-  // pe_parameters().add_parameter("rd_s", "/3/fader4", 0.0, 0.05, 0.03125);
-  // pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12);
-  // pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0);
+  // pe_parameters().add_parameter("lj_A", false, 1.0,
+  //                               "Amplitude for horizontal lissajous pattern.");
+  // pe_parameters().add_parameter("lj_B", false, 1.0,
+  //                               "Amplitude for vertical lissajous pattern.");
+  // pe_parameters().add_parameter("lj_omega", false, 1.0,
+  //                               "Angular frequency for horizontal lissajous pattern.");
+  // pe_parameters().add_parameter("lj_ratio_a", false, 1.0,
+  //                               "Angular frequency for vertical lissajous pattern.");
+  // pe_parameters().add_parameter("lj_ratio_b", false, 1.0,
+  //                               "Angular frequency for vertical lissajous pattern.");
+  // pe_parameters().add_parameter("lj_phase", false, 1.0,
+  //                               "Phase shift for horizontal lissajous pattern.");
 }
 
 int main(int argc, char *argv[]) {
 
-  std::cout << "\nStarting PhosphorEssence v0.2\n";
+  std::cout << "\nStarting PhosphorEssence v0.3\n\n";
 
   // Set up bindings for the OSC Controller
   setup_parameters();
@@ -344,8 +333,8 @@ int main(int argc, char *argv[]) {
   main_window.gl_widget()->register_drawable(oscope);
   //  main_window.gl_widget()->register_drawable(lissajous);
 
-  // Create the script engine & start the command interpreter
-  
+  // Start the script engine & start the command interpreter
+  pe_script_engine().start();
   //  pe_script_engine().register_controller(osc_controller, "OscController", "osc");
   // pe_script_engine().register_controller(midi_controller, "MidiController", "midi");
   // pe_script_engine().register_controller(joystick_controller, "JoystickController", "joystick");

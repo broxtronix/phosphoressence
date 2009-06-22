@@ -38,6 +38,8 @@ public:
   ScriptEngine();
   ~ScriptEngine();
 
+  void start();
+
   double get_parameter(const char* name);
   void set_parameter(const char* name, double value);  
   virtual void execute(std::string const& cmd);

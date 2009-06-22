@@ -30,8 +30,11 @@ ScriptEngine& pe_script_engine() {
 // ---------------------------------------------------------------------
 
 ScriptEngine::ScriptEngine() {
-  // Start the command shell
   m_command_prompt_task.reset(new CommandPromptTask());
+}
+
+void ScriptEngine::start() {
+  // Start the command shell
   m_thread.reset(new vw::Thread( m_command_prompt_task ));
 }
 
@@ -57,7 +60,7 @@ double ScriptEngine::get_parameter(const char* name) {
     result = PyFloat_AsDouble(a);
     // Py_DECREF(a);  // Do I need this?  Seems to cause a segfault!!
   } else {
-    //    std::cout << "Warning in get_parameter() -- Unknown parameter: " << name << "\n";
+    std::cout << "Warning in get_parameter() -- Unknown parameter: " << name << "\n";
   }
 
   // Release the thread. No Python API allowed beyond this point. 

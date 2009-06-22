@@ -20,7 +20,7 @@
 #endif 
 
 #include <PeUtils.h>
-#include <PeParameters.h>
+#include <ScriptEngine.h>
  
 #include <vw/Math/Vector.h>
 
@@ -51,9 +51,9 @@ protected:
 
     float A = 0.5;
     float B = 0.5;
-    float omega = pe_parameters().get_value("wave_frequency");
-    float ratio_a = 5;//pe_parameters().get_value("bass");
-    float ratio_b = 9;//pe_parameters().get_value("treb");
+    float omega = pe_script_engine().get_parameter("wave_frequency");
+    float ratio_a = 5;//pe_script_engine().get_parameter("bass");
+    float ratio_b = 9;//pe_script_engine().get_parameter("treb");
     float phase = 1.01;
 
     for (unsigned i = 0; i < elapsed_time*this->sample_rate(); ++i) {
@@ -97,12 +97,12 @@ public:
     glLoadIdentity();
     
     // Wave position
-    float wave_x = pe_parameters().get_value("wave_x")*2-1;
-    float wave_y = pe_parameters().get_value("wave_y")*2-1;
+    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
+    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
     glTranslatef(wave_x, wave_y, 0);
 
     // Wave line thickness
-    if (pe_parameters().get_value("wave_thick")) {
+    if (pe_script_engine().get_parameter("wave_thick")) {
       glLineWidth(2.0);
       glPointSize(3.0);
     } else {
@@ -111,13 +111,13 @@ public:
     }
 
     // Wave Color
-    float wave_r = pe_parameters().get_value("wave_r");
-    float wave_g = pe_parameters().get_value("wave_g");
-    float wave_b = pe_parameters().get_value("wave_b");
-    float wave_a = pe_parameters().get_value("wave_a");
+    float wave_r = pe_script_engine().get_parameter("wave_r");
+    float wave_g = pe_script_engine().get_parameter("wave_g");
+    float wave_b = pe_script_engine().get_parameter("wave_b");
+    float wave_a = pe_script_engine().get_parameter("wave_a");
     vw::Vector3 color(wave_r, wave_g, wave_b);
     vw::Vector3 norm_color = color;
-    if (pe_parameters().get_value("wave_brighten")) 
+    if (pe_script_engine().get_parameter("wave_brighten")) 
       norm_color = normalize(color);
 
     // Blend mode
@@ -128,7 +128,7 @@ public:
     glBlendFunc (GL_ONE, GL_ZERO);
 
     // Wave lines or dots
-    if (pe_parameters().get_value("wave_usedots")) 
+    if (pe_script_engine().get_parameter("wave_usedots")) 
       glBegin(GL_POINTS);
     else 
       glBegin(GL_LINES);
@@ -139,7 +139,7 @@ public:
     // it gets the job done.
     float dt_draw = 1.0/sample_rate();
     float tau_excite = 3e-5;                   // TODO : Move to parameters.
-    float tau_decay = -(1/30.0)/log(pe_parameters().get_value("decay")); 
+    float tau_decay = -(1/30.0)/log(pe_script_engine().get_parameter("decay")); 
                                                // TODO: Avoid using fixed frame rate (30.0)!
     float beta = (1-exp(-dt_draw/tau_decay));  // TODO: Move tau_decay to pe_parameters()
 
@@ -160,7 +160,7 @@ public:
     // We know that the wave is going to decay by a factor of delta
     // over the course of rendering this frame, so we need to compute
     // that decay factor on a sample by sample basis here.  
-    float decay = pe_parameters().get_value("decay");
+    float decay = pe_script_engine().get_parameter("decay");
     double sample_decay = pow(decay,1.0/float(idx));
 
     // Start by drawing a line that connects from the last point drawn

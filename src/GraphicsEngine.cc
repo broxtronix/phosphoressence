@@ -186,13 +186,13 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // Outer & Inner Border
   // ----------------------
-  if (pe_parameters().get_value("ib_a")) {
+  if (pe_script_engine().get_parameter("ib_a")) {
     glLoadIdentity();
-    glLineWidth( pe_parameters().get_value("ib_size") );
-    glColor4f( pe_parameters().get_value("ib_r"),
-               pe_parameters().get_value("ib_g"),
-               pe_parameters().get_value("ib_b"),
-               pe_parameters().get_value("ib_a") );
+    glLineWidth( pe_script_engine().get_parameter("ib_size") );
+    glColor4f( pe_script_engine().get_parameter("ib_r"),
+               pe_script_engine().get_parameter("ib_g"),
+               pe_script_engine().get_parameter("ib_b"),
+               pe_script_engine().get_parameter("ib_a") );
     
     glBegin(GL_LINES);
     glVertex2d( -aspect, 1.0 );
@@ -210,13 +210,13 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // Grid
   // ----------------------
-  // if (pe_parameters().get_value("ib_a")) {
+  // if (pe_script_engine().get_parameter("ib_a")) {
   //   glLoadIdentity();
-  //   glLineWidth( pe_parameters().get_value("ib_size") );
-  //   glColor4f( pe_parameters().get_value("ib_r"),
-  //              pe_parameters().get_value("ib_g"),
-  //              pe_parameters().get_value("ib_b"),
-  //              pe_parameters().get_value("ib_a") );
+  //   glLineWidth( pe_script_engine().get_parameter("ib_size") );
+  //   glColor4f( pe_script_engine().get_parameter("ib_r"),
+  //              pe_script_engine().get_parameter("ib_g"),
+  //              pe_script_engine().get_parameter("ib_b"),
+  //              pe_script_engine().get_parameter("ib_a") );
     
   //   float step_size = 2*aspect / HORIZ_MESH_SIZE;
   //   for (float i = -aspect; i < aspect; i+=step_size) {
@@ -254,13 +254,13 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // Wave Shape
   // ----------------------
-  if (pe_parameters().get_value("square_a") ) {
+  if (pe_script_engine().get_parameter("square_a") ) {
     glLoadIdentity();
-    float wave_x = pe_parameters().get_value("wave_x")*2-1;
-    float wave_y = pe_parameters().get_value("wave_y")*2-1;
+    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
+    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
     glTranslatef(wave_x, wave_y, 0);
 
-    float f = pe_parameters().get_value("square_frequency");
+    float f = pe_script_engine().get_parameter("square_frequency");
     Matrix2x2 rotation;
     double theta = (pe_parameters().get_value("time")*f*2*M_PI);
     rotation(0,0) = cos(theta);
@@ -270,7 +270,7 @@ void GraphicsEngine::drawImage() {
 
 
     Matrix<double,2,4> shape_vertices;
-    float square_scale = pe_parameters().get_value("square_scale");
+    float square_scale = pe_script_engine().get_parameter("square_scale");
     shape_vertices(0,0) = -0.25 * square_scale;
     shape_vertices(1,0) = -0.25 * square_scale;
     shape_vertices(0,1) = -0.25 * square_scale;
@@ -282,15 +282,15 @@ void GraphicsEngine::drawImage() {
   
     Matrix<double,2,4> vertices = rotation*shape_vertices;
   
-    glLineWidth(pe_parameters().get_value("square_thick"));
+    glLineWidth(pe_script_engine().get_parameter("square_thick"));
       
-    float wave_r = pe_parameters().get_value("square_r");
-    float wave_g = pe_parameters().get_value("square_g");
-    float wave_b = pe_parameters().get_value("square_b");
-    float wave_a = pe_parameters().get_value("square_a");
+    float wave_r = pe_script_engine().get_parameter("square_r");
+    float wave_g = pe_script_engine().get_parameter("square_g");
+    float wave_b = pe_script_engine().get_parameter("square_b");
+    float wave_a = pe_script_engine().get_parameter("square_a");
     vw::Vector3 color(wave_r, wave_g, wave_b);
     vw::Vector3 norm_color = color;
-    if (pe_parameters().get_value("wave_brighten")) 
+    if (pe_script_engine().get_parameter("wave_brighten")) 
       norm_color = vw::math::normalize(color);
     glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
 
@@ -309,12 +309,12 @@ void GraphicsEngine::drawImage() {
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
-  if (pe_parameters().get_value("wave_enabled") ) {
+  if (pe_script_engine().get_parameter("wave_enabled") ) {
     std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
     for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
-      if ( i == pe_parameters().get_value("wave_mode") ) {
+      if ( i == pe_script_engine().get_parameter("wave_mode") ) {
         (*iter)->draw(pe_parameters().get_value("time"),
-                      pe_parameters().get_value("decay"));
+                      pe_script_engine().get_parameter("decay"));
          break;
       }
     }
@@ -354,7 +354,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
   m_gpu_frontbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
-  m_gpu_frontbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
+  m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
         
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.
@@ -378,7 +378,7 @@ void GraphicsEngine::drawImage() {
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
   
-  if (pe_parameters().get_value("show_fps") != 0) {
+  if (pe_script_engine().get_parameter("show_fps") != 0) {
     char fps_cstr[255];
     sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
     QString fps_str(fps_cstr);
@@ -740,13 +740,13 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
     break;
 
   case Qt::Key_Up:  
-    pe_parameters().set_value("ifs_mode", pe_parameters().get_value("ifs_mode") + 1.0);
+    pe_parameters().set_value("ifs_mode", pe_script_engine().get_parameter("ifs_mode") + 1.0);
     break;
   case Qt::Key_Down:  
-    pe_parameters().set_value("ifs_mode", pe_parameters().get_value("ifs_mode") - 1.0);
+    pe_parameters().set_value("ifs_mode", pe_script_engine().get_parameter("ifs_mode") - 1.0);
     break;
   case Qt::Key_I:  
-    pe_parameters().set_value("invert", 1.0-pe_parameters().get_value("invert"));
+    pe_parameters().set_value("invert", 1.0-pe_script_engine().get_parameter("invert"));
     break;
   default: 
     QWidget::keyPressEvent(event);

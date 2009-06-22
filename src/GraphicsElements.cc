@@ -18,27 +18,27 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
-  m_gpu_backbuffer_program->set_input_float("decay", pe_parameters().get_value("decay"));
-  m_gpu_backbuffer_program->set_input_float("invert", pe_parameters().get_value("invert"));
-  m_gpu_backbuffer_program->set_input_float("gamma", pe_parameters().get_value("gamma"));
-  m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_parameters().get_value("ifs_mode"));
-  m_gpu_backbuffer_program->set_input_float("edge_extend", pe_parameters().get_value("edge_extend"));
+  m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
+  m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
+  m_gpu_backbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
+  m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
+  m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
 
   // These are handled by the mobius transform
-  // m_gpu_backbuffer_program->set_input_float("zoom", pe_parameters().get_value("zoom"));
-  // m_gpu_backbuffer_program->set_input_float("zoomexp", pe_parameters().get_value("zoomexp"));
-  // m_gpu_backbuffer_program->set_input_float("rot", pe_parameters().get_value("rot"));
-  // m_gpu_backbuffer_program->set_input_float("dx", pe_parameters().get_value("dx"));
-  // m_gpu_backbuffer_program->set_input_float("dy", pe_parameters().get_value("dy"));
+  // m_gpu_backbuffer_program->set_input_float("zoom", pe_script_engine().get_parameter("zoom"));
+  // m_gpu_backbuffer_program->set_input_float("zoomexp", pe_script_engine().get_parameter("zoomexp"));
+  // m_gpu_backbuffer_program->set_input_float("rot", pe_script_engine().get_parameter("rot"));
+  // m_gpu_backbuffer_program->set_input_float("dx", pe_script_engine().get_parameter("dx"));
+  // m_gpu_backbuffer_program->set_input_float("dy", pe_script_engine().get_parameter("dy"));
 
-  // m_gpu_backbuffer_program->set_input_float("q1", pe_parameters().get_value("q1"));
-  // m_gpu_backbuffer_program->set_input_float("q2", pe_parameters().get_value("q2"));
-  // m_gpu_backbuffer_program->set_input_float("q3", pe_parameters().get_value("q3"));
-  // m_gpu_backbuffer_program->set_input_float("q4", pe_parameters().get_value("q4"));
-  // m_gpu_backbuffer_program->set_input_float("q5", pe_parameters().get_value("q5"));
-  // m_gpu_backbuffer_program->set_input_float("q6", pe_parameters().get_value("q6"));
-  // m_gpu_backbuffer_program->set_input_float("q7", pe_parameters().get_value("q7"));
-  // m_gpu_backbuffer_program->set_input_float("q8", pe_parameters().get_value("q8"));
+  // m_gpu_backbuffer_program->set_input_float("q1", pe_script_engine().get_parameter("q1"));
+  // m_gpu_backbuffer_program->set_input_float("q2", pe_script_engine().get_parameter("q2"));
+  // m_gpu_backbuffer_program->set_input_float("q3", pe_script_engine().get_parameter("q3"));
+  // m_gpu_backbuffer_program->set_input_float("q4", pe_script_engine().get_parameter("q4"));
+  // m_gpu_backbuffer_program->set_input_float("q5", pe_script_engine().get_parameter("q5"));
+  // m_gpu_backbuffer_program->set_input_float("q6", pe_script_engine().get_parameter("q6"));
+  // m_gpu_backbuffer_program->set_input_float("q7", pe_script_engine().get_parameter("q7"));
+  // m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
 
   // Time
   //  float time = pe_parameters().get_value("time");
@@ -87,6 +87,19 @@ void GraphicsEngine::drawFeedback() {
   f[2] = 10.54f + 3.0f*cosf(warpTime*1.233f + 3);
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
+  // Extract the per-pixel parameters
+  float zoom = pe_script_engine().get_parameter("zoom");
+  float zoomExp = pe_script_engine().get_parameter("zoomexp");
+  float warpAmount = pe_script_engine().get_parameter("warp");
+      
+  float rot = pe_script_engine().get_parameter("rot");
+  float cx = pe_script_engine().get_parameter("cx");
+  float cy = pe_script_engine().get_parameter("cy");
+  float dx = pe_script_engine().get_parameter("dx");
+  float dy = pe_script_engine().get_parameter("dy");
+  float sx = pe_script_engine().get_parameter("sx");
+  float sy = pe_script_engine().get_parameter("sy");
+
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate
   // mesh distortion.  THIS IS WHERE THE MAGIC HAPPENS, FOLKS
   for (int i = 0; i < HORIZ_MESH_SIZE + 1; i++) { 
@@ -100,19 +113,6 @@ void GraphicsEngine::drawFeedback() {
       pe_parameters().set_value("y",v);
       pe_parameters().set_value("rad",sqrt(u*u+v*v));
       pe_parameters().set_value("ang",atan2(v,u));
-
-      // Extract the per-pixel parameters
-      float zoom = pe_script_engine().get_parameter("zoom");
-      float zoomExp = pe_script_engine().get_parameter("zoomexp");
-      float warpAmount = pe_script_engine().get_parameter("warp");
-      
-      float rot = pe_script_engine().get_parameter("rot");
-      float cx = pe_script_engine().get_parameter("cx");
-      float cy = pe_script_engine().get_parameter("cy");
-      float dx = pe_script_engine().get_parameter("dx");
-      float dy = pe_script_engine().get_parameter("dy");
-      float sx = pe_script_engine().get_parameter("sx");
-      float sy = pe_script_engine().get_parameter("sy");
       
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 
@@ -226,16 +226,16 @@ bool ReversePropagatePoint(float fx, float fy, float *fx2, float *fy2,
 
 void GraphicsEngine::drawVectorField() {
   
-  if (pe_parameters().get_value("mv_a") >= 0.001f) {
+  if (pe_script_engine().get_parameter("mv_a") >= 0.001f) {
     
     glLoadIdentity();
     glLineWidth(1.0);
     glPointSize(2.0);
 
-    glColor4f(pe_parameters().get_value("mv_r"),
-              pe_parameters().get_value("mv_g"),
-              pe_parameters().get_value("mv_b"),
-              pe_parameters().get_value("mv_a"));              
+    glColor4f(pe_script_engine().get_parameter("mv_r"),
+              pe_script_engine().get_parameter("mv_g"),
+              pe_script_engine().get_parameter("mv_b"),
+              pe_script_engine().get_parameter("mv_a"));              
 
 
     glEnable(GL_BLEND);
@@ -244,16 +244,16 @@ void GraphicsEngine::drawVectorField() {
     float aspect = float(m_viewport_width) / m_viewport_height;
     float framebuffer_radius = sqrt(1+pow(aspect,2));
 
-    int nX = int(pe_parameters().get_value("mv_x"));
-    int nY = int(pe_parameters().get_value("mv_y"));
-    float dx = pe_parameters().get_value("mv_x") - nX;
-    float dy = pe_parameters().get_value("mv_y") - nY;
+    int nX = int(pe_script_engine().get_parameter("mv_x"));
+    int nY = int(pe_script_engine().get_parameter("mv_y"));
+    float dx = pe_script_engine().get_parameter("mv_x") - nX;
+    float dy = pe_script_engine().get_parameter("mv_y") - nY;
     if (nX > 64) { nX = 64; dx = 0; }
     if (nY > 48) { nY = 48; dy = 0; }
     
     if (nX > 0 && nY > 0) {
 
-      float len_mult = pe_parameters().get_value("mv_l");
+      float len_mult = pe_script_engine().get_parameter("mv_l");
       if (dx < 0) dx = 0;
       if (dy < 0) dy = 0;
       if (dx > 1) dx = 1;
@@ -264,14 +264,14 @@ void GraphicsEngine::drawVectorField() {
         float fy = (y + 0.25f)/(float)(nY + dy + 0.25f - 1.0f) * 2.0f - 1.0f ;
 
         // now move by offset
-        fy -= pe_parameters().get_value("mv_dy");
+        fy -= pe_script_engine().get_parameter("mv_dy");
 
         if (fy > -1.0f && fy < 1.0f) {
           for (int x=0; x<nX; x++) {
             float fx = (x + 0.25f)/(float)(nX + dx + 0.25f - 1.0f) * 2.0f * aspect - aspect;
 
             // now move by offset
-            fx += pe_parameters().get_value("mv_dx");
+            fx += pe_script_engine().get_parameter("mv_dx");
             
             if (fx > -aspect && fx < aspect) {
 

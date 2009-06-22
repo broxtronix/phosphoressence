@@ -1,10 +1,12 @@
-# PhosphorEssence Javascript Initialization
+# Load various python modules
+from parameters import *
+
+# PhosphorEssence Python Initialization
 #
 # This function is called when the virtual machine is created.  It
 # loads the basic set of PhosphorEssence javascript scripts.
 def pe_load():
 
-    # Load various javascript modules
 #    load(PE_RESOURCES + "/scripts/Utilities.js");
 #    load(PE_RESOURCES + "/scripts/Parameters.js");
 #    load(PE_RESOURCES + "/scripts/PresetFunctions.js");
@@ -38,9 +40,9 @@ def pe_initialize():
 # Default render callback
 #
 # This method is called by the GraphicsEngine just prior to rendering
-# each frame.  By overriding this method, programmers can animate
-# PhosphorEssence parameters.
-def pe_render() :
+# each frame.  By overriding or augmenting this method, programmers
+# can animate PhosphorEssence parameters.
+def pe_render():
     
     cxz = 200.0
     #    zoom2 = 2;
