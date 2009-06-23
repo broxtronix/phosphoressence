@@ -75,7 +75,7 @@ public:
 
       // Fetch the wave frequency
       float f = pe_script_engine().get_parameter("wave_frequency");    
-      float aspect = pe_parameters().get_value("aspect");    
+      float aspect = pe_script_engine().get_parameter("aspect");    
 
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {

@@ -127,7 +127,9 @@ void GraphicsEngine::drawImage() {
   // Call out to any PhosphorScripts that are running on the
   // JavaScript VM, allowing them to update parameters if they would
   // like.
-  //  pe_script_engine().execute("pe_render();");
+  pe_script_engine().set_parameter("time", pe_time());
+  pe_script_engine().set_parameter("aspect", float(m_viewport_width) / m_viewport_height);
+  pe_script_engine().execute("pe_render()");
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -153,7 +155,7 @@ void GraphicsEngine::drawImage() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  float aspect = pe_parameters().get_value("aspect");
+  float aspect = pe_script_engine().get_parameter("aspect");
   float framebuffer_radius = sqrt(1+pow(aspect,2));
   glOrtho(-framebuffer_radius, framebuffer_radius, 
           -framebuffer_radius, framebuffer_radius, 
@@ -262,7 +264,7 @@ void GraphicsEngine::drawImage() {
 
     float f = pe_script_engine().get_parameter("square_frequency");
     Matrix2x2 rotation;
-    double theta = (pe_parameters().get_value("time")*f*2*M_PI);
+    double theta = (pe_time()*f*2*M_PI);
     rotation(0,0) = cos(theta);
     rotation(0,1) = sin(theta);
     rotation(1,0) = -sin(theta);
@@ -313,7 +315,7 @@ void GraphicsEngine::drawImage() {
     std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
     for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
       if ( i == pe_script_engine().get_parameter("wave_mode") ) {
-        (*iter)->draw(pe_parameters().get_value("time"),
+        (*iter)->draw(pe_time(),
                       pe_script_engine().get_parameter("decay"));
          break;
       }
@@ -353,7 +355,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
-  m_gpu_frontbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_frontbuffer_program->set_input_float("time", pe_time());
   m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
         
   // Determine the dimensions of the sub-window for drawing from the
@@ -392,14 +394,14 @@ void GraphicsEngine::drawImage() {
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
   float fps = 1.0/(new_time - m_fps_last_time);
   m_fps_avg = 0.01 * fps + 0.99 * m_fps_avg;
-  pe_parameters().set_readonly("fps", fps);
+  pe_script_engine().set_parameter("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
   //
   
 
   m_fps_last_time = new_time;
-  pe_parameters().set_readonly("frame", pe_parameters().get_value("frame") + 1.0);
+  pe_script_engine().set_parameter("frame", pe_script_engine().get_parameter("frame") + 1.0);
 }
 
 void GraphicsEngine::drawLegend(QPainter* painter) {
@@ -555,8 +557,8 @@ void GraphicsEngine::initializeGL() {
   glEnable(GL_MULTISAMPLE);
   
   // Set the grid size
-  pe_parameters().set_readonly("meshx", HORIZ_MESH_SIZE);
-  pe_parameters().set_readonly("meshy", VERT_MESH_SIZE);
+  pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
+  pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
 
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
@@ -570,7 +572,6 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Set the current viewport width/height
   m_viewport_width = width;
   m_viewport_height = height;
-  pe_parameters().set_readonly("aspect", float(m_viewport_width) / m_viewport_height);
 
   // Compute framebuffer dimensions.  The framebuffer is a square that
   // circumscribes the circle that circumscribes the rectangle of the
@@ -639,7 +640,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
 void GraphicsEngine::setup_mesh() {
 
-  float aspect = pe_parameters().get_value("aspect");
+  float aspect = pe_script_engine().get_parameter("aspect");
   float framebuffer_radius = sqrt(1+pow(aspect,2));
 
   double texture_w = 1.0;
@@ -740,13 +741,13 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
     break;
 
   case Qt::Key_Up:  
-    pe_parameters().set_value("ifs_mode", pe_script_engine().get_parameter("ifs_mode") + 1.0);
+    pe_script_engine().set_parameter("ifs_mode", pe_script_engine().get_parameter("ifs_mode") + 1.0);
     break;
   case Qt::Key_Down:  
-    pe_parameters().set_value("ifs_mode", pe_script_engine().get_parameter("ifs_mode") - 1.0);
+    pe_script_engine().set_parameter("ifs_mode", pe_script_engine().get_parameter("ifs_mode") - 1.0);
     break;
   case Qt::Key_I:  
-    pe_parameters().set_value("invert", 1.0-pe_script_engine().get_parameter("invert"));
+    pe_script_engine().set_parameter("invert", 1.0-pe_script_engine().get_parameter("invert"));
     break;
   default: 
     QWidget::keyPressEvent(event);

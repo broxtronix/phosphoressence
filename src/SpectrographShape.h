@@ -92,7 +92,7 @@ public:
           float T = float(NUM_FFT_SAMPLES)/AUDIO_SAMPLE_RATE; // FFT length
           float log_lo = log10f(1/T);
           float log_hi = log10f(float(NUM_FFT_SAMPLES/2)/T);
-          float aspect = pe_parameters().get_value("aspect");
+          float aspect = pe_script_engine().get_parameter("aspect");
           for (unsigned i=1; i < NUM_FFT_SAMPLES/2; ++i) {
 
             // This bit of math sets up a position between [-aspec +aspect]
@@ -265,19 +265,19 @@ public slots:
     }
     
     // Update the various PE Parameters
-    pe_parameters().set_readonly("bass", left_avg[0]);
-    pe_parameters().set_readonly("mid", left_avg[1]);
-    pe_parameters().set_readonly("treb", left_avg[2]);
-    pe_parameters().set_readonly("bass_att",left_avg_rel[0]);
-    pe_parameters().set_readonly("mid_att", left_avg_rel[1]);
-    pe_parameters().set_readonly("treb_att", left_avg_rel[2]);
+    pe_script_engine().set_parameter("bass", left_avg[0]);
+    pe_script_engine().set_parameter("mid", left_avg[1]);
+    pe_script_engine().set_parameter("treb", left_avg[2]);
+    pe_script_engine().set_parameter("bass_att",left_avg_rel[0]);
+    pe_script_engine().set_parameter("mid_att", left_avg_rel[1]);
+    pe_script_engine().set_parameter("treb_att", left_avg_rel[2]);
 
-    pe_parameters().set_readonly("bass_r", right_avg[0]);
-    pe_parameters().set_readonly("mid_r", right_avg[1]);
-    pe_parameters().set_readonly("treb_r", right_avg[2]);
-    pe_parameters().set_readonly("bass_att_r",right_avg_rel[0]);
-    pe_parameters().set_readonly("mid_att_r", right_avg_rel[1]);
-    pe_parameters().set_readonly("treb_att_r", right_avg_rel[2]);
+    pe_script_engine().set_parameter("bass_r", right_avg[0]);
+    pe_script_engine().set_parameter("mid_r", right_avg[1]);
+    pe_script_engine().set_parameter("treb_r", right_avg[2]);
+    pe_script_engine().set_parameter("bass_att_r",right_avg_rel[0]);
+    pe_script_engine().set_parameter("mid_att_r", right_avg_rel[1]);
+    pe_script_engine().set_parameter("treb_att_r", right_avg_rel[2]);
   }
 };
 

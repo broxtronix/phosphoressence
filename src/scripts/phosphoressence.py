@@ -1,5 +1,6 @@
 # Load various python modules
 from parameters import *
+import math
 
 # PhosphorEssence Python Initialization
 #
@@ -43,8 +44,7 @@ def pe_initialize():
 # each frame.  By overriding or augmenting this method, programmers
 # can animate PhosphorEssence parameters.
 def pe_render():
-    
-    cxz = 200.0
+    pass
     #    zoom2 = 2;
     #    print(zoom2.description);
     # cxz.foo = 10;
@@ -111,5 +111,3 @@ def pe_render():
 # 	 mv_b += 0.5 * Math.sin(14/10.0*time);
 #      }
 # }
-
-

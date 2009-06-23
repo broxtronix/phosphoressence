@@ -220,10 +220,24 @@ float PeParameters::get_value(std::string name) {
   vw::Mutex::Lock lock(m_mutex);
 
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
-  if(match == m_parameters.end())
+  if(match == m_parameters.end()) {
     std::cout << "Warning in Parameter::get_value() -- Unknown parameter: " << name << "\n";
+    return 0.0;
+  }
   else 
     return (match->second)();
+}
+
+std::string PeParameters::get_description(std::string name) {
+  vw::Mutex::Lock lock(m_mutex);
+
+  std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
+  if(match == m_parameters.end()) {
+    std::cout << "Warning in Parameter::get_description() -- Unknown parameter: " << name << "\n";
+    return "";
+  }
+  else 
+    return (match->second).description();
 }
 
 void PeParameters::reset_value(std::string name) {

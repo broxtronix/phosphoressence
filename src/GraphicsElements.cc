@@ -17,7 +17,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->install();
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", framebuffer_radius);
-  m_gpu_backbuffer_program->set_input_float("time", pe_parameters().get_value("time"));
+  m_gpu_backbuffer_program->set_input_float("time", pe_time());
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
   m_gpu_backbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
@@ -41,7 +41,7 @@ void GraphicsEngine::drawFeedback() {
   // m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
 
   // Time
-  //  float time = pe_parameters().get_value("time");
+  //  float time = pe_time();
 
   // {
   //   vw::Stopwatch sw;
@@ -78,7 +78,7 @@ void GraphicsEngine::drawFeedback() {
   
   float warpSpeed = pe_script_engine().get_parameter("warp_speed");
   float warpScale = pe_script_engine().get_parameter("warp_scale");
-  float warpTime = pe_parameters().get_value("time") * warpSpeed;
+  float warpTime = pe_time() * warpSpeed;
   float warpScaleInv = 1.0f / warpScale;
 
   float f[4];
@@ -109,10 +109,10 @@ void GraphicsEngine::drawFeedback() {
 
       // Before we call the per-pixel equations, we need to set the
       // per-pixel parameters.
-      pe_parameters().set_value("x",u);
-      pe_parameters().set_value("y",v);
-      pe_parameters().set_value("rad",sqrt(u*u+v*v));
-      pe_parameters().set_value("ang",atan2(v,u));
+      // pe_script_engine().set_parameter("x",u);
+      // pe_script_engine().set_parameter("y",v);
+      // pe_script_engine().set_parameter("rad",sqrt(u*u+v*v));
+      // pe_script_engine().set_parameter("ang",atan2(v,u));
       
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, -1 * powf(zoomExp, 

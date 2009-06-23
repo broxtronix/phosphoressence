@@ -141,6 +141,7 @@ public:
   void set_value(std::string name, float val);
   void set_readonly(std::string name, float val);
   float get_value(std::string name);
+  std::string get_description(std::string name);
   void reset_value(std::string name);
   void reset_all();
 
