@@ -1,5 +1,5 @@
 # Load various python modules
-from parameters import *
+from parameters import pe
 import math
 
 # PhosphorEssence Python Initialization

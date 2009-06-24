@@ -35,10 +35,9 @@ ScriptEngine& pe_script_engine() {
 // for binding c functions to python objects at some point, but not
 // yet!
 
-
-// static PyObject* pe_time(PyObject *self, PyObject *args) {
-//   return Py_BuildValue("f", pe_time());
-// }
+static PyObject* pe_py_time(PyObject *self, PyObject *args) {
+  return Py_BuildValue("f", pe_time());
+}
 
 // #define PE_READONLY_PARAM(func, param_name)                           \
 // static PyObject* func(PyObject *self, PyObject *args) {               \
@@ -78,9 +77,9 @@ ScriptEngine& pe_script_engine() {
 // #define PE_METHOD_DESCRIPTION(name, callback)    \
 //   {name,  callback, METH_VARARGS, "callback"}
 
-// static PyMethodDef PeMethods[] = {
-//   {"pe_time",  pe_time, METH_VARARGS, 
-//    "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running"},
+static PyMethodDef PeMethods[] = {
+  {"pe_time",  pe_py_time, METH_VARARGS, 
+   "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running"},
 //   PE_METHOD_DESCRIPTION("pe_fps", pe_fps),
 //   PE_METHOD_DESCRIPTION("pe_frame", pe_frame),
 //   PE_METHOD_DESCRIPTION("pe_aspect", pe_aspect),
@@ -102,11 +101,10 @@ ScriptEngine& pe_script_engine() {
 //   PE_METHOD_DESCRIPTION("pe_bass", pe_bass_att_r),
 //   PE_METHOD_DESCRIPTION("pe_mid", pe_mid_att_r),
 //   PE_METHOD_DESCRIPTION("pe_treb", pe_treb_att_r),
-//   {NULL, NULL, 0, NULL}        /* Sentinel */
-// };
+  {NULL, NULL, 0, NULL}        /* Sentinel */
+};
 
-// PyMODINIT_FUNC
-// initpe(void) { (void) Py_InitModule("pe_readonly_bindings", PeMethods); }
+PyMODINIT_FUNC initpe(void) { (void) Py_InitModule("pe_readonly_bindings", PeMethods); }
 
 // ---------------------------------------------------------------------
 //      C++ Callbacks & Basic Python Utility Functions
@@ -134,7 +132,7 @@ double ScriptEngine::get_parameter(const char* name) {
   PyGILState_STATE gstate = PyGILState_Ensure();
   
   // Extract a reference to the object from the global dictionary
-  PyObject *a = PyDict_GetItemString(m_command_prompt_task->global_dict(), name);
+  PyObject *a = PyDict_GetItemString(m_command_prompt_task->pe_dict(), name);
   
   // Check the validity of the result, and set the return value if the
   // data looks good.
@@ -143,7 +141,7 @@ double ScriptEngine::get_parameter(const char* name) {
     result = PyFloat_AsDouble(a);
     // Py_DECREF(a);  // Do I need this?  Seems to cause a segfault!!
   } else {
-    std::cout << "Warning in get_parameter() -- Unknown parameter: " << name << "\n";
+    //    std::cout << "Warning in get_parameter() -- Unknown parameter: " << name << "\n";
   }
 
   // Release the thread. No Python API allowed beyond this point. 
@@ -166,7 +164,7 @@ void ScriptEngine::set_parameter(const char* name, double value) {
   // Create the Python float object and set it's value in the global
   // dictionary.
   PyObject *a = PyFloat_FromDouble(value);
-  PyDict_SetItemString(m_command_prompt_task->global_dict(), name, a);
+  PyDict_SetItemString(m_command_prompt_task->pe_dict(), name, a);
   // Py_DECREF(a);  // Do I need this?
 
   // Release the thread. No Python API allowed beyond this point. 
@@ -220,7 +218,7 @@ void CommandPromptTask::operator()() {
 
   // Load the phosphoressence module, which contains bindings from
   // python to C++.
-  //  initpe();
+  initpe();
 
   // Append the PE scripts directory to the PYTHON_PATH via the
   // sys.path variable, and then load in the default PhosphorEssence
@@ -238,10 +236,20 @@ void CommandPromptTask::operator()() {
 
   m_interpreter_active = true;
 
-  // Start the main python interpreter loop
-  char* dummy = "xxx";
-  char** argv = &dummy;
-  Py_Main(1, argv);
+  // Grab a reference to the "pe" object's __dict__, which should exist by now...
+  m_pe_dict = PyRun_String("pe.__dict__", Py_single_input, m_global_dict, m_global_dict);
+  if (m_pe_dict == NULL) {
+    PyErr_Print();
+    std::cout << "\n--------------------------------------------------\n"
+              << "Error: the 'pe' object is not found in the python environment.\n" 
+              << "Perhaps an error occurred during startup?\n"
+              << "--------------------------------------------------\n\n";
+  } else {
+    // Start the main python interpreter loop
+    char* dummy = "xxx";
+    char** argv = &dummy;
+    Py_Main(1, argv);
+  }
 
   // static const int buffer_size = 256;
   // char buffer[buffer_size];

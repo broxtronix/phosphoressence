@@ -17,7 +17,7 @@
 /// commands to our embedded python interpreter.
 // 
 class CommandPromptTask {
-  PyObject *m_global_dict, *m_main_module;
+  PyObject *m_global_dict, *m_main_module, *m_pe_dict;
   bool m_interpreter_active;
   
 public:
@@ -25,6 +25,7 @@ public:
   void operator()();
 
   PyObject* global_dict() const { return m_global_dict; }
+  PyObject* pe_dict() const { return m_pe_dict; }
   bool active() const { return m_interpreter_active; }
 };
 
