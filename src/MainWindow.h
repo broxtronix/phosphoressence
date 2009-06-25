@@ -32,7 +32,6 @@ public:
 
 private slots:
   void about();
-  void update_status_bar(std::string const& s);
 
 protected:
   void keyPressEvent(QKeyEvent *event);
@@ -40,7 +39,6 @@ protected:
 private:
   void create_actions();
   void create_menus();
-  void create_status_bar();
 
   GraphicsEngine *m_graphics_engine;
 
@@ -48,7 +46,6 @@ private:
   QMenu *edit_menu;
   QMenu *help_menu;
 
-  QLabel *status_label;
   QAction *about_action;
   QAction *exit_action;
 };

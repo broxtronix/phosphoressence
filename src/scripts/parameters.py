@@ -5,7 +5,7 @@
 class Parameter(object):
     
     def __init__(self, name, description,
-                 default_value = 0.0, read_only = True):
+                 default_value = 0.0, read_only = False):
 
         # Store the parameters specific to this parameter in the class
         # instance.
@@ -159,62 +159,84 @@ pe = PhosphorEssence()
 
 pe.register(Parameter( name = "x",
                        description = "Retrieves the x-position of the current pixel" +
-                       "(for per-pixel equations)" ))
+                       "(for per-pixel equations)",
+                       read_only = True))
 pe.register(Parameter( name = "y",
                        description = "Retrieves the y-position of the current pixel" +
-                       "(for per-pixel equations)" ))
+                       "(for per-pixel equations)",
+                       read_only = True ))
 pe.register(Parameter( name = "rad",
                        description = "Retrieves the radius (from center) of the current pixel" +
-                       "(for per-pixel equations)" ))
+                       "(for per-pixel equations)",
+                       read_only = True ))
 pe.register(Parameter( name = "ang",
                        description = "Retrieves the angle of the current pixel" +
-                       "(for per-pixel equations)" ))
+                       "(for per-pixel equations)",
+                       read_only = True ))
 
 pe.register(Parameter( name = "fps",
                        description = ">0 (readonly)       retrieves the current framerate, " +
-                       "in frames per second."))
+                       "in frames per second.",
+                       default_value = 30.0,
+                       read_only = True))
 pe.register(Parameter( name = "frame",
                        description = "(readonly) retrieves the number of frames of animation " +
-                       "elapsed since the program started"))
+                       "elapsed since the program started",
+                       read_only = True))
 pe.register(Parameter( name = "aspect",
                        description = "Aspect ratio of the screen.  The screen coordinates " +
-                       "vary horizontally from [-aspect +aspect] and vertically from [-1 +1]"))
+                       "vary horizontally from [-aspect +aspect] and vertically from [-1 +1]",
+                       read_only = True))
 pe.register(Parameter( name = "meshx",
                        description = "(readonly)  tells you the user's mesh size in the " +
-                       " X direction."))
+                       " X direction.",
+                       read_only = True))
 pe.register(Parameter( name = "meshy",
                        description = "(readonly)  tells you the user's mesh size in the " +
-                       "Y direction."))
+                       "Y direction.",
+                       read_only = True))
 
 pe.register(Parameter( name = "bass",
                        description = ">0 (readonly)       retrieves the current amount of " +
-                       "bass.  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass" ))
+                       "bass.  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass",
+                       read_only = True ))
 pe.register(Parameter( name = "mid",
-                       description = ">0 (readonly)         -same, but for mids (middle frequencies)"))
+                       description = ">0 (readonly)         -same, but for mids (middle frequencies)",
+                       read_only = True))
 pe.register(Parameter( name = "treb",
-                       description = ">0 (readonly)         -same, but for treble (high) frequencies"))
+                       description = ">0 (readonly)         -same, but for treble (high) frequencies",
+                       read_only = True))
 pe.register(Parameter( name = "bass_att",
                        description = ">0 (readonly)       retrieves an attenuated reading on the bass, " +
-                             "meaning that it is damped in time and doesn't change so rapidly"))
+                             "meaning that it is damped in time and doesn't change so rapidly",
+                       read_only = True))
 pe.register(Parameter( name = "mid_att",
-                       description = ">0 (readonly)         -same, but for mids (middle frequencies)"))
+                       description = ">0 (readonly)         -same, but for mids (middle frequencies)",
+                       read_only = True))
 pe.register(Parameter( name = "treb_att",
-                       description = ">0 (readonly)         -same, but for treble (high) frequencies"))
+                       description = ">0 (readonly)         -same, but for treble (high) frequencies",
+                       read_only = True))
 
 pe.register(Parameter( name = "bass_r",
                        description = ">0 (readonly)       retrieves the current amount of bass. " +
-                       "  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass" ))
+                       "  1 is normal; below ~0.7 is quiet; above ~1.3 is loud bass",
+                       read_only = True ))
 pe.register(Parameter( name = "mid_r",
-                       description = ">0 (readonly)         -same, but for mids (middle frequencies)"))
+                       description = ">0 (readonly)         -same, but for mids (middle frequencies)",
+                       read_only = True))
 pe.register(Parameter( name = "treb_r",
-                       description = ">0 (readonly)         -same, but for treble (high) frequencies"))
+                       description = ">0 (readonly)         -same, but for treble (high) frequencies",
+                       read_only = True))
 pe.register(Parameter( name = "bass_att_r",
                        description = ">0 (readonly)       retrieves an attenuated reading on the bass, " +
-                       "meaning that it is damped in time and doesn't change so rapidly"))
+                       "meaning that it is damped in time and doesn't change so rapidly",
+                       read_only = True))
 pe.register(Parameter( name = "mid_att_r",
-                       description = ">0 (readonly)         -same, but for mids (middle frequencies)"))
+                       description = ">0 (readonly)         -same, but for mids (middle frequencies)",
+                       read_only = True))
 pe.register(Parameter( name = "treb_att_r",
-                       description = ">0 (readonly)         -same, but for treble (high) frequencies"))
+                       description = ">0 (readonly)         -same, but for treble (high) frequencies",
+                       read_only = True))
 
 
 # ---------------------

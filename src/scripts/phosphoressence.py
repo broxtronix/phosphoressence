@@ -20,9 +20,10 @@ pe.show_fps = 1;
 
 # Default initialization handler
 #
-# This function can be used to set up the environment in the JS
-# virtual machine.  This is called once when the ScriptEngine is
-# initialized.
+# This function can be used to set up the environment in the embedded
+# python environment.  This is called once when the rest of
+# Phosphoressence has been initialized, but the main application loop
+# has not yet started.
 def pe_initialize():
     pass
     #     setup_osc();

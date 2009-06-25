@@ -19,13 +19,9 @@
 
 MainWindow::MainWindow() {
 
-  // Set up the basic layout of the window and its menus
-  create_actions();
-  create_menus();
-  //  create_status_bar();
   
   // Set the window title and add tabs
-  std::string window_title = "Phosphor Essence v0.2";
+  std::string window_title = "Phosphor Essence v0.3";
   this->setWindowTitle(window_title.c_str());
 
   // Set up GraphicsEngine
@@ -36,6 +32,10 @@ MainWindow::MainWindow() {
   gl_frmt.setSwapInterval(0);
   m_graphics_engine = new GraphicsEngine(this, gl_frmt);
   setCentralWidget(m_graphics_engine);
+
+  // Set up the basic layout of the window and its menus
+  create_actions();
+  create_menus();
 
   // Maximize the main window
   this->showMaximized();
@@ -50,7 +50,7 @@ void MainWindow::create_actions() {
 
   // The About Box
   about_action = new QAction(tr("About VWV"), this);
-  about_action->setStatusTip(tr("Show the Vision Workbench Viewere about box."));
+  about_action->setStatusTip(tr("Show the PhosphorEssence about box."));
   connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
 
   // Exit or Quit
@@ -58,6 +58,9 @@ void MainWindow::create_actions() {
   exit_action->setShortcut(tr("Ctrl+Q"));
   exit_action->setStatusTip(tr("Exit the application"));
   connect(exit_action, SIGNAL(triggered()), this, SLOT(close()));
+
+  // A call to close from the inner OpenGLWidget
+  connect(m_graphics_engine, SIGNAL(pe_quit()), this, SLOT(close()));
 }
 
 void MainWindow::create_menus() {
@@ -73,20 +76,6 @@ void MainWindow::create_menus() {
   menuBar()->addSeparator();
   help_menu = menuBar()->addMenu(tr("&Help"));
   help_menu->addAction(about_action);
-}
-
-void MainWindow::create_status_bar() {
-  status_label = new QLabel("");
-  status_label->setAlignment(Qt::AlignHCenter);
-  statusBar()->addWidget(status_label);
-
-  // WARNING: Memory leak as currently written.  Fix this somewhow...
-  //   GuiProgressCallback *clbk = new GuiProgressCallback(this, "Updating: ");
-  //   statusBar()->addWidget(clbk->widget());
-}
-
-void MainWindow::update_status_bar(std::string const& s) {
-  status_label->setText(QString(s.c_str()));
 }
 
 void MainWindow::about() {

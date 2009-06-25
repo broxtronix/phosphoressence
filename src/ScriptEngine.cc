@@ -120,11 +120,11 @@ void ScriptEngine::start() {
 }
 
 ScriptEngine::~ScriptEngine() {
-  std::cout << "Issuing command to quit.";
-  if (m_command_prompt_task->active())
-    this->execute("quit()");
-  std::cout << "Joining thread!\n";
-  m_thread->join();
+  // std::cout << "Issuing command to quit.";
+  // if (m_command_prompt_task->active())
+  //   this->execute("quit()");
+  // std::cout << "Joining thread!\n";
+  // m_thread->join();
 }
 
 double ScriptEngine::get_parameter(const char* name) {
@@ -176,8 +176,8 @@ void ScriptEngine::set_parameter(const char* name, double value) {
 
 void ScriptEngine::execute(std::string const& cmd) {
   if (!m_command_prompt_task->active()) {
-    std::cout << "Warning in execute() -- Could not execute python code. " 
-              << "The interpreter is not currently running.\n";
+    //    std::cout << "Warning in execute() -- Could not execute python code. " 
+    //              << "The interpreter is not currently running.\n";
     return;
   }
 
@@ -248,51 +248,16 @@ void CommandPromptTask::operator()() {
               << "--------------------------------------------------\n\n";
   } else {
 
-    PyObject* a = PyObject_GetAttrString(m_pe_dict, "show_fps");
-    if (a) 
-      std::cout << "\n\nFound it!\n\n";
-    else
-      std::cout << "\n\nLOST it!\n\n";
-  
-
-
     // Start the main python interpreter loop
     char* dummy = "xxx";
     char** argv = &dummy;
     Py_Main(1, argv);
   }
 
-  std::cout << "ended py_main... cleaning up.\n";
-
-  // static const int buffer_size = 256;
-  // char buffer[buffer_size];
-  // while (true) {
-    // std::cout << ">>> " << std::flush;
-    // char* str = fgets(buffer, buffer_size, stdin);
-
-    // // Check to see if the user has chosen to quit.  TODO: I'm not
-    // // sure if calling exit() here is really the best way to cleanly
-    // // shut down, but it seems to work for now.
-    // if (str == NULL || std::string(str) == "quit()\n") {
-    //   std::cout << "Exiting\n";
-    //   exit(0);
-    // }
-
-    // // All other inputs are passed along to the python interpreter.
-    // if (str != "\n")
-    //   pe_script_engine().execute(str);
-  //  }
-  // std::cout << "\n";
-  // printf("\n");
-
-
+  // Close down the python environment
   m_interpreter_active = false;
-  std::cout << "finalizing.\n";
   Py_Finalize();
-  std::cout << "exiting.\n";
 
   // Send the signal for the rest of the program to exit.
-  pe_parameters().set_value("exit", 1.0);
-  std::cout << "done.\n";
-
+  pe_parameters().set_readonly("exit", 1.0);
 }

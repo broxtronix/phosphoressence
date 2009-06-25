@@ -105,6 +105,10 @@ public:
     m_drawables.clear();
   }
 
+signals:
+
+  void pe_quit();
+
 public slots:
 
   // This timer is used by the Texture Fetch thread to inform the

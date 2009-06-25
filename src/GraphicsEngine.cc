@@ -121,6 +121,8 @@ void GraphicsEngine::timer_callback() {
 
 
 void GraphicsEngine::drawImage() {
+  if (pe_parameters().get_value("exit")) 
+    emit pe_quit();
 
   // ------------------------ <Scripts> -------------------------
 
