@@ -12,7 +12,6 @@ class PePresets(object):
     def current_preset():
         return _presets[_current_preset]
 
-
     def next_preset():
         _current_preset += 1
         if (_current_preset >= len(_presets)):

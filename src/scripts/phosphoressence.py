@@ -1,27 +1,22 @@
 # Load various python modules
 from parameters import pe
 from presets import pe_presets
+from controllers import setup_osc, setup_joystick
+from bindings import Binding
 import math
 
 # PhosphorEssence Python Initialization
-#
-# This function is called when the virtual machine is created.  It
-# loads the basic set of PhosphorEssence javascript scripts.
-def pe_load():
 
-#    load(PE_RESOURCES + "/scripts/Controllers.js");
-#    load(PE_RESOURCES + "/scripts/Bindings.js");
-
-    # Set up bindings object
+# Set up bindings object
 #    bindings = new Bindings();
 
-    # Turn automatic preset loading on/off
-    run_preset = 0;
+# Turn automatic preset loading on/off
+RUN_PRESET = 0;
 
-    # Switches for debugging
-    debug = 0;
-    joy_debug = 0;
-    show_fps = 1;
+# Switches for debugging
+DEBUG = 0;
+JOY_DEBUG = 0;
+pe.show_fps = 1;
 
 # Default initialization handler
 #
@@ -30,8 +25,8 @@ def pe_load():
 # initialized.
 def pe_initialize():
     pass
-    # setup_osc();
-#    setup_joystick();
+    #     setup_osc();
+    #    setup_joystick();
 
     # Load Milkdrop Presets
     # load(PE_RESOURCES + "/presets/milkdrop/milk_presets.js");

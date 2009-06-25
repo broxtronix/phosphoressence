@@ -136,12 +136,12 @@ void GraphicsEngine::drawImage() {
   
   // ------------------------ <FrameBuffer> -------------------------
  
-  // // Activate the framebuffer.  All of the following drawing is done
-  // // in the framebuffer so that we have a larger area available to
-  // // draw in.
-  // glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
-  // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-  // glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+  // Activate the framebuffer.  All of the following drawing is done
+  // in the framebuffer so that we have a larger area available to
+  // draw in.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+  glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
   // Set the background color and viewport.
   qglClearColor(QColor(0, 0, 0)); // Black Background
@@ -166,7 +166,7 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Start by drawing a black frame.
-  glColor4f(1.0,0.0,0.0,1.0);
+  glColor4f(0.0,0.0,0.0,1.0);
   glBegin(GL_QUADS);
   glVertex2f( -framebuffer_radius, -framebuffer_radius);
   glVertex2f( framebuffer_radius, -framebuffer_radius);
@@ -174,19 +174,43 @@ void GraphicsEngine::drawImage() {
   glVertex2f( -framebuffer_radius, framebuffer_radius);
   glEnd() ;
 
-  // // -----------------------
-  // // FEEDBACK TEXTURE 
-  // // ----------------------
-  // drawFeedback();
+  // -----------------------
+  // FEEDBACK TEXTURE 
+  // ----------------------
+  drawFeedback();
 
-  // // -----------------------
-  // // Motion Vectors
-  // // ----------------------
-  // drawVectorField();
+  // -----------------------
+  // Motion Vectors
+  // ----------------------
+  drawVectorField();
 
-  // // -----------------------
-  // // Outer & Inner Border
-  // // ----------------------
+  // -----------------------
+  // Outer & Inner Border
+  // ----------------------
+  if (pe_script_engine().get_parameter("ib_a")) {
+    glLoadIdentity();
+    glLineWidth( pe_script_engine().get_parameter("ib_size") );
+    glColor4f( pe_script_engine().get_parameter("ib_r"),
+               pe_script_engine().get_parameter("ib_g"),
+               pe_script_engine().get_parameter("ib_b"),
+               pe_script_engine().get_parameter("ib_a") );
+    
+    glBegin(GL_LINES);
+    glVertex2d( -aspect, 1.0 );
+    glVertex2d( aspect, 1.0 );
+    glVertex2d( aspect, 1.0 );
+    glVertex2d( aspect, -1.0 );
+    glVertex2d( aspect, -1.0 );
+    glVertex2d( -aspect, -1.0 );
+    glVertex2d( -aspect, -1.0 );
+    glVertex2d( -aspect, 1.0 );
+    glEnd();
+  }
+
+
+  // -----------------------
+  // Grid
+  // ----------------------
   // if (pe_script_engine().get_parameter("ib_a")) {
   //   glLoadIdentity();
   //   glLineWidth( pe_script_engine().get_parameter("ib_size") );
@@ -195,191 +219,167 @@ void GraphicsEngine::drawImage() {
   //              pe_script_engine().get_parameter("ib_b"),
   //              pe_script_engine().get_parameter("ib_a") );
     
-  //   glBegin(GL_LINES);
-  //   glVertex2d( -aspect, 1.0 );
-  //   glVertex2d( aspect, 1.0 );
-  //   glVertex2d( aspect, 1.0 );
-  //   glVertex2d( aspect, -1.0 );
-  //   glVertex2d( aspect, -1.0 );
-  //   glVertex2d( -aspect, -1.0 );
-  //   glVertex2d( -aspect, -1.0 );
-  //   glVertex2d( -aspect, 1.0 );
-  //   glEnd();
-  // }
-
-
-  // // -----------------------
-  // // Grid
-  // // ----------------------
-  // // if (pe_script_engine().get_parameter("ib_a")) {
-  // //   glLoadIdentity();
-  // //   glLineWidth( pe_script_engine().get_parameter("ib_size") );
-  // //   glColor4f( pe_script_engine().get_parameter("ib_r"),
-  // //              pe_script_engine().get_parameter("ib_g"),
-  // //              pe_script_engine().get_parameter("ib_b"),
-  // //              pe_script_engine().get_parameter("ib_a") );
-    
-  // //   float step_size = 2*aspect / HORIZ_MESH_SIZE;
-  // //   for (float i = -aspect; i < aspect; i+=step_size) {
-  // //     glBegin(GL_LINES);
-  // //     float x = i;
-  // //     float y1 = 1.0;
-  // //     float y2 = -1.0;
-  // //     float r1 = sqrt(x*x+y1*y1);
-  // //     float r2 = sqrt(x*x+y2*y2);
-  // //     float XX1 = 1/(r1*r1) * x;
-  // //     float XX2 = 1/(r2*r2) * x;
-  // //     float YY1 = 1/(r1*r1) * y1;
-  // //     float YY2 = 1/(r2*r2) * y2;
-  // //     glVertex2d( XX1, YY1 );
-  // //     glVertex2d( XX2, YY2 );
-  // //   }
-
-  // //   for (float j = -1; j < 1; j+=step_size ) {
-  // //     glBegin(GL_LINES);
-  // //     float x1 = aspect;
-  // //     float x2 = -aspect;
-  // //     float y = j;
-  // //     float r1 = sqrt(x1*x1+y*y);
-  // //     float r2 = sqrt(x2*x2+y*y);
-  // //     float XX1 = 1/(r1*r1)*x1;
-  // //     float XX2 = 1/(r2*r2)*x2;
-  // //     float YY1 = 1/(r1*r1)*y;
-  // //     float YY2 = 1/(r2*r2)*y;
-  // //     glVertex2d( XX1, YY1 );
-  // //     glVertex2d( XX2, YY2 );
-  // //   }
-  // //   glEnd();
-  // // }
-
-  // // -----------------------
-  // // Wave Shape
-  // // ----------------------
-  // if (pe_script_engine().get_parameter("square_a") ) {
-  //   glLoadIdentity();
-  //   float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
-  //   float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
-  //   glTranslatef(wave_x, wave_y, 0);
-
-  //   float f = pe_script_engine().get_parameter("square_frequency");
-  //   Matrix2x2 rotation;
-  //   double theta = (pe_time()*f*2*M_PI);
-  //   rotation(0,0) = cos(theta);
-  //   rotation(0,1) = sin(theta);
-  //   rotation(1,0) = -sin(theta);
-  //   rotation(1,1) = cos(theta);
-
-
-  //   Matrix<double,2,4> shape_vertices;
-  //   float square_scale = pe_script_engine().get_parameter("square_scale");
-  //   shape_vertices(0,0) = -0.25 * square_scale;
-  //   shape_vertices(1,0) = -0.25 * square_scale;
-  //   shape_vertices(0,1) = -0.25 * square_scale;
-  //   shape_vertices(1,1) = 0.25 * square_scale;
-  //   shape_vertices(0,2) = 0.25 * square_scale;
-  //   shape_vertices(1,2) = 0.25 * square_scale;
-  //   shape_vertices(0,3) = 0.25 * square_scale;
-  //   shape_vertices(1,3) = -0.25 * square_scale;
-  
-  //   Matrix<double,2,4> vertices = rotation*shape_vertices;
-  
-  //   glLineWidth(pe_script_engine().get_parameter("square_thick"));
-      
-  //   float wave_r = pe_script_engine().get_parameter("square_r");
-  //   float wave_g = pe_script_engine().get_parameter("square_g");
-  //   float wave_b = pe_script_engine().get_parameter("square_b");
-  //   float wave_a = pe_script_engine().get_parameter("square_a");
-  //   vw::Vector3 color(wave_r, wave_g, wave_b);
-  //   vw::Vector3 norm_color = color;
-  //   if (pe_script_engine().get_parameter("wave_brighten")) 
-  //     norm_color = vw::math::normalize(color);
-  //   glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
-
-  //   // We will draw the image as a texture on this quad.
-  //   glBegin(GL_LINES);
-  //   glVertex2f( vertices(0,0), vertices(1,0) );
-  //   glVertex2f( vertices(0,1), vertices(1,1) );
-  //   glVertex2f( vertices(0,1), vertices(1,1) );
-  //   glVertex2f( vertices(0,2), vertices(1,2) );
-  //   glVertex2f( vertices(0,2), vertices(1,2) );
-  //   glVertex2f( vertices(0,3), vertices(1,3) );
-  //   glVertex2f( vertices(0,3), vertices(1,3) );
-  //   glVertex2f( vertices(0,0), vertices(1,0) );
-  //   glEnd();
-  // }
-
-  // // Run through the list of drawables, giving them each a chance to
-  // // render into the display.
-  // if (pe_script_engine().get_parameter("wave_enabled") ) {
-  //   std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
-  //   for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
-  //     if ( i == pe_script_engine().get_parameter("wave_mode") ) {
-  //       (*iter)->draw(pe_time(),
-  //                     pe_script_engine().get_parameter("decay"));
-  //        break;
-  //     }
+  //   float step_size = 2*aspect / HORIZ_MESH_SIZE;
+  //   for (float i = -aspect; i < aspect; i+=step_size) {
+  //     glBegin(GL_LINES);
+  //     float x = i;
+  //     float y1 = 1.0;
+  //     float y2 = -1.0;
+  //     float r1 = sqrt(x*x+y1*y1);
+  //     float r2 = sqrt(x*x+y2*y2);
+  //     float XX1 = 1/(r1*r1) * x;
+  //     float XX2 = 1/(r2*r2) * x;
+  //     float YY1 = 1/(r1*r1) * y1;
+  //     float YY2 = 1/(r2*r2) * y2;
+  //     glVertex2d( XX1, YY1 );
+  //     glVertex2d( XX2, YY2 );
   //   }
+
+  //   for (float j = -1; j < 1; j+=step_size ) {
+  //     glBegin(GL_LINES);
+  //     float x1 = aspect;
+  //     float x2 = -aspect;
+  //     float y = j;
+  //     float r1 = sqrt(x1*x1+y*y);
+  //     float r2 = sqrt(x2*x2+y*y);
+  //     float XX1 = 1/(r1*r1)*x1;
+  //     float XX2 = 1/(r2*r2)*x2;
+  //     float YY1 = 1/(r1*r1)*y;
+  //     float YY2 = 1/(r2*r2)*y;
+  //     glVertex2d( XX1, YY1 );
+  //     glVertex2d( XX2, YY2 );
+  //   }
+  //   glEnd();
   // }
 
-  // -------------- <Feedback> -------------------------
+  // -----------------------
+  // Wave Shape
+  // ----------------------
+  if (pe_script_engine().get_parameter("square_a") ) {
+    glLoadIdentity();
+    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
+    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
+    glTranslatef(wave_x, wave_y, 0);
 
-  // // Save the feedback texture 
-  // saveFeedback();
+    float f = pe_script_engine().get_parameter("square_frequency");
+    Matrix2x2 rotation;
+    double theta = (pe_time()*f*2*M_PI);
+    rotation(0,0) = cos(theta);
+    rotation(0,1) = sin(theta);
+    rotation(1,0) = -sin(theta);
+    rotation(1,1) = cos(theta);
 
-  // // -------------- <Render to Screen> -----------------
 
-  // // Make the real screen the OpenGL target
-  // glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-  // qglClearColor(QColor(0, 0, 0)); // Black Background
-  // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // glViewport(0,0,m_viewport_width,m_viewport_height);
+    Matrix<double,2,4> shape_vertices;
+    float square_scale = pe_script_engine().get_parameter("square_scale");
+    shape_vertices(0,0) = -0.25 * square_scale;
+    shape_vertices(1,0) = -0.25 * square_scale;
+    shape_vertices(0,1) = -0.25 * square_scale;
+    shape_vertices(1,1) = 0.25 * square_scale;
+    shape_vertices(0,2) = 0.25 * square_scale;
+    shape_vertices(1,2) = 0.25 * square_scale;
+    shape_vertices(0,3) = 0.25 * square_scale;
+    shape_vertices(1,3) = -0.25 * square_scale;
   
-  // // Set up the orthographic view of the scene.  The exact extent of
-  // // the view onto the scene depends on the current panning and zoom
-  // // in the UI.
-  // glMatrixMode(GL_PROJECTION);
-  // glLoadIdentity();
-  // glOrtho(-aspect, aspect, -1.0, 1.0, -1.0, 1.0);
+    Matrix<double,2,4> vertices = rotation*shape_vertices;
+  
+    glLineWidth(pe_script_engine().get_parameter("square_thick"));
+      
+    float wave_r = pe_script_engine().get_parameter("square_r");
+    float wave_g = pe_script_engine().get_parameter("square_g");
+    float wave_b = pe_script_engine().get_parameter("square_b");
+    float wave_a = pe_script_engine().get_parameter("square_a");
+    vw::Vector3 color(wave_r, wave_g, wave_b);
+    vw::Vector3 norm_color = color;
+    if (pe_script_engine().get_parameter("wave_brighten")) 
+      norm_color = vw::math::normalize(color);
+    glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
 
-  // // Set up the modelview matrix, and bind the image as the texture we
-  // // are about to use.
-  // glMatrixMode(GL_MODELVIEW);
-  // glLoadIdentity();
+    // We will draw the image as a texture on this quad.
+    glBegin(GL_LINES);
+    glVertex2f( vertices(0,0), vertices(1,0) );
+    glVertex2f( vertices(0,1), vertices(1,1) );
+    glVertex2f( vertices(0,1), vertices(1,1) );
+    glVertex2f( vertices(0,2), vertices(1,2) );
+    glVertex2f( vertices(0,2), vertices(1,2) );
+    glVertex2f( vertices(0,3), vertices(1,3) );
+    glVertex2f( vertices(0,3), vertices(1,3) );
+    glVertex2f( vertices(0,0), vertices(1,0) );
+    glEnd();
+  }
 
-  // // Draw the framebuffer to the real screen.
-  // glEnable( GL_TEXTURE_2D );
-  // glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
+  // Run through the list of drawables, giving them each a chance to
+  // render into the display.
+  if (pe_script_engine().get_parameter("wave_enabled") ) {
+    std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
+    for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
+      if ( i == pe_script_engine().get_parameter("wave_mode") ) {
+        (*iter)->draw(pe_time(),
+                      pe_script_engine().get_parameter("decay"));
+         break;
+      }
+    }
+  }
 
-  // m_gpu_frontbuffer_program->install();
-  // m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
-  // m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
-  // m_gpu_frontbuffer_program->set_input_float("time", pe_time());
-  // m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
+  // ----------------- <Feedback> ----------------------
+
+  // Save the feedback texture 
+  saveFeedback();
+
+  // -------------- <Render to Screen> -----------------
+
+  // Make the real screen the OpenGL target
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  qglClearColor(QColor(0, 0, 0)); // Black Background
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0,0,m_viewport_width,m_viewport_height);
+  
+  // Set up the orthographic view of the scene.  The exact extent of
+  // the view onto the scene depends on the current panning and zoom
+  // in the UI.
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-aspect, aspect, -1.0, 1.0, -1.0, 1.0);
+
+  // Set up the modelview matrix, and bind the image as the texture we
+  // are about to use.
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  // Draw the framebuffer to the real screen.
+  glEnable( GL_TEXTURE_2D );
+  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
+
+  m_gpu_frontbuffer_program->install();
+  m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
+  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
+  m_gpu_frontbuffer_program->set_input_float("time", pe_time());
+  m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
         
-  // // Determine the dimensions of the sub-window for drawing from the
-  // // framebuffer texture.
-  // float w_texture = 0.5 * aspect/framebuffer_radius; // r_texture * ( w_object / r_object )
-  // float h_texture = 0.5 * 1.0/framebuffer_radius;    // r_texture * ( h_object / r_object )
+  // Determine the dimensions of the sub-window for drawing from the
+  // framebuffer texture.
+  float w_texture = 0.5 * aspect/framebuffer_radius; // r_texture * ( w_object / r_object )
+  float h_texture = 0.5 * 1.0/framebuffer_radius;    // r_texture * ( h_object / r_object )
 
-  // //  We will draw the image as a texture on this quad.
-  // qglColor(Qt::white);
-  // glBegin(GL_QUADS);
-  // glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
-  // glVertex2d( -aspect, -1.0);
-  // glTexCoord2f( 0.5+w_texture, 0.5-h_texture ); 
-  // glVertex2d( aspect, -1.0);
-  // glTexCoord2f( 0.5+w_texture, 0.5+h_texture );
-  // glVertex2d( aspect, 1.0);
-  // glTexCoord2f( 0.5-w_texture, 0.5+h_texture );
-  // glVertex2d( -aspect, 1.0);
-  // glEnd() ;
+  //  We will draw the image as a texture on this quad.
+  qglColor(Qt::white);
+  glBegin(GL_QUADS);
+  glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
+  glVertex2d( -aspect, -1.0);
+  glTexCoord2f( 0.5+w_texture, 0.5-h_texture ); 
+  glVertex2d( aspect, -1.0);
+  glTexCoord2f( 0.5+w_texture, 0.5+h_texture );
+  glVertex2d( aspect, 1.0);
+  glTexCoord2f( 0.5-w_texture, 0.5+h_texture );
+  glVertex2d( -aspect, 1.0);
+  glEnd() ;
 
-  // glBindTexture( GL_TEXTURE_2D, 0 );
-  // glDisable( GL_TEXTURE_2D );
-  // m_gpu_backbuffer_program->uninstall();
+  glBindTexture( GL_TEXTURE_2D, 0 );
+  glDisable( GL_TEXTURE_2D );
+  m_gpu_backbuffer_program->uninstall();
 
-  //  std::cout << "Show_fps: " << pe_script_engine().get_parameter("show_fps") << "\n";
+  //   std::cout << "Show_fps: " << pe_script_engine().get_parameter("show_fps") << "\n";
   if (pe_script_engine().get_parameter("show_fps") != 0) {
     char fps_cstr[255];
     sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
@@ -397,8 +397,7 @@ void GraphicsEngine::drawImage() {
   pe_script_engine().set_parameter("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
-  //
-  
+  //  
 
   m_fps_last_time = new_time;
   pe_script_engine().set_parameter("frame", pe_script_engine().get_parameter("frame") + 1.0);
@@ -563,8 +562,7 @@ void GraphicsEngine::initializeGL() {
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  //  m_timer->start(10.0); 
-  m_timer->start(1000.0); 
+  m_timer->start(10.0); 
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {

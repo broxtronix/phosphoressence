@@ -23,15 +23,19 @@ class Parameter(object):
     def set_value(self, value):
         self.value = value
 
+    def set_control_value(self, value):
+        self.value = value
+
     def __unicode__(self):
         return "Parameter: " + self.name
         
+
 # --------------------------------------------------------------
-#                The Parameter Instance
+#              Initializing the C/Python Bridge
 # --------------------------------------------------------------
 
 # Bring in the read only parameters which are exposed through the
-# c/python bridge.
+# c/python bridge and loaded into the module space by ScriptEngine.cc
 try:
     import pe_readonly_bindings
 except:
@@ -43,6 +47,16 @@ except:
     pe_readonly_bindings = PeReadonlyBindingsDummy()
 
 
+# --------------------------------------------------------------
+#        The PhosphorEssence Class and 'pe' Instance
+#
+# In the scripting environment, the 'pe' object gives access to
+# phosphoressence parameters.  Parameters can be accessed directly
+# 'attributes' (e.g. 'pe.time' or 'pe.decay'), or they can be set
+# using the methods defined below.  Parameters are defined at the
+# bottom of this file.
+# --------------------------------------------------------------
+
 class PhosphorEssence(object):
 
     # --------------------- Attribute Methods ------------------------
@@ -53,16 +67,16 @@ class PhosphorEssence(object):
     # the 'self.params' dictionary.  
 
     def __getattr__(self, item):
-        print "call to getattr with " + item
-        print self.__dict__['params']
+        # print "call to getattr with " + item
+        # print self.__dict__['params']
         try:
-            print 'falling back to params dict!'
+           # print 'falling back to params dict!'
             return self.__dict__['params'][item].value
         except KeyError:
             raise AttributeError(item)
 
     def __setattr__(self, item, value):
-        print "call to setattr with " + str(item) + " " + str(value)
+        # print "call to setattr with " + str(item) + " " + str(value)
 
         # this test allows attributes to be set in the __init__ method
         if not self.__dict__.has_key('_Test__initialised'):
@@ -120,20 +134,29 @@ class PhosphorEssence(object):
     def set_control_value(self, name, value):
         self.params[name].set_control_value(value)
 
+    def has_parameter(self, name):
+        return self.params.has_key(name)
+
 # Create the instance of the PhosphorEssence class.  Note: don't go
 # creating your own instance.  This should be the only one!!  (TODO:
 # Maybe it should be a singleton class?)
 pe = PhosphorEssence()
 
+
+
 # --------------------------------------------------------------
-#                           Parameters
+#                   Parameter Definition
 # --------------------------------------------------------------
 
+
+# ---------------------
 # READ-ONLY PARAMETERS
+# ---------------------
 #
 # You should not change these, even though you technically can.
 # Someday when I have more time these might get properly moved to the
 # python/c bridge where thery can be locked down properly.
+
 pe.register(Parameter( name = "x",
                        description = "Retrieves the x-position of the current pixel" +
                        "(for per-pixel equations)" ))
@@ -194,7 +217,9 @@ pe.register(Parameter( name = "treb_att_r",
                        description = ">0 (readonly)         -same, but for treble (high) frequencies"))
 
 
-
+# ---------------------
+# READ-WRITE PARAMETERS
+# ---------------------
 
 # FEEDBACK PARAMETERS
 pe.register(Parameter( name = "decay",

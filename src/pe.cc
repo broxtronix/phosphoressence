@@ -37,6 +37,9 @@
 using namespace vw;
 
 void setup_parameters() {
+  pe_parameters().add_parameter("exit", true, 0.0,
+                                "Causes the program to exit.");
+
   // -------------------------------------------------------------------------------
   //                           READ-ONLY PARAMETERS
   //
