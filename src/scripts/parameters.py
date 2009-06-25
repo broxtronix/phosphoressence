@@ -13,11 +13,15 @@ class Parameter(object):
         self.description = description
         self.default_value = default_value
         self.read_only = read_only
+        self.value = default_value
 
         # Private members are set to default values
         self.control_mode = "automation";
         self.controller_timeout = 0.0;
         self.last_time = 0.0;
+
+    def set_value(self, value):
+        self.value = value
 
     def __unicode__(self):
         return "Parameter: " + self.name
@@ -28,26 +32,98 @@ class Parameter(object):
 
 # Bring in the read only parameters which are exposed through the
 # c/python bridge.
-import pe_readonly_bindings
+try:
+    import pe_readonly_bindings
+except:
+    # If we are running the python environment in "debug mode" without
+    # the C code at the same time, we have to spoof a few things,
+    # including the pe_readonly_bindings module.
+    class PeReadonlyBindingsDummy:
+        def pe_time(self, value): return 0.0;
+    pe_readonly_bindings = PeReadonlyBindingsDummy()
+
 
 class PhosphorEssence(object):
 
-    def __init__(self):
-        self.params = {}
+    # --------------------- Attribute Methods ------------------------
+    #
+    # We jump through quite a few hoops here in order to expose the PE
+    # parameters as attributes of the PhosphorEssence class instance.
+    # These functions forward lookups for unknown attributes along to
+    # the 'self.params' dictionary.  
+
+    def __getattr__(self, item):
+        print "call to getattr with " + item
+        print self.__dict__['params']
+        try:
+            print 'falling back to params dict!'
+            return self.__dict__['params'][item].value
+        except KeyError:
+            raise AttributeError(item)
+
+    def __setattr__(self, item, value):
+        print "call to setattr with " + str(item) + " " + str(value)
+
+        # this test allows attributes to be set in the __init__ method
+        if not self.__dict__.has_key('_Test__initialised'):
+            return dict.__setattr__(self, item, value)
+
+        # any normal attributes are handled normally
+        elif self.__dict__.has_key(item): 
+             dict.__setattr__(self, item, value)
+
+        # the remaining attributes are delegated to the 'params' dictionary 
+        elif  self.__dict__['params'].has_key(item): 
+            self.__dict__['params'][item].set_value(value)
+
+        else:
+            raise AttributeError(item)        
+
+    # ------------------------- Properties ---------------------------
+    #
+    # In a similar fashion to the attributes above, we establish a set
+    # of properties for accessing read-only data from the python/c
+    # bridge.  Right now this is only used to access the time object,
+    # but it could easily be used to access other read-only parameters
+    # as well.
 
     # No-Op method for setting read-only parameters
-    def setReadOnly(self, value):        
+    def set_read_only(self, key, value):
         pass
 
-    # Read-only parameters
-    time = property(pe_readonly_bindings.pe_time, setReadOnly)    
+    # The time parameter is special, so we bind it by hand.
+    time = property(pe_readonly_bindings.pe_time, set_read_only)    
 
+    # ------------------------- --------- ---------------------------
+
+    def __init__(self):
+        self.params = {}
+        self.__initialised = True  # for __setattr__
+
+    # Register a new paramater.  This store the parameter in a
+    # dictionary, and then creates a class property for its access.
     def register(self, parameter):
         self.params[parameter.name] = parameter
-        self.__dict__[parameter.name] = parameter.default_value
 
+    # There are two flavors for setting parameter values.  The first,
+    # set_value(), is equivelent to setting the attribute value
+    # directly from the script.  This form of setting the value may be
+    # overridden by the set_control_value() method below.
+    def set_value(self, name, value):
+        self.params[name].set_value(value)
+
+    # Set the value of a parameter using a physical controller.  This
+    # method of setting parameter values always takes precedence over
+    # set_value(), and may leave the parameter at this value for a
+    # certain amount of time before it reverts to being controllable
+    # from the scripting environment.
+    def set_control_value(self, name, value):
+        self.params[name].set_control_value(value)
+
+# Create the instance of the PhosphorEssence class.  Note: don't go
+# creating your own instance.  This should be the only one!!  (TODO:
+# Maybe it should be a singleton class?)
 pe = PhosphorEssence()
-
 
 # --------------------------------------------------------------
 #                           Parameters

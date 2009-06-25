@@ -1,5 +1,6 @@
 # Load various python modules
 from parameters import pe
+from presets import pe_presets
 import math
 
 # PhosphorEssence Python Initialization
@@ -8,9 +9,6 @@ import math
 # loads the basic set of PhosphorEssence javascript scripts.
 def pe_load():
 
-#    load(PE_RESOURCES + "/scripts/Utilities.js");
-#    load(PE_RESOURCES + "/scripts/Parameters.js");
-#    load(PE_RESOURCES + "/scripts/PresetFunctions.js");
 #    load(PE_RESOURCES + "/scripts/Controllers.js");
 #    load(PE_RESOURCES + "/scripts/Bindings.js");
 
@@ -45,6 +43,7 @@ def pe_initialize():
 # can animate PhosphorEssence parameters.
 def pe_render():
     pass
+    
     #    zoom2 = 2;
     #    print(zoom2.description);
     # cxz.foo = 10;

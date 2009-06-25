@@ -38,8 +38,8 @@ MainWindow::MainWindow() {
   setCentralWidget(m_graphics_engine);
 
   // Maximize the main window
-  //  this->showMaximized();
-  this->showFullScreen();
+  this->showMaximized();
+  //  this->showFullScreen();
 }
 
 //********************************************************************

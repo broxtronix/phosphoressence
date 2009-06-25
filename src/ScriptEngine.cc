@@ -230,7 +230,6 @@ void CommandPromptTask::operator()() {
   std::ostringstream ostr;
   ostr << "import sys\n" 
        << "sys.path.append('" << scripts_dir << "')\n"
-       << "PE_RESOURCES = \'" << scripts_dir << "\'\n"
        << "from phosphoressence import *\n";
   PyRun_SimpleString( ostr.str().c_str() );
 
@@ -245,6 +244,15 @@ void CommandPromptTask::operator()() {
               << "Perhaps an error occurred during startup?\n"
               << "--------------------------------------------------\n\n";
   } else {
+
+    PyObject* a = PyDict_GetItemString(m_pe_dict, "show_fps");
+    if (a) 
+      std::cout << "\n\nFound it!\n\n";
+    else
+      std::cout << "\n\nLOST it!\n\n";
+  
+
+
     // Start the main python interpreter loop
     char* dummy = "xxx";
     char** argv = &dummy;
