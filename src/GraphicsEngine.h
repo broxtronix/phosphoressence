@@ -41,7 +41,6 @@ class QPoint;
 #define VERT_MESH_SIZE 64
 #define FRAMEBUFFER_SIZE 2048
 
-
 /// Drawable
 ///
 /// This is the base class for a drawable object.  A class that
