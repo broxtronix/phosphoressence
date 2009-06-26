@@ -156,7 +156,7 @@ void GraphicsEngine::drawImage() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  float aspect = pe_script_engine().get_parameter("aspect");
+  float aspect = float(m_viewport_width) / m_viewport_height;
   float framebuffer_radius = sqrt(1+pow(aspect,2));
   glOrtho(-framebuffer_radius, framebuffer_radius, 
           -framebuffer_radius, framebuffer_radius, 
@@ -355,7 +355,7 @@ void GraphicsEngine::drawImage() {
 
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
-  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
+  m_gpu_frontbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
   m_gpu_frontbuffer_program->set_input_float("time", pe_time());
   m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
         
@@ -399,7 +399,6 @@ void GraphicsEngine::drawImage() {
   pe_script_engine().set_parameter("fps", fps);
   // For debugging:
   //  std::cout << "FPS: " << fps << "\n";
-  //  
 
   m_fps_last_time = new_time;
   pe_script_engine().set_parameter("frame", pe_script_engine().get_parameter("frame") + 1.0);
@@ -641,7 +640,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
 void GraphicsEngine::setup_mesh() {
 
-  float aspect = pe_script_engine().get_parameter("aspect");
+  float aspect = float(m_viewport_width) / m_viewport_height;
   float framebuffer_radius = sqrt(1+pow(aspect,2));
 
   double texture_w = 1.0;
