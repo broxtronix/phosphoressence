@@ -72,13 +72,22 @@ def fix_variable_names(line):
     l = l.replace("fZoomExponent", "zoomexp")
     l = l.replace("fShader", "fShader")
 
-    # Next, we need to prefix all of the parameters with "pe."
+    # Next, we need to prefix all of the parameters with 'pe.'
+    tokens = mystrip(l, ['=', ' ', '+', '-', '*', '/', '%', '(', ')', '[', ']', ';', ','])
     params = pe.param_list()
-    tokens = mystrip(l, ['=', ' ', '+', '-', '*', '/', '(', ')', '[', ']', ';'])
     for p in params:
         t = l.find(p)
-        if (t != -1 and tokens.count(t) > 0):
+        if (t != -1 and tokens.count(p) > 0):
             l = l.replace(p, "pe." + p)
+
+    # ... and math function with 'math.'
+    mathfuncs = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sqr', 'sqrt',
+                 'pow', 'log', 'log10', 'sign', 'sigmoid', 'rand', 'bor', 'bnot',
+                 'equal', 'above', 'below']
+    for f in mathfuncs:
+        t = l.find(f)
+        if (t != -1 and tokens.count(f) > 0):
+            l = l.replace(f, "math." + f)
 
     # Replace any c-style comments with python style comments
     l = l.replace('//', '#')
@@ -88,8 +97,9 @@ def fix_variable_names(line):
 
 def fix_standard_objects(line):
     l = line.replace("if", "if_milk")
-    l = l.replace("int", "floor")
-    l = l.replace("rand", "random_integer")
+    l = l.replace("int", "math.floor")
+    l = l.replace("rand", "math.random_integer")
+    l = l.replace("abs", "math.fabs")
     return l
 
 def fix_syntax_pf(line):
@@ -118,10 +128,10 @@ def write_per_frame(pe_file, milk_file):
         l2 = fix_standard_objects(l2)
         l2 = fix_variable_names(l2)
         if (l2 != ""):
-            pe_file.write( '\t' + l2 )
+            pe_file.write( '    ' + l2 )
             numlines += 1
     if (numlines == 0):
-            pe_file.write( '\tpass\n' )
+            pe_file.write( '    pass\n' )
 
 def write_per_pixel(pe_file, milk_file):
     milk_file.seek(0)
@@ -131,10 +141,10 @@ def write_per_pixel(pe_file, milk_file):
         l2 = fix_standard_objects(l2)
         l2 = fix_variable_names(l2)
         if (l2 != ""):
-            pe_file.write( '\t' + l2 )
+            pe_file.write( '    ' + l2 )
             numlines += 1
     if (numlines == 0):
-            pe_file.write( '\tpass\n' )
+            pe_file.write( '    pass\n' )
 
 # -----------------------------------------------------------------------
 #                               MAIN
@@ -158,18 +168,18 @@ for f in files:
     milk_file = open(f)
     pe_file = open(preset_name + ".pe","w")
 
-    # Write the preset name
-    pe_file.write("name = \'" + preset_name + "\'\n\n")
+    # Write the (empty) initialize routine
+    pe_file.write('name = \'' + preset_name + '\'\n\n')
 
     # Write the (empty) initialize routine
-    pe_file.write('def initialize(self):\n\tpass\n')
+    pe_file.write('def initialize():\n    pass\n')
                   
     # Write the per-frame equations
-    pe_file.write('\ndef per_frame(self):\n')
+    pe_file.write('\ndef per_frame():\n')
     write_per_frame(pe_file, milk_file);
 
     # Write the per_pixel equations
-    pe_file.write('\ndef per_pixel(self):\n')
+    pe_file.write('\ndef per_pixel():\n')
     write_per_pixel(pe_file, milk_file);
 
     # Write the final line, and then close both files

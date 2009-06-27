@@ -84,7 +84,7 @@ class PhosphorEssence(object):
 
         # any normal attributes are handled normally
         elif self.__dict__.has_key(item): 
-             dict.__setattr__(self, item, value)
+            dict.__setattr__(self, item, value)
 
         # the remaining attributes are delegated to the 'params' dictionary 
         elif  self.__dict__['params'].has_key(item): 
@@ -133,6 +133,18 @@ class PhosphorEssence(object):
     # from the scripting environment.
     def set_control_value(self, name, value):
         self.params[name].set_control_value(value)
+
+    def reset_all(self):
+        for p in self.params.values():
+
+            # THERE IS A BUG HERE. We should be able to do this:
+            #
+            # p.value = p.default_value
+            #
+            # but this doesn't work because something in the
+            # PeParameters dict is masking the Parameter's value
+            # entry.  FIXME!
+            self.__dict__[p.name] = p.default_value
 
     def has_parameter(self, name):
         return self.params.has_key(name)

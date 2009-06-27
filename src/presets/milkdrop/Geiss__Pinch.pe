@@ -1,0 +1,61 @@
+name = 'Geiss__Pinch'
+
+def initialize():
+    pass
+
+def per_frame():
+    pe.gamma=1.5
+    pe.decay=0.98
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=2
+    pe.wave_additive=0
+    pe.wave_usedots=0
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bMotionVectorsOn=0
+    bRedBlueStereo=0
+    pe.mv_x=12
+    pe.mv_y=9
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=0.8
+    fWaveScale=1.605
+    fWaveSmoothing=0.5
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=2.853
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.064
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=0
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.9
+    pe.wave_g=0.5
+    pe.wave_b=0.5
+    pe.wave_x=0.5
+    pe.wave_y=0.5
+    pe.wave_r = pe.wave_r + 0.100*( 0.60*math.sin(0.933*pe.time) + 0.40*math.sin(1.045*pe.time) );
+    pe.wave_g = pe.wave_g + 0.100*( 0.60*math.sin(0.900*pe.time) + 0.40*math.sin(0.956*pe.time) );
+    pe.wave_b = pe.wave_b + 0.100*( 0.60*math.sin(0.910*pe.time) + 0.40*math.sin(0.920*pe.time) );
+    pe.zoom = pe.zoom + 0.013*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
+    pe.rot = pe.rot + 0.040*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
+    fRating=2
+
+def per_pixel():
+    pe.rot=pe.rot+0.05+0.04*math.sin(pe.ang*3+pe.time*1.6);
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

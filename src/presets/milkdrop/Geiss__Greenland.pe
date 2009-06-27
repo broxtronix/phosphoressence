@@ -1,0 +1,79 @@
+name = 'Geiss__Greenland'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=3
+    pe.gamma=1.9
+    pe.decay=0.9899
+    echo_zoom=1.061
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=7
+    pe.wave_additive=0
+    pe.wave_usedots=0
+    bWaveThick=1
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bRedBlueStereo=0
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=0.395453
+    fWaveScale=0.135085
+    fWaveSmoothing=0.5
+    pe.wave_mystery=0.28
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=3.138
+    pe.zoomexp=2.7
+    fShader=0
+    pe.zoom=1.031
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0.001
+    pe.warp=0.319549
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.1
+    pe.wave_g=1
+    pe.wave_b=0.1
+    pe.wave_x=0.5
+    pe.wave_y=0.54
+    pe.ob_size=0.01
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0
+    pe.ib_size=0.01
+    pe.ib_r=0.25
+    pe.ib_g=0.25
+    pe.ib_b=0.25
+    pe.ib_a=0
+    pe.mv_x=12
+    pe.mv_y=9
+    pe.mv_dx=0
+    pe.mv_dy=0
+    pe.mv_l=0.9
+    pe.mv_r=1
+    pe.mv_g=1
+    pe.mv_b=1
+    pe.mv_a=0
+    pe.wave_r = pe.wave_r + 0.250*( 0.60*math.sin(2.137*pe.time) + 0.40*math.sin(1.770*pe.time) );
+    pe.wave_g = pe.wave_g + 0.300*( 0.60*math.sin(1.944*pe.time) + 0.40*math.sin(1.541*pe.time) );
+    pe.wave_b = pe.wave_b + 0.250*( 0.60*math.sin(1.251*pe.time) + 0.40*math.sin(1.655*pe.time) );
+    pe.rot = pe.rot + 0.01*( 0.60*math.sin(0.337*pe.time) + 0.40*math.sin(0.270*pe.time) );
+    pe.decay = pe.decay - 0.03*math.equal(pe.frame%4,0);
+    pe.wave_mystery = pe.wave_mystery + 0.07*math.sin(pe.time*0.09);
+
+def per_pixel():
+    pe.warp = pe.warp*(pe.x*2-1)*(pe.y*2-1);
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

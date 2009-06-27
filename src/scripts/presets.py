@@ -1,4 +1,5 @@
-import math, random, sys
+from parameters import pe
+import math, random, sys, os
 
 #----------------------------------------------------------------------
 #                               Preset Class
@@ -20,19 +21,17 @@ class Preset(object):
         if (init_func):
             self.initialize = init_func
         else:
-            self.initialize = empty_initialize
+            self.initialize = self.empty_initialize
 
         if (per_frame_func):
             self.per_frame = per_frame_func
         else:
-            self.per_frame = empty_per_frame
+            self.per_frame = self.empty_per_frame
 
         if (per_pixel_func):
             self.per_pixel = per_pixel_func
         else:
-            self.per_pixel = empty_per_pixel
-
-
+            self.per_pixel = self.empty_per_pixel
 
 #----------------------------------------------------------------------
 #                          Global PePresets Object
@@ -43,30 +42,52 @@ class PePresets(object):
 
     def __init__(self):
         self._presets = []
-        self._current_preset = 0
+        self._current_preset = None
+        self._current_index = 0
 
-    def register(self, name, per_frame_func, init_func = None,  per_pixel_func = None):
-        self._presets.append(Preset(name, per_frame_func, init_func, per_pixel_func))
+    def register(self, name, per_frame_func, init_func = None, per_pixel_func = None):
+        p = Preset(name, per_frame_func, init_func, per_pixel_func)
+        self._presets.append(p)
+        if self._current_preset == None:
+            self._current_preset = p
+            self._current_index = len(self._presets) - 1
 
     def current_preset(self):
-        return self._presets[_current_preset]
+        return self._current_preset
 
     def next_preset(self):
-        self._current_preset += 1
-        if (self._current_preset >= len(self._presets)):
-            self._current_preset = 0
-        print("Switched forward to " + self._current_preset)
-
+        self._current_index += 1
+        if (self._current_index >= len(self._presets)):
+            self._current_index = 0
+        try:
+            self._current_preset = self._presets[self._current_index]
+            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
+        except (IndexError):
+            self._current_preset = None
+            print 'An unexpected error occurred when switching presets.'
 
     def prev_preset(self):
-        self._current_preset -= 1
-        if (self._current_preset < 0):
-            self._current_preset = len(self._presets)-1
-        print("Switched back to " + self._current_preset)
+        self._current_index -= 1
+        if (self._current_index < 0):
+            self._current_index = len(self._presets)-1
+        try:
+            self._current_preset = self._presets[self._current_index]
+            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
+        except (IndexError):
+            self._current_preset = None
+            print 'An unexpected error occurred when switching presets.'
 
     def random_preset(self):
-        self._current_preset = int(math.random.uniform(0, len(self._presets)-1))
-        print("Switched ramdomly to " + self._current_preset)
+        self._current_index = int(math.random.uniform(0, len(self._presets)-1))
+        try:
+            self._current_preset = self._presets[self._current_index]
+            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
+        except (IndexError):
+            self._current_preset = None
+            print 'An unexpected error occurred when switching presets.'
+
+    def size(self):
+        return len(self._presets)
 
     # Loads all presets found in a directory.
     def load_directory(self, directory):
@@ -96,6 +117,7 @@ pe_presets = PePresets()
 
 def sqr(val): 
     return math.pow(val,2)
+math.sqr = sqr
 
 def sign(val):
     if (val > 0):
@@ -103,43 +125,51 @@ def sign(val):
     elif (val == 0):
         return 0 
     else:
-        return -1 
+        return -1
+math.sign = sign
 
 def sigmoid(val):
     print("WARNING : sigmoid() has not yet been implemented.\n")
+math.sigmoid = sigmoid
 
 def random_integer(val):
     return int(random.uniform(0,val))
+math.random_integer = random_integer
 
 def bor (val1, val2):
     if (val1 != 0 or val2 != 0):
         return 1.0 
     else:
         return 0.0 
+math.bor = bor
 
 def bnot (val):
     if (val != 0):
         return 0.0 
     else:
         return 1.0 
+math.bnot = bnot
 
 def equal (val1, val2):
     if (val1 == val2):
         return 1.0 
     else:
         return 0.0 
+math.equal = equal
 
 def above (val1, val2):
     if (val1 > val2):
         return 1.0 
     else:
-        return 0.0 
+        return 0.0
+math.above = above
 
 def below (val1, val2):
     if (val1 < val2):
         return 1.0 
     else:
         return 0.0 
+math.below = below
     
 def if_milk (pred, cond1, cond2):
     if (pred):

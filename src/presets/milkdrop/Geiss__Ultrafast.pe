@@ -1,0 +1,75 @@
+name = 'Geiss__Ultrafast'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=4
+    pe.gamma=1.998
+    pe.decay=0.98
+    echo_zoom=1.421369
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=5
+    pe.wave_additive=1
+    pe.wave_usedots=1
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=1
+    bMotionVectorsOn=0
+    bRedBlueStereo=0
+    pe.mv_x=12
+    pe.mv_y=9
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=1.456111
+    fWaveScale=1.694
+    fWaveSmoothing=0.9
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=3.138
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.153
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=1.098615
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.5
+    pe.wave_g=0.5
+    pe.wave_b=0.8
+    pe.wave_x=0.5
+    pe.wave_y=0.5
+    pe.ob_size=0.01
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0
+    pe.ib_size=0.01
+    pe.ib_r=0.25
+    pe.ib_g=0.25
+    pe.ib_b=0.25
+    pe.ib_a=0
+    pe.wave_r = pe.wave_r + 0.650*( 0.60*math.sin(1.437*pe.time) + 0.40*math.sin(0.970*pe.time) );
+    pe.wave_g = pe.wave_g + 0.650*( 0.60*math.sin(1.344*pe.time) + 0.40*math.sin(0.841*pe.time) );
+    pe.wave_b = pe.wave_b + 0.650*( 0.60*math.sin(1.251*pe.time) + 0.40*math.sin(1.055*pe.time) );
+    pe.rot = pe.rot + 0.07*( 0.60*math.sin(0.381*pe.time) + 0.09*math.sin(-0.579*pe.time) );
+    pe.cx = pe.cx + 0.10*( 0.60*math.sin(0.374*pe.time) + 0.10*math.sin(0.294*pe.time) );
+    pe.cy = pe.cy + 0.10*( 0.60*math.sin(0.393*pe.time) + 0.10*math.sin(0.223*pe.time) );
+    pe.dx = pe.dx + 0.010*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
+    pe.dy = pe.dy + 0.010*( 0.60*math.sin(0.284*pe.time) + 0.40*math.sin(0.247*pe.time) );
+    pe.decay = pe.decay - 0.01*math.equal(pe.frame%6,0);
+
+def per_pixel():
+    pass
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

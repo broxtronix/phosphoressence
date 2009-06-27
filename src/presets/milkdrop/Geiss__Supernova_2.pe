@@ -1,0 +1,81 @@
+name = 'Geiss__Supernova_2'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=3
+    pe.gamma=1.994
+    pe.decay=0.99
+    echo_zoom=1.089924
+    echo_alpha=0.5
+    echo_orient=3
+    pe.wave_mode=2
+    pe.wave_additive=0
+    pe.wave_usedots=0
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bMotionVectorsOn=0
+    bRedBlueStereo=0
+    pe.mv_x=12
+    pe.mv_y=9
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=2.2
+    fWaveScale=0.810235
+    fWaveSmoothing=0.5
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=2.264809
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.0518
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=0.23801
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.6
+    pe.wave_g=0.5
+    pe.wave_b=0.5
+    pe.wave_x=0.5
+    pe.wave_y=0.5
+    pe.ob_size=0.01
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0
+    pe.ib_size=0.01
+    pe.ib_r=0.25
+    pe.ib_g=0.25
+    pe.ib_b=0.25
+    pe.ib_a=0
+    pe.wave_r = pe.wave_r + 0.150*( 0.60*math.sin(1.037*pe.time) + 0.40*math.sin(0.370*pe.time) );
+    pe.wave_g = pe.wave_g + 0.150*( 0.60*math.sin(0.944*pe.time) + 0.40*math.sin(0.441*pe.time) );
+    pe.wave_b = pe.wave_b + 0.150*( 0.60*math.sin(0.851*pe.time) + 0.40*math.sin(0.55*pe.time) );
+    pe.rot = pe.rot + 0.005*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
+    pe.cx = pe.cx + 0.210*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.294*pe.time) );
+    pe.cy = pe.cy + 0.210*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.223*pe.time) );
+    pe.dx = pe.dx + 0.005*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
+    pe.dy = pe.dy + 0.005*( 0.60*math.sin(0.284*pe.time) + 0.40*math.sin(0.247*pe.time) );
+    pe.decay = pe.decay + 0.01*math.equal(pe.frame%8,0);
+    my_x = 0.2*math.sin(pe.time*0.392) + 0.2*math.sin(pe.time*0.551+2);
+    my_y = 0.2*math.sin(pe.time*0.322+1) + 0.2*math.sin(pe.time*0.611+3);
+    pe.dx = pe.dx + 0.03*my_x;
+    pe.dy = pe.dy + 0.03*my_y;
+    pe.wave_x = pe.wave_x - 0.89*my_x;
+    pe.wave_y = pe.wave_y + 0.89*my_y;
+
+def per_pixel():
+    pass
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

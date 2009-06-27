@@ -1,0 +1,72 @@
+name = 'Geiss__Flotsam'
+
+def initialize():
+    pass
+
+def per_frame():
+    pe.gamma=2.7
+    pe.decay=0.98
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=3
+    pe.wave_additive=0
+    pe.wave_usedots=0
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bMotionVectorsOn=0
+    bRedBlueStereo=0
+    pe.mv_x=12
+    pe.mv_y=9
+    pe.wave_a=4.099998
+    fWaveScale=2.24567
+    fWaveSmoothing=0.7
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=1.331
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.012991
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=0.000156
+    pe.sx=0.999666
+    pe.sy=0.9999
+    pe.wave_r=1
+    pe.wave_g=0.65
+    pe.wave_b=0.25
+    pe.wave_x=0.5
+    pe.wave_y=0.38
+    pe.wave_r = pe.wave_r + 0.250*( 0.60*math.sin(0.980*pe.time) + 0.40*math.sin(1.047*pe.time) );
+    pe.wave_g = pe.wave_g + 0.250*( 0.60*math.sin(0.835*pe.time) + 0.40*math.sin(1.081*pe.time) );
+    pe.wave_b = pe.wave_b + 0.250*( 0.60*math.sin(0.814*pe.time) + 0.40*math.sin(1.011*pe.time) );
+    pe.q1 = (pe.cx*2-1) + 0.92*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.494*pe.time) );
+    pe.q2 = (pe.cy*2-1) + 0.92*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.423*pe.time) );
+    pe.q3 = (pe.cx*2-1) + 0.92*( 0.60*math.sin(0.174*-pe.time) + 0.40*math.sin(0.364*pe.time) );
+    pe.q4 = (pe.cy*2-1) + 0.92*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.271*-pe.time) );
+    fRating=2
+
+def per_pixel():
+    du = (pe.x*2-1) - pe.q1;
+    dv = (pe.y*2-1) - pe.q2;
+    dist = math.sqrt(du*du+dv*dv);
+    ang2 = atan2(du,dv);
+    mult = 0.012/(dist+0.4);
+    pe.dx = mult*math.sin(ang2-1.5);
+    pe.dy = mult*math.cos(ang2-1.5);
+    du = (pe.x*2-1) - pe.q3;
+    dv = (pe.y*2-1) - pe.q4;
+    dist = math.sqrt(du*du+dv*dv);
+    ang2 = atan2(du,dv);
+    mult = 0.012/(dist+0.4);
+    pe.dx = pe.dx + mult*math.sin(ang2+1.5);
+    pe.dy = pe.dy + mult*math.cos(ang2+1.5);
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

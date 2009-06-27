@@ -1,0 +1,76 @@
+name = 'Geiss__Downward_Spiral'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=3
+    pe.gamma=1.9
+    pe.decay=0.98
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=7
+    pe.wave_additive=1
+    pe.wave_usedots=0
+    bWaveThick=1
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bRedBlueStereo=0
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=1
+    fWaveScale=2.717574
+    fWaveSmoothing=0.9
+    pe.wave_mystery=1
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=2.853
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=0.99
+    pe.rot=0.06
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=0
+    pe.sx=1
+    pe.sy=0.9999
+    pe.wave_r=1
+    pe.wave_g=0.4
+    pe.wave_b=0.1
+    pe.wave_x=0.5
+    pe.wave_y=0.6
+    pe.ob_size=0.01
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0
+    pe.ib_size=0.01
+    pe.ib_r=0.25
+    pe.ib_g=0.25
+    pe.ib_b=0.25
+    pe.ib_a=0
+    pe.mv_x=12
+    pe.mv_y=9
+    pe.mv_dx=0
+    pe.mv_dy=0
+    pe.mv_l=0.9
+    pe.mv_r=1
+    pe.mv_g=1
+    pe.mv_b=1
+    pe.mv_a=0
+    pe.wave_r = pe.wave_r + 0.120*( 0.60*math.sin(0.733*pe.time) + 0.40*math.sin(0.345*pe.time) );
+    pe.wave_g = pe.wave_g + 0.120*( 0.60*math.sin(0.600*pe.time) + 0.40*math.sin(0.456*pe.time) );
+    pe.wave_b = pe.wave_b + 0.100*( 0.60*math.sin(0.510*pe.time) + 0.40*math.sin(0.550*pe.time) );
+
+def per_pixel():
+    pe.rot=pe.rot*(-0.2+math.pow(math.cos(pe.rad*8+pe.ang-pe.time*0.8),2));
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

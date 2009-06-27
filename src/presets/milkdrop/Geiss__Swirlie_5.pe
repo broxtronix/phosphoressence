@@ -1,0 +1,78 @@
+name = 'Geiss__Swirlie_5'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=2
+    pe.gamma=1.994
+    pe.decay=0.99
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=7
+    pe.wave_additive=1
+    pe.wave_usedots=0
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bMotionVectorsOn=0
+    bRedBlueStereo=0
+    pe.mv_x=12
+    pe.mv_y=9
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=0
+    fWaveScale=1.693514
+    fWaveSmoothing=0.9
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=0.451118
+    pe.warp_scale=3.928016
+    pe.zoomexp=2.1
+    fShader=0
+    pe.zoom=0.961
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=7.397955
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.65
+    pe.wave_g=0.65
+    pe.wave_b=0.65
+    pe.wave_x=0.5
+    pe.wave_y=0.95
+    pe.ob_size=0.03
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0.5
+    pe.ib_size=0.01
+    pe.ib_r=0.34
+    pe.ib_g=0.34
+    pe.ib_b=0.34
+    pe.ib_a=0.5
+    pe.wave_x = pe.wave_x + 0.0200*( 0.60*math.sin(0.821*pe.time) + 0.40*math.sin(0.621*pe.time) );
+    pe.wave_y = pe.wave_y + 0.0200*( 0.60*math.sin(0.942*pe.time) + 0.40*math.sin(0.722*pe.time) );
+    pe.wave_r = pe.wave_r + 0.350*( 0.60*math.sin(0.823*pe.time) + 0.40*math.sin(0.916*pe.time) );
+    pe.wave_g = pe.wave_g + 0.350*( 0.60*math.sin(0.900*pe.time) + 0.40*math.sin(1.023*pe.time) );
+    pe.wave_b = pe.wave_b + 0.350*( 0.60*math.sin(0.808*pe.time) + 0.40*math.sin(0.949*pe.time) );
+    pe.rot = pe.rot + 0.35*( 0.60*math.sin(0.21*pe.time) + 0.30*math.sin(0.339*pe.time) );
+    pe.cx = pe.cx + 0.30*( 0.60*math.sin(0.374*pe.time) + 0.14*math.sin(0.194*pe.time) );
+    pe.cy = pe.cy + 0.37*( 0.60*math.sin(0.274*pe.time) + 0.10*math.sin(0.394*pe.time) );
+    pe.ib_r = pe.ib_r + 0.2*math.sin(pe.time*0.5413);
+    pe.ib_g = pe.ib_g + 0.2*math.sin(pe.time*0.6459);
+    pe.ib_b = pe.ib_b + 0.2*math.sin(pe.time*0.7354);
+    
+
+def per_pixel():
+    pass
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

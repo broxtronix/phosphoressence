@@ -1,0 +1,58 @@
+name = 'Geiss__Bright_Fiber_Matrix_1'
+
+def initialize():
+    pass
+
+def per_frame():
+    pe.gamma=1.5
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.decay=0.99
+    pe.wave_mode=2
+    pe.wave_additive=1
+    pe.wave_usedots=0
+    bModWaveAlphaByVolume=0
+    pe.wave_brighten=1
+    pe.wrap=1
+    darken_center=0
+    bMotionVectorsOn=0
+    pe.mv_x=12
+    pe.mv_y=9
+    pe.wave_a=3.32
+    fWaveScale=2.718
+    fWaveSmoothing=0.6
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=1
+    pe.warp_scale=25.548
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.099
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=4.044
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=0.5
+    pe.wave_g=0.5
+    pe.wave_b=0.5
+    pe.wave_x=0.5
+    pe.wave_y=0.5
+    pe.wave_r = pe.wave_r + 0.500*( 0.60*math.sin(0.933*pe.time) + 0.40*math.sin(1.045*pe.time) );
+    pe.wave_g = pe.wave_g + 0.500*( 0.60*math.sin(0.900*pe.time) + 0.40*math.sin(0.956*pe.time) );
+    pe.wave_b = pe.wave_b + 0.500*( 0.60*math.sin(0.910*pe.time) + 0.40*math.sin(0.920*pe.time) );
+    pe.zoom = pe.zoom + 0.013*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
+    pe.rot = pe.rot + 0.040*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
+    pe.cx = pe.cx + 0.110*( 0.60*math.sin(0.344*pe.time) + 0.40*math.sin(0.294*pe.time) );
+    pe.cy = pe.cy + 0.110*( 0.60*math.sin(0.313*pe.time) + 0.40*math.sin(0.223*pe.time) );
+    fRating=4
+
+def per_pixel():
+    pass
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

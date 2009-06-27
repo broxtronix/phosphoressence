@@ -1,0 +1,88 @@
+name = 'Geiss__Octopus_Gold'
+
+def initialize():
+    pass
+
+def per_frame():
+    fRating=2
+    pe.gamma=2
+    pe.decay=0.98
+    echo_zoom=2
+    echo_alpha=0
+    echo_orient=0
+    pe.wave_mode=5
+    pe.wave_additive=0
+    pe.wave_usedots=0
+    bWaveThick=0
+    bModWaveAlphaByVolume=1
+    pe.wave_brighten=0
+    pe.wrap=1
+    darken_center=0
+    bRedBlueStereo=0
+    brighten=0
+    darken=0
+    solarize=0
+    pe.invert=0
+    pe.wave_a=6.56221
+    fWaveScale=2.673533
+    fWaveSmoothing=0.9
+    pe.wave_mystery=0
+    fModWaveAlphaStart=0.75
+    fModWaveAlphaEnd=0.95
+    pe.warp_speed=2.143588
+    pe.warp_scale=1
+    pe.zoomexp=1
+    fShader=0
+    pe.zoom=1.01
+    pe.rot=0
+    pe.cx=0.5
+    pe.cy=0.5
+    pe.dx=0
+    pe.dy=0
+    pe.warp=0.004791
+    pe.sx=1
+    pe.sy=1
+    pe.wave_r=1
+    pe.wave_g=0.8
+    pe.wave_b=0.5
+    pe.wave_x=0.5
+    pe.wave_y=0.5
+    pe.ob_size=0.01
+    pe.ob_r=0
+    pe.ob_g=0
+    pe.ob_b=0
+    pe.ob_a=0
+    pe.ib_size=0.01
+    pe.ib_r=0.25
+    pe.ib_g=0.25
+    pe.ib_b=0.25
+    pe.ib_a=0
+    pe.mv_x=8
+    pe.mv_y=6
+    pe.mv_dx=0
+    pe.mv_dy=0
+    pe.mv_l=0.9
+    pe.mv_r=1
+    pe.mv_g=1
+    pe.mv_b=1
+    pe.mv_a=0
+    pe.wave_x = pe.wave_x + 0.200*( 0.60*math.sin(0.394*pe.time) + 0.40*math.sin(0.475*pe.time) );
+    pe.wave_y = pe.wave_y + 0.200*( 0.60*math.sin(0.442*pe.time) + 0.40*math.sin(0.321*pe.time) );
+    pe.wave_r = pe.wave_r + 0.300*( 0.60*math.sin(1.517*pe.time) + 0.40*math.sin(1.580*pe.time) );
+    pe.wave_g = pe.wave_g + 0.200*( 0.60*math.sin(1.088*pe.time) + 0.40*math.sin(1.076*pe.time) );
+    pe.wave_b = pe.wave_b + 1.000*( 0.60*math.sin(3.422*pe.time) + 0.40*math.sin(2.494*pe.time) );
+    pe.rot = pe.rot + 0.040*( 0.60*math.sin(0.181*pe.time) + 0.40*math.sin(0.279*pe.time) );
+    pe.cx = pe.cx + 0.110*( 0.60*math.sin(0.174*pe.time) + 0.40*math.sin(0.204*pe.time) );
+    pe.cy = pe.cy + 0.110*( 0.60*math.sin(0.193*pe.time) + 0.40*math.sin(0.237*pe.time) );
+    pe.zoom=pe.zoom+0.01+0.037*math.sin(pe.time*0.93) + 0.03*math.sin(pe.time*0.01);
+    pe.q1=math.cos(0.23*pe.time);
+    pe.q2=pe.time + 0.3*math.sin(pe.time*0.21);
+    pe.cx=pe.cx+0.2*math.sin(pe.q1*0.5);
+    pe.cy=pe.cy+0.2*math.sin(pe.q2*0.4);
+
+def per_pixel():
+    pe.rot=pe.rot+0.05*math.sin(pe.rad*(9.5 + 5.5*math.sin(pe.time*0.0823)) + pe.q2*1.3);
+    pe.zoom=pe.zoom+0.05*math.sin(pe.ang*6 + pe.rad*(5.5 + 1.5*math.sin(pe.time*0.04)) + pe.q2*1.63 + q);
+    pe.zoom=pe.zoom+0.05-0.05*pe.rad;
+
+pe_presets.register(name, per_frame, initialize, per_pixel)

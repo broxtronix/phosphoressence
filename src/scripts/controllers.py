@@ -1,19 +1,15 @@
+from parameters import pe
+from bindings import pe_bindings
+import math
+
 # ----------------------------------------------------
 #                   OSC Controller
 # ----------------------------------------------------
 
-def osc_receive_callback(path, value):
-    if (DEBUG):
-	print("[OSC]    Path: " + path + "   Value: " + value)
-    bindings.controller_to_parameter(osc, path, value)
+class OscController(object):
 
-def osc_render_callback(): 
-    lj_ratio_a = Math.round(lj_ratio_a)
-    lj_ratio_b = Math.round(lj_ratio_b)
-
-def setup_osc(): 
-    # Setup the receive callbacks for controllers
-    osc.receive_callback = osc_receive_callback
+    def __init__(self):
+        pass
 
     # Set up some basic control bindings
     # bindings.add(osc, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
@@ -67,351 +63,349 @@ def setup_osc():
     # pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12)
     # pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0)
 
+    def receive_callback(self, path, value):
+        #        if (DEBUG):
+        print("[OSC]    Path: " + path + "   Value: " + str(value))
+        pe_bindings.controller_to_parameter(self, path, value)
+    
+    def render_callback(self): 
+        pass
 
 # ----------------------------------------------------
 #                Joystick Controller
 # ----------------------------------------------------
 
-def joystick_receive_callback(path, value): 
+class JoystickController(object):
 
-    # -------------------------------------
-    # Fixed settings for the langton bEATS!
-    # -------------------------------------
-    
-    # RESET!!
-    if (path == "/joystick0/button3" and value == 1): 
-	print("Resetting to defaults!!\n>> ")
-	p.reset_all()
-	mv_a = 1.0
-	mv_x = 0
-	mv_y = 0
-	mv_l = 0
-	rot = -0.001
-	sx=0.999
-	wave_mode=0
-    	wave_enabled = 1
-    
+    def __init__(self, joystick_debug = False):
 
-    # IFS Mode
-    if (path == "/joystick0/button0" and value == 1): 
-	ifs_mode = ifs_mode + 1
-        if (ifs_mode > 4):
-	    ifs_mode = 0
-    
+        self.JOY_DEBUG = joystick_debug
 
+        # Langton bEATS
+        pe_bindings.add(self, "/joystick0/axis2", "decay", 0.75, 1.05, 0.98)
+        pe_bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
+        pe_bindings.add(self, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
 
-    if (path == "/joystick0/button6" and value == 1): 
-	ifs_mode = ifs_mode - 1
-        if (ifs_mode < 0):
-	    ifs_mode = 4
-    
+        # Local variables, for helping us to keep track of various
+        # joystick settings.
+        self.sx_coefficient = 0.0
+        self.sy_coefficient = 0.0
+        self.cx_coefficient = 0.0
+        self.cy_coefficient = 0.0
+        self.warp_coefficient = 0.0
+        self.gamma_coefficient = 0.0
+        self.dx_coefficient = 0.0
+        self.dy_coefficient = 0.0
+        self.sqfreq_coefficient = 0.0
+        self.wave_frequency_coeff = 0.0
+        self.mv_l_coeff = 0.0
+        self.square_scale_coeff = 0.0
+        self.square_thick_coeff = 0.0
 
-    # Squareshape Enable
-    if (path == "/joystick0/button1" and value == 1): 
-	if (square_a): square_a = 0.0
-        else: square_a = 1.0	
-    
+        # Default parameters for PhosphorEssence
+        pe.wave_enabled = 1
+        pe.wave_mode = 0
+        pe.square_a = 1.0
+        pe.ib_size=10.0
+        pe.ib_a = 0.0
+        pe.mv_a = 1.0
+        pe.mv_x = 0
+        pe.mv_y = 0
+        pe.mv_l = 0
+        pe.rot = -0.001
+        pe.sx=0.999
+        
 
-    # Border Enable
-    if (path == "/joystick0/button2" and value == 1): 
-	if (ib_a): ib_a = 0.0
-        else: ib_a = 1.0	
-    
-    # Invert
-    if (path == "/joystick0/button4" and value == 1): 
-	if (invert): invert = 0.0
-        else: invert = 1.0
-    
+    def receive_callback(self, path, value): 
 
-    # Translation
-    if (path == "/joystick0/hat0" and value == 2): 
-	square_thick_coeff = 1.0
-    #	wave_frequency_coeff = 1.0
-    if (path == "/joystick0/hat0" and value == 8): 
-	square_thick_coeff = -1.0
-    #	wave_frequency_coeff = -1.0
-    if (path == "/joystick0/hat0" and value == 1): 
-    	square_scale_coeff = 1.0
-    if (path == "/joystick0/hat0" and value == 4): 
-    	square_scale_coeff = -1.0
-    if (path == "/joystick0/hat0" and value == 0.0): 
-    	square_thick_coeff = 0.0
-	square_scale_coeff = 0.0
-	wave_frequency_coeff = 0.0
+        # -------------------------------------
+        # Fixed settings for the langton bEATS!
+        # -------------------------------------
+    
+        # RESET!!
+        if (path == "/joystick0/button3" and value == 1): 
+            print("Resetting to defaults!!\n>> ")
+            pe.reset_all()
+            pe.mv_a = 1.0
+            pe.mv_x = 0
+            pe.mv_y = 0
+            pe.mv_l = 0
+            pe.rot = -0.001
+            pe.sx=0.999
+            pe.wave_mode=0
+            pe.wave_enabled = 1
     
 
-    # Gamma
-    if (path == "/joystick0/button7" and value == 1): 
-	if (gamma == 1.0): gamma = 1.5
-	else: gamma = 1.0
+        # IFS Mode
+        if (path == "/joystick0/button0" and value == 1): 
+            pe.ifs_mode = pe.ifs_mode + 1
+            if (pe.ifs_mode > 4):
+                pe.ifs_mode = 0
+
+        if (path == "/joystick0/button6" and value == 1): 
+            pe.ifs_mode = pe.ifs_mode - 1
+            if (pe.ifs_mode < 0):
+                pe.ifs_mode = 4
     
 
-    # Rotation
-    rot_gain = 0.01
-    if (path == "/joystick0/axis0"): 
-	delta = -(value-0.5) * rot_gain
-	if (Math.abs(value-0.5) > 0.05): 
-	    rot += -delta
-	    # if (rot > 0.785): rot = 0.785   # Turn off rotation 
-	    # if (rot < -0.785): rot = -0.785 # limits for now.
-	
-    
-
-    # Zoom
-    zoom_gain = 0.002
-    if (path == "/joystick0/axis1"): 
-	delta = (value-0.5) * zoom_gain
-	if (Math.abs(value-0.5) > 0.05): 
-	    zoom += -delta
-	    if (zoom > 1.16): zoom = 1.16
-	    if (zoom < 0.5): zoom = 0.5
-	
-    
-
-    # Zoomexp
-    if (path == "/joystick0/axis3"): 
-	delta = (value-0.5)/20.0
-        if (Math.abs(value-0.5) > 0.05):
-	    zoomexp -= delta
-	if (zoomexp < 0.25): zoomexp = 0.25 
-	if (zoomexp > 2.0): zoomexp = 2.0
-    
-
-    # Scaling
-    if (path == "/joystick0/button21" and value == 1.0): 
-	sx_coefficient = 1.0
-    if (path == "/joystick0/button21" and value == 0.0): 
-	sx_coefficient = 0.0
-    if (path == "/joystick0/button19" and value == 1.0): 
-	sx_coefficient = -1.0
-    if (path == "/joystick0/button19" and value == 0.0): 
-	sx_coefficient = 0.0
-
-    if (path == "/joystick0/button20" and value == 1.0): 
-	sy_coefficient = 1.0
-    if (path == "/joystick0/button20" and value == 0.0): 
-	sy_coefficient = 0.0
-    if (path == "/joystick0/button18" and value == 1.0): 
-	sy_coefficient = -1.0
-    if (path == "/joystick0/button18" and value == 0.0): 
-	sy_coefficient = 0.0
-
-    # Center of rotation
-    if (path == "/joystick0/button23" and value == 1.0): 
-    	dx_coefficient = -1.0
-    if (path == "/joystick0/button23" and value == 0.0): 
-    	dx_coefficient = 0.0
-    if (path == "/joystick0/button25" and value == 1.0): 
-	dx_coefficient = 1.0
-    if (path == "/joystick0/button25" and value == 0.0): 
-	dx_coefficient = 0.0
-
-    if (path == "/joystick0/button22" and value == 1.0): 
-	dy_coefficient = -1.0
-    if (path == "/joystick0/button22" and value == 0.0): 
-	dy_coefficient = 0.0
-    if (path == "/joystick0/button24" and value == 1.0): 
-	dy_coefficient = 1.0
-    if (path == "/joystick0/button24" and value == 0.0): 
-	dy_coefficient = 0.0
-
-    # Motion Vectors
-    if (path == "/joystick0/button15" and value == 1.0): 
-	if (mv_x == 0 or mv_y == 0): 
-	    mv_x = 2
-	    mv_y = 2
-        elif (mv_x < 64 and mv_y < 64): 
-	    mv_x *= 2
-	    mv_y *= 2
-	
-    if (path == "/joystick0/button17" and value == 1.0): 
-	if (mv_x == 2 or mv_y == 2): 
-	    mv_x = 0
-	    mv_y = 0
-        else: 
-	    mv_x /= 2
-	    mv_y /= 2
-	
-    
-    if (path == "/joystick0/button14" and value == 1.0): 
-	mv_l_coeff = 1.0
-    if (path == "/joystick0/button14" and value == 0.0): 
-	mv_l_coeff = 0.0
-    if (path == "/joystick0/button16" and value == 1.0): 
-	mv_l_coeff = -1.0
-    if (path == "/joystick0/button16" and value == 0.0): 
-	mv_l_coeff = 0.0
-
-    # Reset center of rotation, scaling, and zoom exponent
-    if (path == "/joystick0/button5" and value == 1.0): 
-	sx= 1.0
-	sy= 1.0
-	dx = 0.0
-	dy = 0.0
-    	wave_enabled = 1
-	wave_mode = 0
-	square_a = 1.0
-	ib_a = 0.0
-	zoomexp = 1.0
-    
-
-    # Warp
-    if (path == "/joystick0/button0" and value == 1.0):
-	warp_coefficient = 1.0
-    if (path == "/joystick0/button0" and value == 0.0):
-	warp_coefficient = 0.0
-    if (path == "/joystick0/button6" and value == 1.0):
-	warp_coefficient = -1.0
-    if (path == "/joystick0/button6" and value == 0.0): 
-	warp_coefficient = 0.0
+        # Squareshape Enable
+        if (path == "/joystick0/button1" and value == 1): 
+            if (pe.square_a): pe.square_a = 0.0
+            else: pe.square_a = 1.0	
 
 
-    # Wave mode
-    if (path == "/joystick0/button8" and value == 1): 
-    	wave_mode = 0
-    	wave_enabled = 1
-    elif (path == "/joystick0/button9" and value == 1): 
-    	wave_mode = 1
-    	wave_enabled = 1
-    elif (path == "/joystick0/button10" and value == 1): 
-    	wave_mode = 2
-    	wave_enabled = 1
-    
+        # Border Enable
+        if (path == "/joystick0/button2" and value == 1): 
+            if (pe.ib_a): pe.ib_a = 0.0
+            else: pe.ib_a = 1.0	
 
-    # PRECIOUS UPPER SWITCH 
-    if (path == "/joystick0/button11" and value == 1): 
-	wave_frequency = 0.03
-	wave_mode=2
-    elif (path == "/joystick0/button12" and value == 1): 
-	wave_frequency = 0.5
-	wave_mode=2
-    elif (path == "/joystick0/button13" and value == 1): 
-	wave_frequency = 10.0
-	wave_mode=2
-    
-
-    # Debugging
-    if (JOY_DEBUG and (path.search("axis") == -1)):
-	print("[JOYSTICK]    Path: " + path + "   Value: " + value)
-
-    # Otherwise, delegate to the bindings.
-#    bindings.controller_to_parameter(joystick, path, value)
+        # Invert
+        if (path == "/joystick0/button4" and value == 1): 
+            if (pe.invert): pe.invert = 0.0
+            else: pe.invert = 1.0
 
 
-def setup_joystick(): 
-    # Setup the receive callbacks for controllers
-    joystick.receive_callback = joystick_receive_callback
-
-    # Langton bEATS
-#    bindings.add(joystick, "/joystick0/axis2", "decay", 0.75, 1.05, 0.98)
-#    bindings.add(joystick, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
-#    bindings.add(joystick, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
-
-    sx_coefficient = 0.0
-    sy_coefficient = 0.0
-    cx_coefficient = 0.0
-    cy_coefficient = 0.0
-    warp_coefficient = 0.0
-    gamma_coefficient = 0.0
-    dx_coefficient = 0.0
-    dy_coefficient = 0.0
-    sqfreq_coefficient = 0.0
-    wave_frequency_coeff = 0.0
-    mv_l_coeff = 0.0
-
-    square_scale_coeff = 0.0
-    square_thick_coeff = 0.0
-
-    wave_enabled = 1
-    wave_mode = 0
-    square_a = 1.0
-    ib_size=10.0
-    ib_a = 0.0
-
-    mv_a = 1.0
-    mv_x = 0
-    mv_y = 0
-    mv_l = 0
-    rot = -0.001
-    sx=0.999
+        # Translation
+        if (path == "/joystick0/hat0" and value == 2): 
+            self.square_thick_coeff = 1.0
+        #	wave_frequency_coeff = 1.0
+        if (path == "/joystick0/hat0" and value == 8): 
+            self.square_thick_coeff = -1.0
+        #	wave_frequency_coeff = -1.0
+        if (path == "/joystick0/hat0" and value == 1): 
+            self.square_scale_coeff = 1.0
+        if (path == "/joystick0/hat0" and value == 4): 
+            self.square_scale_coeff = -1.0
+        if (path == "/joystick0/hat0" and value == 0.0): 
+            self.square_thick_coeff = 0.0
+            self.square_scale_coeff = 0.0
+            self.wave_frequency_coeff = 0.0
 
 
-def joystick_render_callback():
-
-    # Update scaling
-    scaling_stepsize = 0.0005
-    sx += scaling_stepsize * sx_coefficient
-    sy += scaling_stepsize * sy_coefficient
-    if (sx > 1.5): sx = 1.5
-    if (sx < 0.5): sx = 0.5
-    if (sy > 1.5): sy = 1.5
-    if (sy < 0.5): sy = 0.5
-
-    # Update center of rotation
-    crot_stepsize = 1/100.0
-    cx += crot_stepsize * cx_coefficient
-    cy += crot_stepsize * cy_coefficient
-    if (cx > 1.5): cx = 1.5
-    if (cx < -1.5): cx = -1.5
-    if (cy > 1.5): cy = 1.5
-    if (cy < -1.5): cy = -1.5
-
-    # Update warp
-    # warp_stepsize = 1/30.0
-    # warp += warp_stepsize * warp_coefficient
-    # if (warp > 2.0): warp = 2.0
-    # if (warp < 0.0): warp = 0.0
-
-    # Update Square Scale
-    square_scale_stepsize = 0.05
-    square_scale += square_scale_stepsize * square_scale_coeff
-    if (square_scale > 4.0): square_scale = 4.0
-    if (square_scale < 0.25): square_scale = 0.25
-
-    # Update Square Thickness
-    square_thick_stepsize = 1.2
-    if (square_thick_coeff == 1.0):
-	square_thick *= square_thick_stepsize
-    if (square_thick_coeff == -1.0):
-	square_thick /= square_thick_stepsize
-    if (square_thick > 500.0): square_thick = 500.0
-    if (square_thick < 1.0): square_thick = 1.0
-
-    # Update gamma
-    # gamma_stepsize = 1/100.0
-    # gamma += gamma_stepsize * gamma_coefficient
-    # if (gamma > 1.5): gamma = 1.5
-    # if (gamma < 0.9): gamma = 0.9
-
-    # Update dx & dy
-    dx_stepsize = 0.01
-    if (dx_coefficient > 0):
-	dx += dx_stepsize
-    elif (dx_coefficient < 0):
-	dx -= dx_stepsize
-    if (dx > 0.5): dx = 0.5
-    if (dx < -0.5): dx = -0.5
-
-    dy_stepsize = 0.01
-    if (dy_coefficient > 0):
-	dy += dy_stepsize
-    elif (dy_coefficient < 0):
-	dy -= dy_stepsize
-    if (dy > 0.5): dy = 0.5
-    if (dy < -0.5): dy = -0.5
+        # Gamma
+        if (path == "/joystick0/button7" and value == 1): 
+            if (pe.gamma == 1.0): pe.gamma = 1.5
+            else: pe.gamma = 1.0
 
 
-    # Update wave_frequency
-    # wave_frequency_stepsize = 1.1
-    # if (wave_frequency_coeff > 0)
-    #     wave_frequency *= wave_frequency_stepsize
-    # elif (wave_frequency_coeff < 0)
-    #     wave_frequency /= wave_frequency_stepsize
-    # if (wave_frequency > 10.0) wave_frequency = 10.0
-    # if (wave_frequency < 0.03) wave_frequency = 0.03
+        # Rotation
+        rot_gain = 0.01
+        if (path == "/joystick0/axis0"): 
+            delta = -(value-0.5) * rot_gain
+            if (math.fabs(value-0.5) > 0.05): 
+                pe.rot += -delta
+                # if (pe.rot > 0.785): pe.rot = 0.785   # Turn off rotation 
+                # if (pe.rot < -0.785): pe.rot = -0.785 # limits for now.
 
-    # Update MV length
-    mv_l_stepsize = 1/20.0
-    mv_l += mv_l_stepsize * mv_l_coeff
-    if (mv_l > 1.5): mv_l = 1.5
-    if (mv_l < 0.0): mv_l = 0.0
+
+
+        # Zoom
+        zoom_gain = 0.002
+        if (path == "/joystick0/axis1"): 
+            delta = (value-0.5) * zoom_gain
+            if (math.fabs(value-0.5) > 0.05): 
+                pe.zoom += -delta
+                if (pe.zoom > 1.16): pe.zoom = 1.16
+                if (pe.zoom < 0.5): pe.zoom = 0.5
+
+
+
+        # Zoomexp
+        if (path == "/joystick0/axis3"): 
+            delta = (value-0.5)/20.0
+            if (math.fabs(value-0.5) > 0.05):
+                pe.zoomexp -= delta
+            if (pe.zoomexp < 0.25): pe.zoomexp = 0.25 
+            if (pe.zoomexp > 2.0): pe.zoomexp = 2.0
+
+
+        # Scaling
+        if (path == "/joystick0/button21" and value == 1.0): 
+            self.sx_coefficient = 1.0
+        if (path == "/joystick0/button21" and value == 0.0): 
+            self.sx_coefficient = 0.0
+        if (path == "/joystick0/button19" and value == 1.0): 
+            self.sx_coefficient = -1.0
+        if (path == "/joystick0/button19" and value == 0.0): 
+            self.sx_coefficient = 0.0
+
+        if (path == "/joystick0/button20" and value == 1.0): 
+            self.sy_coefficient = 1.0
+        if (path == "/joystick0/button20" and value == 0.0): 
+            self.sy_coefficient = 0.0
+        if (path == "/joystick0/button18" and value == 1.0): 
+            self.sy_coefficient = -1.0
+        if (path == "/joystick0/button18" and value == 0.0): 
+            self.sy_coefficient = 0.0
+
+        # Center of rotation
+        if (path == "/joystick0/button23" and value == 1.0): 
+            self.dx_coefficient = -1.0
+        if (path == "/joystick0/button23" and value == 0.0): 
+            self.dx_coefficient = 0.0
+        if (path == "/joystick0/button25" and value == 1.0): 
+            self.dx_coefficient = 1.0
+        if (path == "/joystick0/button25" and value == 0.0): 
+            self.dx_coefficient = 0.0
+
+        if (path == "/joystick0/button22" and value == 1.0): 
+            self.dy_coefficient = -1.0
+        if (path == "/joystick0/button22" and value == 0.0): 
+            self.dy_coefficient = 0.0
+        if (path == "/joystick0/button24" and value == 1.0): 
+            self.dy_coefficient = 1.0
+        if (path == "/joystick0/button24" and value == 0.0): 
+            self.dy_coefficient = 0.0
+
+        # Motion Vectors
+        if (path == "/joystick0/button15" and value == 1.0): 
+            if (pe.mv_x == 0 or pe.mv_y == 0): 
+                pe.mv_x = 2
+                pe.mv_y = 2
+            elif (pe.mv_x < 64 and pe.mv_y < 64): 
+                pe.mv_x *= 2
+                pe.mv_y *= 2
+
+        if (path == "/joystick0/button17" and value == 1.0): 
+            if (pe.mv_x == 2 or pe.mv_y == 2): 
+                pe.mv_x = 0
+                pe.mv_y = 0
+            else: 
+                pe.mv_x /= 2
+                pe.mv_y /= 2
+
+
+        if (path == "/joystick0/button14" and value == 1.0): 
+            self.mv_l_coeff = 1.0
+        if (path == "/joystick0/button14" and value == 0.0): 
+            self.mv_l_coeff = 0.0
+        if (path == "/joystick0/button16" and value == 1.0): 
+            self.mv_l_coeff = -1.0
+        if (path == "/joystick0/button16" and value == 0.0): 
+            self.mv_l_coeff = 0.0
+
+        # Reset center of rotation, scaling, and zoom exponent
+        if (path == "/joystick0/button5" and value == 1.0): 
+            pe.sx= 1.0
+            pe.sy= 1.0
+            pe.dx = 0.0
+            pe.dy = 0.0
+            pe.wave_enabled = 1
+            pe.wave_mode = 0
+            pe.square_a = 1.0
+            pe.ib_a = 0.0
+            pe.zoomexp = 1.0
+
+
+        # Warp
+        if (path == "/joystick0/button0" and value == 1.0):
+            self.warp_coefficient = 1.0
+        if (path == "/joystick0/button0" and value == 0.0):
+            self.warp_coefficient = 0.0
+        if (path == "/joystick0/button6" and value == 1.0):
+            self.warp_coefficient = -1.0
+        if (path == "/joystick0/button6" and value == 0.0): 
+            self.warp_coefficient = 0.0
+
+
+        # Wave mode
+        if (path == "/joystick0/button8" and value == 1): 
+            pe.wave_mode = 0
+            pe.wave_enabled = 1
+        elif (path == "/joystick0/button9" and value == 1): 
+            pe.wave_mode = 1
+            pe.wave_enabled = 1
+        elif (path == "/joystick0/button10" and value == 1): 
+            pe.wave_mode = 2
+            pe.wave_enabled = 1
+
+
+        # PRECIOUS UPPER SWITCH 
+        if (path == "/joystick0/button11" and value == 1): 
+            pe.wave_frequency = 0.03
+            pe.wave_mode=2
+        elif (path == "/joystick0/button12" and value == 1): 
+            pe.wave_frequency = 0.5
+            pe.wave_mode=2
+        elif (path == "/joystick0/button13" and value == 1): 
+            pe.wave_frequency = 10.0
+            pe.wave_mode=2
+
+
+        # Debugging
+        if (self.JOY_DEBUG and (path.find("axis") == -1)):
+            print("[JOYSTICK]    Path: " + path + "   Value: " + str(value))
+
+        # Otherwise, delegate to the bindings.
+        pe_bindings.controller_to_parameter(self, path, value)
+
+
+    def render_callback(self):
+
+        # Update scaling
+        scaling_stepsize = 0.0005
+        pe.sx += scaling_stepsize * self.sx_coefficient
+        pe.sy += scaling_stepsize * self.sy_coefficient
+        if (pe.sx > 1.5): pe.sx = 1.5
+        if (pe.sx < 0.5): pe.sx = 0.5
+        if (pe.sy > 1.5): pe.sy = 1.5
+        if (pe.sy < 0.5): pe.sy = 0.5
+
+        # Update center of rotation
+        crot_stepsize = 1/100.0
+        pe.cx += crot_stepsize * self.cx_coefficient
+        pe.cy += crot_stepsize * self.cy_coefficient
+        if (pe.cx > 1.5): pe.cx = 1.5
+        if (pe.cx < -1.5): pe.cx = -1.5
+        if (pe.cy > 1.5): pe.cy = 1.5
+        if (pe.cy < -1.5): pe.cy = -1.5
+
+        # Update Square Scale
+        square_scale_stepsize = 0.05
+        pe.square_scale += square_scale_stepsize * self.square_scale_coeff
+        if (pe.square_scale > 4.0): pe.square_scale = 4.0
+        if (pe.square_scale < 0.25): pe.square_scale = 0.25
+
+        # Update Square Thickness
+        square_thick_stepsize = 1.2
+        if (self.square_thick_coeff == 1.0):
+            pe.square_thick *= square_thick_stepsize
+        if (self.square_thick_coeff == -1.0):
+            pe.square_thick /= square_thick_stepsize
+        if (pe.square_thick > 500.0): pe.square_thick = 500.0
+        if (pe.square_thick < 1.0): pe.square_thick = 1.0
+
+        # Update dx & dy
+        dx_stepsize = 0.01
+        if (self.dx_coefficient > 0):
+            pe.dx += dx_stepsize
+        elif (self.dx_coefficient < 0):
+            pe.dx -= dx_stepsize
+        if (pe.dx > 0.5): pe.dx = 0.5
+        if (pe.dx < -0.5): pe.dx = -0.5
+
+        dy_stepsize = 0.01
+        if (self.dy_coefficient > 0):
+            pe.dy += dy_stepsize
+        elif (self.dy_coefficient < 0):
+            pe.dy -= dy_stepsize
+        if (pe.dy > 0.5): pe.dy = 0.5
+        if (pe.dy < -0.5): pe.dy = -0.5
+
+
+        # Update wave_frequency
+        # wave_frequency_stepsize = 1.1
+        # if (self.wave_frequency_coeff > 0)
+        #     pe.wave_frequency *= wave_frequency_stepsize
+        # elif (self.wave_frequency_coeff < 0)
+        #     pe.wave_frequency /= wave_frequency_stepsize
+        # if (pe.wave_frequency > 10.0) pe.wave_frequency = 10.0
+        # if (pe.wave_frequency < 0.03) pe.wave_frequency = 0.03
+
+        # Update MV length
+        mv_l_stepsize = 1/20.0
+        pe.mv_l += mv_l_stepsize * self.mv_l_coeff
+        if (pe.mv_l > 1.5): pe.mv_l = 1.5
+        if (pe.mv_l < 0.0): pe.mv_l = 0.0
+
+
