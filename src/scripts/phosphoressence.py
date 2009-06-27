@@ -1,3 +1,7 @@
+# PHOSPHORESSENCE MASTER CONTROL PROGRAM
+#
+PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
+
 # Load various python modules
 from parameters import pe
 from presets import pe_presets
@@ -25,12 +29,11 @@ pe.show_fps = 1;
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pass
     #     setup_osc();
     #    setup_joystick();
 
     # Load Milkdrop Presets
-    # load(PE_RESOURCES + "/presets/milkdrop/milk_presets.js");
+    pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
 
 # Default render callback
 #
@@ -106,3 +109,4 @@ def pe_render():
 # 	 mv_b += 0.5 * Math.sin(14/10.0*time);
 #      }
 # }
+pe_initialize()

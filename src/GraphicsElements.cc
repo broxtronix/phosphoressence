@@ -31,14 +31,6 @@ void GraphicsEngine::drawFeedback() {
   // m_gpu_backbuffer_program->set_input_float("dx", pe_script_engine().get_parameter("dx"));
   // m_gpu_backbuffer_program->set_input_float("dy", pe_script_engine().get_parameter("dy"));
 
-  // m_gpu_backbuffer_program->set_input_float("q1", pe_script_engine().get_parameter("q1"));
-  // m_gpu_backbuffer_program->set_input_float("q2", pe_script_engine().get_parameter("q2"));
-  // m_gpu_backbuffer_program->set_input_float("q3", pe_script_engine().get_parameter("q3"));
-  // m_gpu_backbuffer_program->set_input_float("q4", pe_script_engine().get_parameter("q4"));
-  // m_gpu_backbuffer_program->set_input_float("q5", pe_script_engine().get_parameter("q5"));
-  // m_gpu_backbuffer_program->set_input_float("q6", pe_script_engine().get_parameter("q6"));
-  // m_gpu_backbuffer_program->set_input_float("q7", pe_script_engine().get_parameter("q7"));
-  // m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
 
   // Time
   //  float time = pe_time();

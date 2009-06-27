@@ -137,6 +137,12 @@ class PhosphorEssence(object):
     def has_parameter(self, name):
         return self.params.has_key(name)
 
+    # Returns a list of paramters
+    def param_list(self):
+        l = self.params.keys()
+        l.append("time")
+        return l
+    
 # Create the instance of the PhosphorEssence class.  Note: don't go
 # creating your own instance.  This should be the only one!!  (TODO:
 # Maybe it should be a singleton class?)

@@ -228,11 +228,11 @@ void CommandPromptTask::operator()() {
   // python script.
   std::cout << "\t--> Loading default PhosphorEssence preset script\n";
   std::string resources_dir = pe_resources_directory();
-  std::string scripts_dir = resources_dir + "/scripts";
 
   std::ostringstream ostr;
   ostr << "import sys\n" 
-       << "sys.path.append('" << scripts_dir << "')\n"
+       << "sys.path.append('" << resources_dir << "/scripts')\n"
+       << "\'PE_RESOURCES = " << resources_dir << "\'\n"
        << "from phosphoressence import *\n";
   PyRun_SimpleString( ostr.str().c_str() );
 
@@ -243,8 +243,9 @@ void CommandPromptTask::operator()() {
   if (m_pe_dict == NULL) {
     PyErr_Print();
     std::cout << "\n--------------------------------------------------\n"
-              << "Error: the 'pe' object is not found in the python environment.\n" 
-              << "Perhaps an error occurred during startup?\n"
+              << "Error: the 'pe' object is not found in the python\n" 
+              << "environment.  This probably means that an error \n"
+              << "occurred during startup.  Exiting.\n"
               << "--------------------------------------------------\n\n";
   } else {
 

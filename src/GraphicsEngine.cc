@@ -734,10 +734,14 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
   
   switch (event->key()) {
   case Qt::Key_Left: 
-    pe_script_engine().execute("prev_preset();");
+    pe_script_engine().execute("pe_presets.prev_preset();");
     break;
   case Qt::Key_Right:  
-    pe_script_engine().execute("next_preset();");
+    pe_script_engine().execute("pe_presets.next_preset();");
+    break;
+
+  case Qt::Key_R:  
+    pe_script_engine().execute("pe_presets.random_preset();");
     break;
 
   case Qt::Key_Up:  
