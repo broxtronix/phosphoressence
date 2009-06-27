@@ -25,11 +25,11 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
 
   // These are handled by the mobius transform
-  // m_gpu_backbuffer_program->set_input_float("zoom", pe_script_engine().get_parameter("zoom"));
-  // m_gpu_backbuffer_program->set_input_float("zoomexp", pe_script_engine().get_parameter("zoomexp"));
-  // m_gpu_backbuffer_program->set_input_float("rot", pe_script_engine().get_parameter("rot"));
-  // m_gpu_backbuffer_program->set_input_float("dx", pe_script_engine().get_parameter("dx"));
-  // m_gpu_backbuffer_program->set_input_float("dy", pe_script_engine().get_parameter("dy"));
+  m_gpu_backbuffer_program->set_input_float("zoom", pe_script_engine().get_parameter("zoom"));
+  m_gpu_backbuffer_program->set_input_float("zoomexp", pe_script_engine().get_parameter("zoomexp"));
+  m_gpu_backbuffer_program->set_input_float("rot", pe_script_engine().get_parameter("rot"));
+  m_gpu_backbuffer_program->set_input_float("dx", pe_script_engine().get_parameter("dx"));
+  m_gpu_backbuffer_program->set_input_float("dy", pe_script_engine().get_parameter("dy"));
 
 
   // Time
@@ -80,15 +80,15 @@ void GraphicsEngine::drawFeedback() {
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
   // Extract the per-pixel parameters
-  float zoom = pe_script_engine().get_parameter("zoom");
-  float zoomExp = pe_script_engine().get_parameter("zoomexp");
+  float zoom = 1;//pe_script_engine().get_parameter("zoom");
+  float zoomExp = 1;//pe_script_engine().get_parameter("zoomexp");
   float warpAmount = pe_script_engine().get_parameter("warp");
       
-  float rot = pe_script_engine().get_parameter("rot");
+  float rot = 0;//pe_script_engine().get_parameter("rot");
   float cx = pe_script_engine().get_parameter("cx");
   float cy = pe_script_engine().get_parameter("cy");
-  float dx = pe_script_engine().get_parameter("dx");
-  float dy = pe_script_engine().get_parameter("dy");
+  float dx = 0;//pe_script_engine().get_parameter("dx");
+  float dy = 0;//pe_script_engine().get_parameter("dy");
   float sx = pe_script_engine().get_parameter("sx");
   float sy = pe_script_engine().get_parameter("sy");
 

@@ -503,7 +503,7 @@ pe.register(Parameter( name = "ifs_mode",
 pe.register(Parameter( name = "wrap",
                        description = "0/1    sets whether or not screen elements " +
                        "can drift off of one side and onto the other",
-                       default_value = 0.0))
+                       default_value = 1.0))
 
         # pe_parameters().add_pe.register(Parameter("wrap", false, 0.0,
         #                               "0/1    sets whether or not screen elements can drift off of one side and onto the other");
