@@ -512,8 +512,10 @@ pe.register(Parameter( name = "echo_orient",
                        "  0=normal, 1=flip on x, 2=flip on y, 3=flip on both",
                        default_value = 0.0))
 
-# pe_parameters().add_pe.register(Parameter("darken_center", false, 0.0,
-#                               "0/1    if 1, help keeps the image from getting too bright by continually dimming the center point");
+pe.register(Parameter( name = "darken_center",
+                       description = "0/1    if 1, help keeps the image from getting too " +
+                       "bright by continually dimming the center point",
+                       default_value = 0.0))
  
 pe.register(Parameter( name = "wrap",
                        description = "0/1    sets whether or not screen elements " +

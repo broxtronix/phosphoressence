@@ -144,6 +144,8 @@ private:
 
   // Graphic Elements (see GraphicElements.cc for imlementations)
   void drawFeedback();
+  void drawDarkenCenter();
+  void drawBorders();
   void drawVectorField();
   
   // Image & OpenGL
@@ -173,6 +175,8 @@ private:
   int m_viewport_height;
   int m_framebuffer_width;
   int m_framebuffer_height;
+  float m_aspect;
+  float m_framebuffer_radius;
 
   // Feedback
   vw::Matrix<vw::Vector2> m_feedback_texcoords;

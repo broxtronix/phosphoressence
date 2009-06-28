@@ -10,13 +10,10 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  float aspect = float(m_viewport_width) / m_viewport_height;
-  float framebuffer_radius = sqrt(1+pow(aspect,2));
-
   // Feedback decay, gamma, etc are controlled using a pixel shader.
   m_gpu_backbuffer_program->install();
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
-  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", framebuffer_radius);
+  m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
   m_gpu_backbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
@@ -115,7 +112,7 @@ void GraphicsEngine::drawFeedback() {
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
                                               sqrtf(u * u + v * v) * 2.0 * 
-                                              framebuffer_radius - framebuffer_radius));
+                                              m_framebuffer_radius - m_framebuffer_radius));
       u = u * zoomCoefficient;
       v = v * zoomCoefficient;
 
@@ -218,6 +215,72 @@ bool ReversePropagatePoint(float fx, float fy, float *fx2, float *fy2,
   return true;
 }
 
+// <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
+// See the milkdrop license in COPYING for more details.
+
+void GraphicsEngine::drawBorders() {
+
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  if (pe_script_engine().get_parameter("ib_a")) {
+    glLoadIdentity();
+    glLineWidth( pe_script_engine().get_parameter("ib_size") );
+    glColor4f( pe_script_engine().get_parameter("ib_r"),
+               pe_script_engine().get_parameter("ib_g"),
+               pe_script_engine().get_parameter("ib_b"),
+               pe_script_engine().get_parameter("ib_a") );
+
+    // float ib_size = pe_script_engine().get_parameter("ib_size");
+    // float ob_size = pe_script_engine().get_parameter("ob_size");
+
+    // float fInnerRad = (it==0) ? 1.0f - fOuterBorderSize : 
+    //                             1.0f - fOuterBorderSize - fInnerBorderSize;
+    // float fOuterRad = (it==0) ? 1.0f                    : 
+    //                             1.0f - fOuterBorderSize;
+    
+    glBegin(GL_LINES);
+    glVertex2d( -m_aspect, 1.0 );
+    glVertex2d( m_aspect, 1.0 );
+    glVertex2d( m_aspect, 1.0 );
+    glVertex2d( m_aspect, -1.0 );
+    glVertex2d( m_aspect, -1.0 );
+    glVertex2d( -m_aspect, -1.0 );
+    glVertex2d( -m_aspect, -1.0 );
+    glVertex2d( -m_aspect, 1.0 );
+    glEnd();
+  }
+  glDisable( GL_BLEND );
+}
+
+void GraphicsEngine::drawDarkenCenter() {
+
+  if (pe_script_engine().get_parameter("darken_center")) {
+
+       glEnable(GL_BLEND);
+       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+       float fHalfSize = 0.05f;
+       glBegin(GL_TRIANGLE_FAN);
+       
+       // Center point
+       glColor4f(0.0, 0.0, 0.0, 3.0f/32.0f);
+       glVertex2f(0.0,0.0);
+       
+       // Perimeter
+       glColor4f(0.0, 0.0, 0.0, 0.0);
+       glVertex2f(0.0f - fHalfSize*m_aspect, 0.0);
+       glVertex2f(0.0f, 0.0f - fHalfSize);
+       glVertex2f(0.0f + fHalfSize*m_aspect, 0.0);
+       glVertex2f(0.0f, 0.0f + fHalfSize);
+       glVertex2f(0.0f - fHalfSize*m_aspect, 0.0);
+       
+       glEnd();
+       glDisable( GL_BLEND ); 
+     }
+}
+
+
 
 // <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
 // See the milkdrop license in COPYING for more details.
@@ -239,8 +302,6 @@ void GraphicsEngine::drawVectorField() {
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    float aspect = float(m_viewport_width) / m_viewport_height;
-    float framebuffer_radius = sqrt(1+pow(aspect,2));
 
     int nX = int(pe_script_engine().get_parameter("mv_x"));
     int nY = int(pe_script_engine().get_parameter("mv_y"));
@@ -266,17 +327,17 @@ void GraphicsEngine::drawVectorField() {
 
         if (fy > -1.0f && fy < 1.0f) {
           for (int x=0; x<nX; x++) {
-            float fx = (x + 0.25f)/(float)(nX + dx + 0.25f - 1.0f) * 2.0f * aspect - aspect;
+            float fx = (x + 0.25f)/(float)(nX + dx + 0.25f - 1.0f) * 2.0f * m_aspect - m_aspect;
 
             // now move by offset
             fx += pe_script_engine().get_parameter("mv_dx");
             
-            if (fx > -aspect && fx < aspect) {
+            if (fx > -m_aspect && fx < m_aspect) {
 
               float fx2, fy2;
               ReversePropagatePoint(fx, fy, &fx2, &fy2, 
                                     HORIZ_MESH_SIZE, VERT_MESH_SIZE, 
-                                    framebuffer_radius,
+                                    m_framebuffer_radius,
                                     m_warped_screencoords);	
               float dx = (fx2 - fx);
               float dy = (fy2 - fy);

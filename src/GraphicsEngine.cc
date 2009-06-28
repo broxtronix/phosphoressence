@@ -129,7 +129,7 @@ void GraphicsEngine::drawImage() {
   // Call out to any PhosphorScripts that are running on the
   // JavaScript VM, allowing them to update parameters if they would
   // like.
-  pe_script_engine().set_parameter("aspect", float(m_viewport_width) / m_viewport_height);
+  pe_script_engine().set_parameter("aspect", m_aspect);
   pe_script_engine().execute("pe_render()");
 
   // Make this context current, and store the current OpenGL state
@@ -156,10 +156,8 @@ void GraphicsEngine::drawImage() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  float aspect = float(m_viewport_width) / m_viewport_height;
-  float framebuffer_radius = sqrt(1+pow(aspect,2));
-  glOrtho(-framebuffer_radius, framebuffer_radius, 
-          -framebuffer_radius, framebuffer_radius, 
+  glOrtho(-m_framebuffer_radius, m_framebuffer_radius, 
+          -m_framebuffer_radius, m_framebuffer_radius, 
           -1.0, 1.0);
 
   // Set up the modelview matrix, and bind the image as the texture we
@@ -170,16 +168,21 @@ void GraphicsEngine::drawImage() {
   // Start by drawing a black frame.
   glColor4f(0.0,0.0,0.0,1.0);
   glBegin(GL_QUADS);
-  glVertex2f( -framebuffer_radius, -framebuffer_radius);
-  glVertex2f( framebuffer_radius, -framebuffer_radius);
-  glVertex2f( framebuffer_radius, framebuffer_radius);
-  glVertex2f( -framebuffer_radius, framebuffer_radius);
+  glVertex2f( -m_framebuffer_radius, -m_framebuffer_radius);
+  glVertex2f( m_framebuffer_radius, -m_framebuffer_radius);
+  glVertex2f( m_framebuffer_radius, m_framebuffer_radius);
+  glVertex2f( -m_framebuffer_radius, m_framebuffer_radius);
   glEnd() ;
 
   // -----------------------
   // FEEDBACK TEXTURE 
   // ----------------------
   drawFeedback();
+
+  // -----------------------
+  // Darken Center
+  // -----------------------
+  drawDarkenCenter();
 
   // -----------------------
   // Motion Vectors
@@ -189,70 +192,7 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // Outer & Inner Border
   // ----------------------
-  if (pe_script_engine().get_parameter("ib_a")) {
-    glLoadIdentity();
-    glLineWidth( pe_script_engine().get_parameter("ib_size") );
-    glColor4f( pe_script_engine().get_parameter("ib_r"),
-               pe_script_engine().get_parameter("ib_g"),
-               pe_script_engine().get_parameter("ib_b"),
-               pe_script_engine().get_parameter("ib_a") );
-    
-    glBegin(GL_LINES);
-    glVertex2d( -aspect, 1.0 );
-    glVertex2d( aspect, 1.0 );
-    glVertex2d( aspect, 1.0 );
-    glVertex2d( aspect, -1.0 );
-    glVertex2d( aspect, -1.0 );
-    glVertex2d( -aspect, -1.0 );
-    glVertex2d( -aspect, -1.0 );
-    glVertex2d( -aspect, 1.0 );
-    glEnd();
-  }
-
-
-  // -----------------------
-  // Grid
-  // ----------------------
-  // if (pe_script_engine().get_parameter("ib_a")) {
-  //   glLoadIdentity();
-  //   glLineWidth( pe_script_engine().get_parameter("ib_size") );
-  //   glColor4f( pe_script_engine().get_parameter("ib_r"),
-  //              pe_script_engine().get_parameter("ib_g"),
-  //              pe_script_engine().get_parameter("ib_b"),
-  //              pe_script_engine().get_parameter("ib_a") );
-    
-  //   float step_size = 2*aspect / HORIZ_MESH_SIZE;
-  //   for (float i = -aspect; i < aspect; i+=step_size) {
-  //     glBegin(GL_LINES);
-  //     float x = i;
-  //     float y1 = 1.0;
-  //     float y2 = -1.0;
-  //     float r1 = sqrt(x*x+y1*y1);
-  //     float r2 = sqrt(x*x+y2*y2);
-  //     float XX1 = 1/(r1*r1) * x;
-  //     float XX2 = 1/(r2*r2) * x;
-  //     float YY1 = 1/(r1*r1) * y1;
-  //     float YY2 = 1/(r2*r2) * y2;
-  //     glVertex2d( XX1, YY1 );
-  //     glVertex2d( XX2, YY2 );
-  //   }
-
-  //   for (float j = -1; j < 1; j+=step_size ) {
-  //     glBegin(GL_LINES);
-  //     float x1 = aspect;
-  //     float x2 = -aspect;
-  //     float y = j;
-  //     float r1 = sqrt(x1*x1+y*y);
-  //     float r2 = sqrt(x2*x2+y*y);
-  //     float XX1 = 1/(r1*r1)*x1;
-  //     float XX2 = 1/(r2*r2)*x2;
-  //     float YY1 = 1/(r1*r1)*y;
-  //     float YY2 = 1/(r2*r2)*y;
-  //     glVertex2d( XX1, YY1 );
-  //     glVertex2d( XX2, YY2 );
-  //   }
-  //   glEnd();
-  // }
+  drawBorders();
 
   // -----------------------
   // Wave Shape
@@ -342,7 +282,7 @@ void GraphicsEngine::drawImage() {
   // in the UI.
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-aspect, aspect, -1.0, 1.0, -1.0, 1.0);
+  glOrtho(-m_aspect, m_aspect, -1.0, 1.0, -1.0, 1.0);
 
   // Set up the modelview matrix, and bind the image as the texture we
   // are about to use.
@@ -361,20 +301,20 @@ void GraphicsEngine::drawImage() {
         
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.
-  float w_texture = 0.5 * aspect/framebuffer_radius; // r_texture * ( w_object / r_object )
-  float h_texture = 0.5 * 1.0/framebuffer_radius;    // r_texture * ( h_object / r_object )
+  float w_texture = 0.5 * m_aspect/m_framebuffer_radius; // r_texture * ( w_object / r_object )
+  float h_texture = 0.5 * 1.0/m_framebuffer_radius;      // r_texture * ( h_object / r_object )
 
   //  We will draw the image as a texture on this quad.
   qglColor(Qt::white);
   glBegin(GL_QUADS);
   glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
-  glVertex2d( -aspect, -1.0);
+  glVertex2d( -m_aspect, -1.0);
   glTexCoord2f( 0.5+w_texture, 0.5-h_texture ); 
-  glVertex2d( aspect, -1.0);
+  glVertex2d( m_aspect, -1.0);
   glTexCoord2f( 0.5+w_texture, 0.5+h_texture );
-  glVertex2d( aspect, 1.0);
+  glVertex2d( m_aspect, 1.0);
   glTexCoord2f( 0.5-w_texture, 0.5+h_texture );
-  glVertex2d( -aspect, 1.0);
+  glVertex2d( -m_aspect, 1.0);
   glEnd() ;
 
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -571,6 +511,9 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Set the current viewport width/height
   m_viewport_width = width;
   m_viewport_height = height;
+
+  m_aspect = float(m_viewport_width) / m_viewport_height;
+  m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
 
   // Compute framebuffer dimensions.  The framebuffer is a square that
   // circumscribes the circle that circumscribes the rectangle of the
