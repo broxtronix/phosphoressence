@@ -38,8 +38,8 @@ MainWindow::MainWindow() {
   create_menus();
 
   // Maximize the main window
-  this->showMaximized();
-  //  this->showFullScreen();
+  //this->showMaximized();
+  this->showFullScreen();
 }
 
 //********************************************************************

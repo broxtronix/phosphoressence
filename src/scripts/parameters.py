@@ -1,11 +1,19 @@
+import time
+
 # --------------------------------------------------------------
 #                  The Parameter Object
 # --------------------------------------------------------------
 
 class Parameter(object):
     
+    
     def __init__(self, name, description,
                  default_value = 0.0, read_only = False):
+
+        # Constants
+        self.CONTROL_AUTOMATE = 0
+        self.CONTROL_OVERRIDE = 1
+        self.TIMEOUT_LENGTH = 0.3   # seconds
 
         # Store the parameters specific to this parameter in the class
         # instance.
@@ -15,16 +23,25 @@ class Parameter(object):
         self.read_only = read_only
         self.value = default_value
 
-        # Private members are set to default values
-        self.control_mode = "automation";
-        self.controller_timeout = 0.0;
-        self.last_time = 0.0;
+        # Automation parameters
+        self.control_mode = self.CONTROL_AUTOMATE
+        self.last_control_time = 0.0
 
     def set_value(self, value):
-        self.value = value
+        if (self.control_mode == self.CONTROL_OVERRIDE and
+            time.time() - self.last_control_time > self.TIMEOUT_LENGTH):
+            self.control_mode = self.CONTROL_AUTOMATE
+
+        if (self.control_mode == self.CONTROL_AUTOMATE):
+            self.value = value
 
     def set_control_value(self, value):
+        self.control_mode = self.CONTROL_OVERRIDE
+        self.last_control_time = time.time()
         self.value = value
+
+    def get_value(self):
+        return self.value
 
     def __unicode__(self):
         return "Parameter: " + self.name
@@ -67,23 +84,19 @@ class PhosphorEssence(object):
     # the 'self.params' dictionary.  
 
     def __getattr__(self, item):
-        # print "call to getattr with " + item
-        # print self.__dict__['params']
         try:
            # print 'falling back to params dict!'
-            return self.__dict__['params'][item].value
+            return self.__dict__['params'][item].get_value()
         except KeyError:
             raise AttributeError(item)
 
     def __setattr__(self, item, value):
-        # print "call to setattr with " + str(item) + " " + str(value)
-
         # this test allows attributes to be set in the __init__ method
-        if not self.__dict__.has_key('_Test__initialised'):
+        if not self.__dict__.has_key('_PhosphorEssence__initialised'):
             return dict.__setattr__(self, item, value)
 
         # any normal attributes are handled normally
-        elif self.__dict__.has_key(item): 
+        elif self.__dict__.has_key(item):
             dict.__setattr__(self, item, value)
 
         # the remaining attributes are delegated to the 'params' dictionary 
@@ -124,6 +137,8 @@ class PhosphorEssence(object):
     # directly from the script.  This form of setting the value may be
     # overridden by the set_control_value() method below.
     def set_value(self, name, value):
+        if (name == 'zoom'):
+            print 'Outer set_value called'
         self.params[name].set_value(value)
 
     # Set the value of a parameter using a physical controller.  This
@@ -136,15 +151,7 @@ class PhosphorEssence(object):
 
     def reset_all(self):
         for p in self.params.values():
-
-            # THERE IS A BUG HERE. We should be able to do this:
-            #
-            # p.value = p.default_value
-            #
-            # but this doesn't work because something in the
-            # PeParameters dict is masking the Parameter's value
-            # entry.  FIXME!
-            self.__dict__[p.name] = p.default_value
+            p.value = p.default_value
 
     def has_parameter(self, name):
         return self.params.has_key(name)
@@ -498,7 +505,7 @@ pe.register(Parameter( name = "echo_zoom",
 pe.register(Parameter( name = "echo_alpha",
                        description = ">0     controls the opacity of the second graphics layer;" +
                        " 0=transparent (off)) 0.5=half-mix, 1=opaque",
-                       default_value = 0.5))
+                       default_value = 0.33))
 
 pe.register(Parameter( name = "echo_orient",
                        description = "0,1,2,3 selects an orientation for the second graphics layer. " +
@@ -513,12 +520,18 @@ pe.register(Parameter( name = "wrap",
                        "can drift off of one side and onto the other",
                        default_value = 1.0))
 
-# pe_parameters().add_pe.register(Parameter("brighten", false, 0.0,
-#                               "0/1    brightens the darker parts of the image (nonlinear; square root filter)");
-# pe_parameters().add_pe.register(Parameter("darken", false, 0.0,
-#                               "0/1    darkens the brighter parts of the image (nonlinear; squaring filter)");
-# pe_parameters().add_pe.register(Parameter("solarize", false, 0.0,
-#                               "0/1    emphasizes mid-range colors");
+pe.register(Parameter( name = "brighten",
+                       description = "0/1    brightens the darker parts of the image (nonlinear; square root filter)",
+                       default_value = 0.0))
+
+pe.register(Parameter( name = "darken",
+                       description = "0/1    darkens the brighter parts of the image (nonlinear; squaring filter)",
+                       default_value = 0.0))
+
+pe.register(Parameter( name = "solarize",
+                       description = "0/1    emphasizes mid-range colors",
+                       default_value = 0.0))
+
 
 # CUSTOM PARAMETERS
 pe.register(Parameter( name = "q1",
@@ -590,6 +603,10 @@ pe.register(Parameter( name = "show_fps",
            description = "Toggle fps display on and off.",
            default_value = 0.0))
 
+
+pe.register(Parameter( name = "reflect",
+                       description = "Activate the kaleidascope effect",
+                       default_value = 0.0))
 
 pe.register(Parameter( name = "reflect_theta",
            description = "Angle of the kaleidascope reflection.",

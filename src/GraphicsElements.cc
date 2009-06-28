@@ -17,12 +17,13 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->install();
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", framebuffer_radius);
-  m_gpu_backbuffer_program->set_input_float("time", pe_time());
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
-  m_gpu_backbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
+  m_gpu_backbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
+  m_gpu_backbuffer_program->set_input_float("darken", pe_script_engine().get_parameter("darken"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
+  m_gpu_backbuffer_program->set_input_float("reflect", pe_script_engine().get_parameter("reflect"));
   m_gpu_backbuffer_program->set_input_float("reflect_theta", pe_script_engine().get_parameter("reflect_theta"));
   m_gpu_backbuffer_program->set_input_float("reflect_offset", pe_script_engine().get_parameter("reflect_offset"));
   m_gpu_backbuffer_program->set_input_float("echo_zoom", pe_script_engine().get_parameter("echo_zoom"));

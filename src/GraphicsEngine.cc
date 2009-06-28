@@ -381,7 +381,6 @@ void GraphicsEngine::drawImage() {
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 
-  //   std::cout << "Show_fps: " << pe_script_engine().get_parameter("show_fps") << "\n";
   if (pe_script_engine().get_parameter("show_fps") != 0) {
     char fps_cstr[255];
     sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
@@ -443,7 +442,7 @@ void GraphicsEngine::setup() {
   m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
 
-  m_fps_avg = 0;
+  m_fps_avg = 30.0;
 
   // Set mouse tracking
   this->setMouseTracking(true);
@@ -545,13 +544,13 @@ void GraphicsEngine::initializeGL() {
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // Uncomment to get rid of the flicker!
-#ifdef __APPLE__
-  AGLContext aglContext;
-  aglContext = aglGetCurrentContext();
-  GLint swapInt = 1;
-  aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  this->setAutoBufferSwap(false);
-#endif
+// #ifdef __APPLE__
+//   AGLContext aglContext;
+//   aglContext = aglGetCurrentContext();
+//   GLint swapInt = 1;
+//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+//   this->setAutoBufferSwap(false);
+// #endif
 
   // Enable hardware anti-aliasing
   glEnable(GL_MULTISAMPLE);

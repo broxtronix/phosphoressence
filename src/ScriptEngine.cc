@@ -257,7 +257,8 @@ void CommandPromptTask::operator()() {
   ostr << "import sys\n" 
        << "sys.path.append('" << resources_dir << "/scripts')\n"
        << "\'PE_RESOURCES = " << resources_dir << "\'\n"
-       << "from phosphoressence import *\n";
+       << "from phosphoressence import *\n"
+       << "pe_initialize()";
   PyRun_SimpleString( ostr.str().c_str() );
 
   m_interpreter_active = true;

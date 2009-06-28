@@ -1,6 +1,6 @@
 # PHOSPHORESSENCE MASTER CONTROL PROGRAM
 #
-import math
+import math, sys
 PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 
 # Load various python modules
@@ -9,8 +9,10 @@ from presets import pe_presets
 from controllers import OscController, JoystickController
 from bindings import Binding
 
-# Turn automatic preset loading on/off
-RUN_PRESET = 0;
+# Use these controls to effect whether phosphoressence behaves as a
+# visualization plugin, an interactive VJ rig, or both!
+ENABLE_PRESETS = 1
+ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 DEBUG = 0;
@@ -28,9 +30,8 @@ joystick = JoystickController(JOY_DEBUG)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pass
     # Load Milkdrop Presets & Bookmarks
-    #pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
+    pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
     #pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
 
@@ -41,17 +42,17 @@ def pe_initialize():
 # can animate PhosphorEssence parameters.
 def pe_render():
 
-    if ( RUN_PRESET ) :
+    if ( ENABLE_PRESETS ) :
         preset = pe_presets.current_preset()
         if (preset):
             try: 
                 preset.per_frame()
             except:
-                print '\t ** Failed to run ' + p.name
+                print '\t ** Failed to run ' + preset.name
                 for ei in sys.exc_info():
                     print '\t    ' + str(ei)
 
-    else:
+    if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
         joystick.render_callback()
