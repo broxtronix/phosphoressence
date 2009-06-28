@@ -9,9 +9,7 @@
 #include <ScriptEngine.h>
 
 void Controller::receive_callback(std::string path, float value) {
-  std::ostringstream ostr;
-  ostr << m_name << ".receive_callback(\'" << path << "\', " << value << ")";
-  pe_script_engine().execute(ostr.str());
+  pe_script_engine().controller_receive_callback(m_name.c_str(), path.c_str(), value);
 }
 
 

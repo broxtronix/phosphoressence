@@ -491,29 +491,34 @@ pe.register(Parameter( name = "ifs_mode",
            description = "Select IFS (fractal feedback) mode.",
            default_value = 0.0))
 
-        # pe_parameters().add_pe.register(Parameter("echo_zoom", false, 1.0,
-        #                               ">0     controls the size of the second graphics layer");
-        # pe_parameters().add_pe.register(Parameter("echo_alpha", false, 0.0,
-        #                               ">0     controls the opacity of the second graphics layer; 0=transparent (off)) 0.5=half-mix, 1=opaque");
-        # pe_parameters().add_pe.register(Parameter("echo_orient", false, 0.0,
-        #                               "0,1,2,3 selects an orientation for the second graphics layer.  0=normal, 1=flip on x, 2=flip on y, 3=flip on both");
-        # pe_parameters().add_pe.register(Parameter("darken_center", false, 0.0,
-        #                               "0/1    if 1, help keeps the image from getting too bright by continually dimming the center point");
+pe.register(Parameter( name = "echo_zoom",
+           description = ">0     controls the size of the second graphics layer",
+           default_value = 1.0))
+
+pe.register(Parameter( name = "echo_alpha",
+                       description = ">0     controls the opacity of the second graphics layer;" +
+                       " 0=transparent (off)) 0.5=half-mix, 1=opaque",
+                       default_value = 0.5))
+
+pe.register(Parameter( name = "echo_orient",
+                       description = "0,1,2,3 selects an orientation for the second graphics layer. " +
+                       "  0=normal, 1=flip on x, 2=flip on y, 3=flip on both",
+                       default_value = 0.0))
+
+# pe_parameters().add_pe.register(Parameter("darken_center", false, 0.0,
+#                               "0/1    if 1, help keeps the image from getting too bright by continually dimming the center point");
  
 pe.register(Parameter( name = "wrap",
                        description = "0/1    sets whether or not screen elements " +
                        "can drift off of one side and onto the other",
                        default_value = 1.0))
 
-        # pe_parameters().add_pe.register(Parameter("wrap", false, 0.0,
-        #                               "0/1    sets whether or not screen elements can drift off of one side and onto the other");
-        # pe_parameters().add_pe.register(Parameter("brighten", false, 0.0,
-        #                               "0/1    brightens the darker parts of the image (nonlinear; square root filter)");
-        # pe_parameters().add_pe.register(Parameter("darken", false, 0.0,
-        #                               "0/1    darkens the brighter parts of the image (nonlinear; squaring filter)");
-        # pe_parameters().add_pe.register(Parameter("solarize", false, 0.0,
-        #                               "0/1    emphasizes mid-range colors");
-
+# pe_parameters().add_pe.register(Parameter("brighten", false, 0.0,
+#                               "0/1    brightens the darker parts of the image (nonlinear; square root filter)");
+# pe_parameters().add_pe.register(Parameter("darken", false, 0.0,
+#                               "0/1    darkens the brighter parts of the image (nonlinear; squaring filter)");
+# pe_parameters().add_pe.register(Parameter("solarize", false, 0.0,
+#                               "0/1    emphasizes mid-range colors");
 
 # CUSTOM PARAMETERS
 pe.register(Parameter( name = "q1",
@@ -583,5 +588,15 @@ pe.register(Parameter( name = "monitor",
 
 pe.register(Parameter( name = "show_fps",
            description = "Toggle fps display on and off.",
+           default_value = 0.0))
+
+
+pe.register(Parameter( name = "reflect_theta",
+           description = "Angle of the kaleidascope reflection.",
+           default_value = 0.0))
+
+
+pe.register(Parameter( name = "reflect_offset",
+           description = "Offset of the kaleidascope reflection.",
            default_value = 0.0))
 

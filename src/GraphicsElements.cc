@@ -23,6 +23,11 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
+  m_gpu_backbuffer_program->set_input_float("reflect_theta", pe_script_engine().get_parameter("reflect_theta"));
+  m_gpu_backbuffer_program->set_input_float("reflect_offset", pe_script_engine().get_parameter("reflect_offset"));
+  m_gpu_backbuffer_program->set_input_float("echo_zoom", pe_script_engine().get_parameter("echo_zoom"));
+  m_gpu_backbuffer_program->set_input_float("echo_alpha", pe_script_engine().get_parameter("echo_alpha"));
+  m_gpu_backbuffer_program->set_input_float("echo_orient", pe_script_engine().get_parameter("echo_orient"));
 
   // These are handled by the mobius transform
   m_gpu_backbuffer_program->set_input_float("zoom", pe_script_engine().get_parameter("zoom"));

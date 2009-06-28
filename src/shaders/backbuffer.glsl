@@ -7,6 +7,13 @@ uniform float gamma;
 uniform float time;
 uniform float ifs_mode;
 uniform float edge_extend;
+uniform float reflect_theta;
+uniform float reflect_offset;
+
+// Video Echo
+uniform float echo_zoom;
+uniform float echo_alpha;
+uniform float echo_orient;
 
 uniform float zoom;
 uniform float zoomexp;
@@ -140,6 +147,17 @@ void main() {
   float r_sqr = r*r;
   float theta = atan(y,x);
   float phi = atan(x,y);
+  
+  // Reflections
+  // vec2 reflected_coords;
+  // reflected_coords.x = -cos(2.0*reflect_theta) * (x-reflect_offset) + 
+  //   sin(2.0*reflect_theta) * y + reflect_offset;
+
+  // reflected_coords.y = sin(2.0*reflect_theta) * (x-reflect_offset) + 
+  //                      cos(2.0*reflect_theta) * y;
+  // x = reflected_coords.x;
+  // y = reflected_coords.y;
+
 
   // Linear
   vec2 remapped_coords = vec2(x,y);
@@ -323,6 +341,18 @@ void main() {
       final_texel.a != final_texel.a)
     final_texel = vec4(0.0,0.0,0.0,1.0);
 
+  // Video echo
+  vec2 prev_coords = gl_TexCoord[0].st;
+  vec2 echo_coords = vec2((prev_coords.x-0.5) * echo_zoom + 0.5, 
+                          (prev_coords.y-0.5) * echo_zoom + 0.5);
+  // if (echo_orient == 1.0 || echo_orient == 3.0)
+  //   echo_coords.x *= -1.0;
+  // if (echo_orient >= 1.0)
+  //   echo_coords.y *= -1.0;
+
+  vec4 src_prev = texture2D(feedback_texture, echo_coords);
+
   // Return the final value
-  gl_FragColor = final_texel;
+  gl_FragColor = ((1.0-echo_alpha)*final_texel + echo_alpha*src_prev);
+  gl_FragColor.a = 1.0;
 }

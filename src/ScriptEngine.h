@@ -25,6 +25,7 @@ public:
   void operator()();
 
   PyObject* global_dict() const { return m_global_dict; }
+  PyObject* main_module() const { return m_main_module; }
   PyObject* pe_dict() const { return m_pe_dict; }
   bool active() const { return m_interpreter_active; }
 };
@@ -44,6 +45,9 @@ public:
   double get_parameter(const char* name);
   void set_parameter(const char* name, double value);  
   virtual void execute(std::string const& cmd);
+
+  void controller_receive_callback(const char* controller_name, const char* path, double value);
+
 };
 
 /// Return the singleton instance of the PhosphorEssence parameters

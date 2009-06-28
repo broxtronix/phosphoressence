@@ -83,8 +83,10 @@ class JoystickController(object):
 
         # Langton bEATS
         pe_bindings.add(self, "/joystick0/axis2", "decay", 0.75, 1.05, 0.98)
-        pe_bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
-        pe_bindings.add(self, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
+#        pe_bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
+#        pe_bindings.add(self, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
+        pe_bindings.add(self, "/joystick0/axis4", "echo_zoom", 0.0, 2.0, 1.0)
+#        pe_bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 1.0, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
