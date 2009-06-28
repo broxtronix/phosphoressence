@@ -84,9 +84,12 @@ public:
     vw::Vector3 norm_color = color;
     if (pe_script_engine().get_parameter("wave_brighten")) 
       norm_color = normalize(color);
-
+    
     glEnable(GL_BLEND);
-    glBlendFunc (GL_ONE, GL_ZERO);
+    if (pe_script_engine().get_parameter("wave_additive"))
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+    else
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     if (pe_script_engine().get_parameter("wave_usedots")) 
       glBegin(GL_POINTS);

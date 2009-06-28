@@ -11,7 +11,7 @@ from bindings import Binding
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
-ENABLE_PRESETS = 0
+ENABLE_PRESETS = 1
 ENABLE_CONTROLLERS = 1
 
 # Switches for debugging

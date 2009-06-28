@@ -81,7 +81,10 @@ public:
             norm_color = normalize(color);
           
           glEnable(GL_BLEND);
-          glBlendFunc (GL_ONE, GL_ZERO);
+          if (pe_script_engine().get_parameter("wave_additive"))
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+          else
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     
           if (pe_script_engine().get_parameter("wave_usedots")) 
             glBegin(GL_POINTS);
@@ -106,13 +109,14 @@ public:
 
             // Left
             glVertex2d(horiz_pos, -1.0);
-            glVertex2d(horiz_pos, left_spectrum[i]*80-1.0);
+            glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*40-1.0);
 
-            // Right
-            glVertex2d(horiz_pos, 1.0);
-            glVertex2d(horiz_pos, -(right_spectrum[i]*80-1.0));
+            // // Right
+            // glVertex2d(horiz_pos, 1.0);
+            // glVertex2d(horiz_pos, -(right_spectrum[i]*80-1.0));
           }
           glEnd();
+          glDisable(GL_BLEND);
           
         }
         

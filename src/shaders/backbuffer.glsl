@@ -2,9 +2,6 @@
 uniform sampler2D feedback_texture;                             
 uniform float framebuffer_radius;
 uniform float decay;
-uniform float invert;
-uniform float brighten;
-uniform float darken;
 uniform float ifs_mode;
 uniform float edge_extend;
 uniform float reflect;
@@ -210,13 +207,6 @@ void main() {
   } 
   
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
-
-  // Apply invert
-  if (invert == 1.0) {
-    src.r = src.r * -1.0 + 1.0;
-    src.g = src.g * -1.0 + 1.0;
-    src.b = src.b * -1.0 + 1.0;
-  }
   
   // Apply gain.  This is done in the HSV color space so that the hue
   // can cycle when the image becomes saturated.
@@ -224,7 +214,7 @@ void main() {
   vec4 hsv_texel = g * rgb_to_hsv(src);
   hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
   hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance
-  vec4 final_texel = src;//hsv_to_rgb(hsv_texel);
+  vec4 final_texel = hsv_to_rgb(hsv_texel);
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.
@@ -242,17 +232,8 @@ void main() {
   //   echo_coords.x *= -1.0;
   // if (echo_orient >= 1.0)
   //   echo_coords.y *= -1.0;
-
   vec4 src_prev = texture2D(feedback_texture, echo_coords);
 
   // Return the final value
   gl_FragColor = mix(final_texel, src_prev, echo_alpha);
-  
-  if (brighten == 1.0) 
-    gl_FragColor = sqrt(gl_FragColor); 
-  if (darken == 1.0) {
-    vec4 e = vec4(2.0,2.0,2.0,1.0);
-    gl_FragColor = pow(gl_FragColor,e);
-  }
-  gl_FragColor.a = 1.0;
 }

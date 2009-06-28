@@ -298,6 +298,10 @@ void GraphicsEngine::drawImage() {
   m_gpu_frontbuffer_program->set_input_float("framebuffer_radius", float(m_framebuffer_width));
   m_gpu_frontbuffer_program->set_input_float("time", pe_time());
   m_gpu_frontbuffer_program->set_input_float("gamma", pe_script_engine().get_parameter("gamma"));
+  m_gpu_frontbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
+  m_gpu_frontbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
+  m_gpu_frontbuffer_program->set_input_float("darken", pe_script_engine().get_parameter("darken"));
+  m_gpu_frontbuffer_program->set_input_float("solarize", pe_script_engine().get_parameter("solarize"));
         
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.

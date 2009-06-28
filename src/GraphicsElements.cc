@@ -15,9 +15,6 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
-  m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
-  m_gpu_backbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
-  m_gpu_backbuffer_program->set_input_float("darken", pe_script_engine().get_parameter("darken"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
   m_gpu_backbuffer_program->set_input_float("reflect", pe_script_engine().get_parameter("reflect"));
@@ -164,11 +161,7 @@ void GraphicsEngine::drawFeedback() {
       glVertex2f(   m_warped_screencoords(i+1,j)[0], m_warped_screencoords(i+1,j)[1] );
     }		
   }
-  glEnd() ;
-
-  //  glDisable(GL_BLEND);
-
-  // Disable texture mapping and GLSL shaders
+  glEnd();
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 }
@@ -359,4 +352,47 @@ void GraphicsEngine::drawVectorField() {
     glDisable(GL_BLEND);
   }
   
+}
+
+
+// <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
+// See the milkdrop license in COPYING for more details.
+
+void GraphicsEngine::draw_milkdrop_waves() {
+    glEnable(GL_BLEND);
+    if (pe_script_engine().get_parameter("wave_additive"))
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+    else
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float wave_r = pe_script_engine().get_parameter("wave_r");
+    float wave_g = pe_script_engine().get_parameter("wave_g");
+    float wave_b = pe_script_engine().get_parameter("wave_b");
+    float wave_a = pe_script_engine().get_parameter("wave_a");
+    float wave_mystery = pe_script_engine().get_parameter("wave_mystery");
+    
+    if (pe_script_engine().get_parameter("wave_brighten")) {
+      float max = wave_r;
+      if (max < wave_g) max = wave_g;
+      if (max < wave_b) max = wave_b;
+      if (max > 0.01f) {
+        wave_r = wave_r/max;
+        wave_g = wave_g/max;
+        wave_b = wave_b/max;
+      }
+
+    }
+
+    // Compute wave position, adjusting from the parameter range
+    // [0..1] to the window range [-1..1] for x and [-aspect..aspect]
+    // for y.
+    float x = pe_script_engine().get_parameter("wave_x")*2.0*m_aspect - m_aspect;
+    float y = pe_script_engine().get_parameter("wave_y")*2.0 - 1.0;
+
+
+    float bass_rel   = pe_script_engine().get_parameter("bass_att");
+    float mid_rel    = pe_script_engine().get_parameter("mid_att");
+    float treble_rel = pe_script_engine().get_parameter("treb_att");
+
+    glDisable(GL_BLEND);
 }

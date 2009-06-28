@@ -147,6 +147,7 @@ private:
   void drawDarkenCenter();
   void drawBorders();
   void drawVectorField();
+  void draw_milkdrop_waves();
   
   // Image & OpenGL
   GLuint m_feedback_texture;

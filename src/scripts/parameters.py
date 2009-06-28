@@ -394,6 +394,10 @@ pe.register(Parameter( name = "wave_brighten",
            "will be scaled up until at least one reaches 1.0",
            default_value = 1.0))
 
+pe.register(Parameter( name = "wave_mystery",
+           description = "Does a different thing for each wave.",
+           default_value = 0.0))
+
 pe.register(Parameter( name = "wave_enabled",
            description = "Enable the audio waveform rendered on screen.",
            default_value = 0.0))

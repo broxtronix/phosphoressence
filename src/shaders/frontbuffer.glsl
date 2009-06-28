@@ -2,6 +2,10 @@
 uniform sampler2D backbuffer_texture;                             
 uniform float framebuffer_radius;
 uniform float gamma;
+uniform float invert;
+uniform float brighten;
+uniform float darken;
+uniform float solarize;
 uniform float time;
 
 #define EPS 0.00001
@@ -30,10 +34,32 @@ void main() {
 
   // Map the colors
   vec4 final_texel = src;
-    
+
   // Apply Gamma
   final_texel.r = pow(final_texel.r, gamma);
   final_texel.g = pow(final_texel.g, gamma);
   final_texel.b = pow(final_texel.b, gamma);
+
+  // Apply invert
+  vec4 ones = vec4(1.0, 1.0, 1.0, 1.0);
+  vec4 neg_ones = vec4(-1.0, -1.0, -1.0, -1.0);
+  if (invert == 1.0) 
+    final_texel = final_texel * neg_ones + ones;
+
+  // Brighten
+  if (brighten == 1.0) 
+    final_texel = sqrt(final_texel); 
+
+  // Darken
+  if (darken == 1.0) {
+    vec4 e = vec4(2.0,2.0,2.0,1.0);
+    final_texel = pow(final_texel,e);
+  }
+
+  // Solarize
+  if (solarize == 1.0) 
+    final_texel = final_texel - (final_texel * neg_ones + ones);
+  final_texel.a = 1.0;
+    
   gl_FragColor = final_texel;
 }
