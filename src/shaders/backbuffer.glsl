@@ -4,9 +4,8 @@ uniform float framebuffer_radius;
 uniform float decay;
 uniform float ifs_mode;
 uniform float edge_extend;
-uniform float reflect;
-uniform float reflect_theta;
-uniform float reflect_offset;
+uniform float kaleidoscope;
+uniform float kaleidoscope_radius;
 
 // Video Echo
 uniform float echo_zoom;
@@ -173,15 +172,34 @@ void main() {
   float theta2 = atan(yy,xx);
   
   remapped_coords = mobius_transform(vec2(rr,theta2), 
-                                     vec2(zoom,-rot), // polar      : zoom & rotation
+                                     vec2(zoom,rot), // polar      : zoom & rotation
                                      vec2(dx,dy),    // cartesian  : x & y translation 
-                                     vec2(0,0));   // polar      : rotation & orientation of 3D sphere
+                                     vec2(0,0));     // polar      : rotation & orientation of 3D sphere
 
   // Kaleidoscope mode
-  if (reflect == 1.0 && remapped_coords.x > 0.0)
-    remapped_coords.x = -remapped_coords.x;
-  if (reflect == 1.0 && remapped_coords.y < 0.0)
-    remapped_coords.y = -remapped_coords.y;
+  if (kaleidoscope == 1.0) {
+
+    vec2 p = vec2(remapped_coords.x, remapped_coords.y-kaleidoscope_radius);
+
+    // Top right mirror
+    if (1.7320 * p.x + p.y > 0.0) {
+      mat2 m = mat2(-0.5, -0.866025, -0.866025, 0.5);
+      remapped_coords = m*p;
+      remapped_coords.y += kaleidoscope_radius;
+    }
+
+    // Top left mirror
+    if (-1.7320 * p.x + p.y > 0.0) {
+      mat2 m = mat2(-0.5, 0.866025, 0.866025, 0.5);
+      remapped_coords = m*p;
+      remapped_coords.y += kaleidoscope_radius;
+    }
+
+    // Bottom mirror
+    float bottom = -kaleidoscope_radius / 2.0;
+    if (remapped_coords.y < bottom)
+      remapped_coords.y = -(remapped_coords.y-bottom)+bottom;
+  }
 
   // Remap the coordinates back into texture coordinate space: [0.0,1.0]
   vec2 unnormalized_coords = vec2(remapped_coords.x / 

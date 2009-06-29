@@ -17,9 +17,8 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
-  m_gpu_backbuffer_program->set_input_float("reflect", pe_script_engine().get_parameter("reflect"));
-  m_gpu_backbuffer_program->set_input_float("reflect_theta", pe_script_engine().get_parameter("reflect_theta"));
-  m_gpu_backbuffer_program->set_input_float("reflect_offset", pe_script_engine().get_parameter("reflect_offset"));
+  m_gpu_backbuffer_program->set_input_float("kaleidoscope", pe_script_engine().get_parameter("kaleidoscope"));
+  m_gpu_backbuffer_program->set_input_float("kaleidoscope_radius", pe_script_engine().get_parameter("kaleidoscope_radius"));
   m_gpu_backbuffer_program->set_input_float("echo_zoom", pe_script_engine().get_parameter("echo_zoom"));
   m_gpu_backbuffer_program->set_input_float("echo_alpha", pe_script_engine().get_parameter("echo_alpha"));
   m_gpu_backbuffer_program->set_input_float("echo_orient", pe_script_engine().get_parameter("echo_orient"));

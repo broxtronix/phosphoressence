@@ -83,9 +83,10 @@ class JoystickController(object):
 
         # Langton bEATS
         pe_bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.05, 0.98, "log10")
-        pe_bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
+        #pe_bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
         #pe_bindings.add(self, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
         #pe_bindings.add(self, "/joystick0/axis4", "echo_zoom", 0.0, 2.0, 1.0)
+        pe_bindings.add(self, "/joystick0/axis4", "kaleidoscope_radius", 0.0, 2.0, 0.5)
         pe_bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 1.0, 0.0)
         #pe_bindings.add(self, "/joystick0/axis4", "reflect_theta", 0., 6.28, 0.0)
         #pe_bindings.add(self, "/joystick0/axis5", "reflect_offset", -1.0, 1.0, 0.0)
@@ -186,10 +187,10 @@ class JoystickController(object):
             self.wave_frequency_coeff = 0.0
 
 
-        # Reflect
-        if (path == "/joystick0/button7" and value == 1): 
-            if (pe.reflect == 1.0): pe.set_control_value('reflect', 0.0)
-            else: pe.set_control_value('reflect', 1.0)
+        # Kaleidoscope
+        if (path == "/joystick0/button7" and value == 1.0): 
+            if (pe.kaleidoscope == 1.0): pe.set_control_value('kaleidoscope', 0.0)
+            else: pe.set_control_value('kaleidoscope', 1.0)
 
 
         # Rotation
@@ -253,11 +254,11 @@ class JoystickController(object):
             self.dx_coefficient = 0.0
 
         if (path == "/joystick0/button22" and value == 1.0): 
-            self.dy_coefficient = -1.0
+            self.dy_coefficient = 1.0
         if (path == "/joystick0/button22" and value == 0.0): 
             self.dy_coefficient = 0.0
         if (path == "/joystick0/button24" and value == 1.0): 
-            self.dy_coefficient = 1.0
+            self.dy_coefficient = -1.0
         if (path == "/joystick0/button24" and value == 0.0): 
             self.dy_coefficient = 0.0
 

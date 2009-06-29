@@ -609,17 +609,11 @@ pe.register(Parameter( name = "show_fps",
            description = "Toggle fps display on and off.",
            default_value = 0.0))
 
-
-pe.register(Parameter( name = "reflect",
-                       description = "Activate the kaleidascope effect",
-                       default_value = 0.0))
-
-pe.register(Parameter( name = "reflect_theta",
-           description = "Angle of the kaleidascope reflection.",
+pe.register(Parameter( name = "kaleidoscope",
+           description = "Activate the kaleidoscope effect.",
            default_value = 0.0))
 
-
-pe.register(Parameter( name = "reflect_offset",
-           description = "Offset of the kaleidascope reflection.",
+pe.register(Parameter( name = "kaleidoscope_radius",
+           description = "Set the radius for the kaleidoscope effect.",
            default_value = 0.0))
 
