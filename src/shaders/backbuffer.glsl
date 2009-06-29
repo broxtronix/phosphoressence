@@ -172,7 +172,7 @@ void main() {
   float theta2 = atan(yy,xx);
   
   remapped_coords = mobius_transform(vec2(rr,theta2), 
-                                     vec2(zoom,rot), // polar      : zoom & rotation
+                                     vec2(zoom,-rot), // polar      : zoom & rotation
                                      vec2(dx,dy),    // cartesian  : x & y translation 
                                      vec2(0,0));     // polar      : rotation & orientation of 3D sphere
 
@@ -180,6 +180,7 @@ void main() {
   if (kaleidoscope == 1.0) {
 
     vec2 p = vec2(remapped_coords.x, remapped_coords.y-kaleidoscope_radius);
+    float bottom = -kaleidoscope_radius / 2.0;
 
     // Top right mirror
     if (1.7320 * p.x + p.y > 0.0) {
@@ -189,15 +190,14 @@ void main() {
     }
 
     // Top left mirror
-    if (-1.7320 * p.x + p.y > 0.0) {
+    else if (-1.7320 * p.x + p.y > 0.0) {
       mat2 m = mat2(-0.5, 0.866025, 0.866025, 0.5);
       remapped_coords = m*p;
       remapped_coords.y += kaleidoscope_radius;
     }
 
     // Bottom mirror
-    float bottom = -kaleidoscope_radius / 2.0;
-    if (remapped_coords.y < bottom)
+    else if (remapped_coords.y < bottom)
       remapped_coords.y = -(remapped_coords.y-bottom)+bottom;
   }
 
@@ -246,10 +246,10 @@ void main() {
   vec2 prev_coords = gl_TexCoord[0].st;
   vec2 echo_coords = vec2((prev_coords.x-0.5) * echo_zoom + 0.5, 
                           (prev_coords.y-0.5) * echo_zoom + 0.5);
-  // if (echo_orient == 1.0 || echo_orient == 3.0)
-  //   echo_coords.x *= -1.0;
-  // if (echo_orient >= 1.0)
-  //   echo_coords.y *= -1.0;
+  if (echo_orient == 1.0 || echo_orient == 3.0)
+    echo_coords.x *= -1.0;
+  if (echo_orient >= 1.0)
+    echo_coords.y *= -1.0;
   vec4 src_prev = texture2D(feedback_texture, echo_coords);
 
   // Return the final value

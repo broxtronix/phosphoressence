@@ -252,7 +252,7 @@ void GraphicsEngine::drawDarkenCenter() {
        glEnable(GL_BLEND);
        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-       float fHalfSize = 0.05f;
+       float fHalfSize = 0.005f;
        glBegin(GL_TRIANGLE_FAN);
        
        // Center point

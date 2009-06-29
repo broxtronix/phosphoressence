@@ -125,8 +125,16 @@ class JoystickController(object):
 
     def receive_callback(self, path, value): 
 
+        # Darken the center when gain is high!  This helps to keep
+        # things "under control."
+        if (pe.decay > 1.01):
+            pe.darken_center = 1.0
+        else:
+            pe.darken_center = 0.0
+        
+
         # -------------------------------------
-        # Fixed settings for the langton bEATS!
+        # Fixed settings for PRICELESS!!
         # -------------------------------------
     
         # RESET!!
@@ -140,7 +148,7 @@ class JoystickController(object):
             pe.rot = -0.001
             pe.sx=0.999
             pe.wave_mode=2
-            pe.wave_enabled = 1
+            pe.wave_enabled=1
     
 
         # IFS Mode
@@ -330,10 +338,10 @@ class JoystickController(object):
             pe.set_control_value('wave_frequency', 0.03)
             pe.set_control_value('wave_mode', 2)
         elif (path == "/joystick0/button12" and value == 1): 
-            pe.set_control_value('wave_frequency', 0.5)
+            pe.set_control_value('wave_frequency', 0.2)
             pe.set_control_value('wave_mode', 2)
         elif (path == "/joystick0/button13" and value == 1): 
-            pe.set_control_value('wave_frequency', 10.0)
+            pe.set_control_value('wave_frequency', 9.0)
             pe.set_control_value('wave_mode', 2)
 
 
@@ -348,7 +356,7 @@ class JoystickController(object):
     def render_callback(self):
 
         # Update scaling
-        scaling_stepsize = 0.0005
+        scaling_stepsize = 0.001
         pe.set_control_value('sx', pe.sx + scaling_stepsize * self.sx_coefficient)
         pe.set_control_value('sy', pe.sy + scaling_stepsize * self.sy_coefficient)
         if (pe.sx > 1.5): pe.set_control_value('sx', 1.5)

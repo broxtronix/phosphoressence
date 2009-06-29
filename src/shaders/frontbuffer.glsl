@@ -36,9 +36,9 @@ void main() {
   vec4 final_texel = src;
 
   // Apply Gamma
-  final_texel.r = pow(final_texel.r, gamma);
-  final_texel.g = pow(final_texel.g, gamma);
-  final_texel.b = pow(final_texel.b, gamma);
+  final_texel.r = pow(final_texel.r, 1.0/gamma);
+  final_texel.g = pow(final_texel.g, 1.0/gamma);
+  final_texel.b = pow(final_texel.b, 1.0/gamma);
 
   // Apply invert
   vec4 ones = vec4(1.0, 1.0, 1.0, 1.0);

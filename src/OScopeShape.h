@@ -118,11 +118,15 @@ public:
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)
       if (x_cache[i-1] < x_cache[i]) {
-        glVertex2d(x_cache[i-1],  left_cache[i-1]+0.5);
-        glVertex2d(x_cache[i], left_cache[i]+0.5);
+        glVertex2d(x_cache[i-1],  (left_cache[i-1]+right_cache[i-1])/2);
+        glVertex2d(x_cache[i], (left_cache[i]+right_cache[i])/2);
 
-        glVertex2d(x_cache[i-1],  right_cache[i-1]-0.5);
-        glVertex2d(x_cache[i], right_cache[i]-0.5);
+        // Uncomment to draw two separate traces (one for each channel)
+        // glVertex2d(x_cache[i-1],  left_cache[i-1]+0.5);
+        // glVertex2d(x_cache[i], left_cache[i]+0.5);
+        //
+        // glVertex2d(x_cache[i-1],  right_cache[i-1]-0.5);
+        // glVertex2d(x_cache[i], right_cache[i]-0.5);
 
       }
     }
