@@ -211,7 +211,6 @@ void GraphicsEngine::drawImage() {
     rotation(1,0) = -sin(theta);
     rotation(1,1) = cos(theta);
 
-
     Matrix<double,2,4> shape_vertices;
     float square_scale = pe_script_engine().get_parameter("square_scale");
     shape_vertices(0,0) = -0.25 * square_scale;
@@ -226,6 +225,7 @@ void GraphicsEngine::drawImage() {
     Matrix<double,2,4> vertices = rotation*shape_vertices;
   
     glLineWidth(pe_script_engine().get_parameter("square_thick"));
+    glPointSize(pe_script_engine().get_parameter("square_thick")/2.0);
       
     float wave_r = pe_script_engine().get_parameter("square_r");
     float wave_g = pe_script_engine().get_parameter("square_g");
@@ -237,6 +237,8 @@ void GraphicsEngine::drawImage() {
       norm_color = vw::math::normalize(color);
     glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
 
+    glEnable(GL_LINE_SMOOTH);
+
     // We will draw the image as a texture on this quad.
     glBegin(GL_LINES);
     glVertex2f( vertices(0,0), vertices(1,0) );
@@ -247,6 +249,13 @@ void GraphicsEngine::drawImage() {
     glVertex2f( vertices(0,3), vertices(1,3) );
     glVertex2f( vertices(0,3), vertices(1,3) );
     glVertex2f( vertices(0,0), vertices(1,0) );
+    glEnd();
+
+    glBegin(GL_POINTS);
+    glVertex2f( vertices(0,0), vertices(1,0) );
+    glVertex2f( vertices(0,1), vertices(1,1) );
+    glVertex2f( vertices(0,2), vertices(1,2) );
+    glVertex2f( vertices(0,3), vertices(1,3) );
     glEnd();
   }
 

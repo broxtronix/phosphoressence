@@ -59,8 +59,8 @@ public:
 
           // Set up the GL parameters for drawing
           glLoadIdentity();
-          float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
-          float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
+          float wave_x = 0; //pe_script_engine().get_parameter("wave_x")*2-1;
+          float wave_y = 0; //pe_script_engine().get_parameter("wave_y")*2-1;
           glTranslatef(wave_x, wave_y, 0);
           
           if (pe_script_engine().get_parameter("wave_thick")) {

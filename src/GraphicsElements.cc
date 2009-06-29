@@ -285,6 +285,8 @@ void GraphicsEngine::drawVectorField() {
     glLineWidth(1.0);
     glPointSize(2.0);
 
+    glEnable(GL_POINT_SMOOTH);
+
     glColor4f(pe_script_engine().get_parameter("mv_r"),
               pe_script_engine().get_parameter("mv_g"),
               pe_script_engine().get_parameter("mv_b"),

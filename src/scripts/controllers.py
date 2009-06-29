@@ -218,10 +218,8 @@ class JoystickController(object):
             delta = (value-0.5) * zoom_gain
             if (math.fabs(value-0.5) > 0.05): 
                 pe.set_control_value('zoom', pe.zoom - delta)
-                if (pe.zoom > 1.16): pe.zoom = 1.16
-                if (pe.zoom < 0.5): pe.zoom = 0.5
-
-
+                if (pe.zoom > 1.16): pe.set_control_value('zoom', 1.16)
+                if (pe.zoom < 0.5): pe.set_control_value('zoom', 0.5)
 
         # Zoomexp
         if (path == "/joystick0/axis3"): 
@@ -344,7 +342,6 @@ class JoystickController(object):
             pe.set_control_value('wave_frequency', 9.0)
             pe.set_control_value('wave_mode', 2)
 
-
         # Debugging
         if (self.JOY_DEBUG and (path.find("axis") == -1)):
             print("[JOYSTICK]    Path: " + path + "   Value: " + str(value))
@@ -387,7 +384,7 @@ class JoystickController(object):
             pe.square_thick *= square_thick_stepsize
         if (self.square_thick_coeff == -1.0):
             pe.square_thick /= square_thick_stepsize
-        if (pe.square_thick > 500.0): pe.square_thick = 500.0
+        if (pe.square_thick > 15.0): pe.square_thick = 15.0
         if (pe.square_thick < 1.0): pe.square_thick = 1.0
 
         # Update dx & dy
@@ -424,3 +421,20 @@ class JoystickController(object):
         if (pe.mv_l < 0.0): pe.mv_l = 0.0
 
 
+        # Cause elements to move
+        pe.wave_x = 0.5;
+        pe.wave_y = 0.5;
+#        pe.set_control_value('wave_x', pe.wave_x + 0.02*( 0.60*math.sin(2.121*pe.time) + 0.40*math.sin(1.621*pe.time) ))
+#        pe.set_control_value('wave_y', pe.wave_y + 0.02*( 0.60*math.sin(1.742*pe.time) + 0.40*math.sin(2.322*pe.time) ))
+
+        # wave_x = wave_x + 0.200*( 0.60*sin(1.321*time) + 0.40*sin(1.621*time) );
+        # wave_y = wave_y + 0.200*( 0.60*sin(1.742*time) + 0.40*sin(1.422*time) );
+
+        # wave_x = wave_x + 0.200*( 0.60*sin(0.394*time) + 0.40*sin(0.475*time) );
+        # wave_y = wave_y + 0.200*( 0.60*sin(0.442*time) + 0.40*sin(0.321*time) );
+
+        # wave_x = wave_x + 0.0200*( 0.60*sin(0.821*time) + 0.40*sin(0.621*time) );
+        # wave_y=0.5
+
+        # wave_x = 0.5 + 0.3*sin(time*0.177);
+        # wave_y=0.47
