@@ -16,6 +16,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
+  m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
   m_gpu_backbuffer_program->set_input_float("kaleidoscope", pe_script_engine().get_parameter("kaleidoscope"));
   m_gpu_backbuffer_program->set_input_float("kaleidoscope_radius", pe_script_engine().get_parameter("kaleidoscope_radius"));

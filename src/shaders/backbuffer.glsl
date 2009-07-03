@@ -3,6 +3,7 @@ uniform sampler2D feedback_texture;
 uniform float framebuffer_radius;
 uniform float decay;
 uniform float ifs_mode;
+uniform float invert;
 uniform float edge_extend;
 uniform float kaleidoscope;
 uniform float kaleidoscope_radius;
@@ -141,15 +142,15 @@ void main() {
 
   if (ifs_mode == 1.0) {
 
-    // 1. Sinusoidal
-    remapped_coords = vec2(sin(x),
-                           sin(y));
+    // 1. Spherical
+     remapped_coords = vec2(x/(0.26*r_sqr),
+                            y/(0.26*r_sqr));
 
   } else if (ifs_mode == 2.0) {
 
-    // 2. Spherical
-     remapped_coords = vec2(x/(0.26*r_sqr),
-                            y/(0.26*r_sqr));
+    // 2. Sinusoidal
+    remapped_coords = vec2(sin(x),
+                           sin(y));
 
   } else if (ifs_mode == 3.0) {
 
@@ -176,7 +177,10 @@ void main() {
                                      vec2(dx,dy),    // cartesian  : x & y translation 
                                      vec2(0,0));     // polar      : rotation & orientation of 3D sphere
 
-  // Kaleidoscope mode
+  // ----------------------------------------------------------------------
+  //                             Kaleidoscope
+  // ----------------------------------------------------------------------
+
   if (kaleidoscope == 1.0) {
 
     vec2 p = vec2(remapped_coords.x, remapped_coords.y-kaleidoscope_radius);
@@ -225,6 +229,12 @@ void main() {
   } 
   
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
+
+  // if (invert == 1.0) {
+  //   src.r = 1.0 - src.r;
+  //   src.g = 1.0 - src.g;
+  //   src.b = 1.0 - src.b;
+  // }
   
   // Apply gain.  This is done in the HSV color space so that the hue
   // can cycle when the image becomes saturated.

@@ -109,7 +109,7 @@ public:
 
             // Left
             glVertex2d(horiz_pos, -1.0);
-            glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*40-1.0);
+            glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*10-1.0);
 
             // // Right
             // glVertex2d(horiz_pos, 1.0);

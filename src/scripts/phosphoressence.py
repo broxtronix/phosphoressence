@@ -30,9 +30,11 @@ joystick = JoystickController(JOY_DEBUG)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
+    pass
+
     # Load Milkdrop Presets & Bookmarks
-    pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
-    #pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
+    # pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
+    # pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
 
 # Default render callback
@@ -96,3 +98,22 @@ def pe_render():
         pe.mv_g += 0.5 * math.sin(19/10.0*pe.time)
         pe.mv_b += 0.5 * math.sin(14/10.0*pe.time)
 
+        if pe.wave_move:
+            # Cause elements to move
+            pe.wave_x = 0.5;
+            pe.wave_y = 0.5;
+            pe.set_control_value('wave_x', pe.wave_x + 0.02*( 0.60*math.sin(2.121*pe.time) + 0.40*math.sin(1.621*pe.time) ))
+            pe.set_control_value('wave_y', pe.wave_y + 0.02*( 0.60*math.sin(1.742*pe.time) + 0.40*math.sin(2.322*pe.time) ))
+
+
+        # wave_x = wave_x + 0.200*( 0.60*sin(1.321*time) + 0.40*sin(1.621*time) );
+        # wave_y = wave_y + 0.200*( 0.60*sin(1.742*time) + 0.40*sin(1.422*time) );
+
+        # wave_x = wave_x + 0.200*( 0.60*sin(0.394*time) + 0.40*sin(0.475*time) );
+        # wave_y = wave_y + 0.200*( 0.60*sin(0.442*time) + 0.40*sin(0.321*time) );
+
+        # wave_x = wave_x + 0.0200*( 0.60*sin(0.821*time) + 0.40*sin(0.621*time) );
+        # wave_y=0.5
+
+        # wave_x = 0.5 + 0.3*sin(time*0.177);
+        # wave_y=0.47

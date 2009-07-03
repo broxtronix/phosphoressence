@@ -13,7 +13,7 @@ class Parameter(object):
         # Constants
         self.CONTROL_AUTOMATE = 0
         self.CONTROL_OVERRIDE = 1
-        self.TIMEOUT_LENGTH = 0.3   # seconds
+        self.TIMEOUT_LENGTH = 120.0   # seconds
 
         # Store the parameters specific to this parameter in the class
         # instance.
@@ -137,8 +137,6 @@ class PhosphorEssence(object):
     # directly from the script.  This form of setting the value may be
     # overridden by the set_control_value() method below.
     def set_value(self, name, value):
-        if (name == 'zoom'):
-            print 'Outer set_value called'
         self.params[name].set_value(value)
 
     # Set the value of a parameter using a physical controller.  This
@@ -611,5 +609,9 @@ pe.register(Parameter( name = "kaleidoscope",
 
 pe.register(Parameter( name = "kaleidoscope_radius",
            description = "Set the radius for the kaleidoscope effect.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "wave_move",
+           description = "Cause the wave shapes to move.",
            default_value = 0.0))
 
