@@ -113,8 +113,8 @@ class JoystickController(object):
         pe.ib_size=10.0
         pe.ib_a = 0.0
         pe.mv_a = 0.0
-        pe.mv_x = 48
-        pe.mv_y = 48
+        pe.mv_x = 36
+        pe.mv_y = 36
         pe.mv_l = 0
         pe.rot = -0.001
         pe.sx=0.999
@@ -139,14 +139,15 @@ class JoystickController(object):
         if (path == "/joystick0/button3" and value == 1): 
             print("Resetting to defaults!!\n>> ")
             pe.reset_all()
-            pe.mv_a = 1.0
-            pe.mv_x = 48
-            pe.mv_y = 48
-            pe.mv_l = 0
-            pe.rot = -0.001
-            pe.sx=0.999
-            pe.wave_mode=2
-            pe.wave_enabled=1
+            pe.set_control_value('mv_a', 0.0)
+            pe.set_control_value('mv_x', 36)
+            pe.set_control_value('mv_y', 36)
+            pe.set_control_value('mv_l', 0)
+            pe.set_control_value('rot', -0.001)
+            pe.set_control_value('sx',0.999)
+            pe.set_control_value('wave_mode', 2)
+            pe.set_control_value('wave_enabled',1.0)
+            pe.set_control_value('square_a',1.0)
     
         # Waveshape Enable
         if (path == "/joystick0/button0" and value == 1):
@@ -159,12 +160,12 @@ class JoystickController(object):
             else: pe.set_control_value('square_a', 1.0)
 
         # Border Enable
-        if (path == "/joystick0/button1" and value == 1): 
+        if (path == "/joystick0/button2" and value == 1): 
             if (pe.ib_a): pe.set_control_value('ib_a', 0.0)
             else: pe.set_control_value('ib_a', 1.0)
 
         # Vector Field
-        if (path == "/joystick0/button2" and value == 1): 
+        if (path == "/joystick0/button1" and value == 1): 
             if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
             else: pe.set_control_value('mv_a', 1.0);    
 
@@ -199,7 +200,7 @@ class JoystickController(object):
 
 
         # Rotation
-        rot_gain = 0.01
+        rot_gain = -0.01
         if (path == "/joystick0/axis0"):
             delta = -(value-0.5) * rot_gain
             if (math.fabs(value-0.5) > 0.05): 
@@ -234,41 +235,41 @@ class JoystickController(object):
 
 
         # Scaling
-        if (path == "/joystick0/button21" and value == 1.0): 
+        if (path == "/joystick0/button20" and value == 1.0): 
             self.sx_coefficient = 1.0
-        if (path == "/joystick0/button21" and value == 0.0): 
+        if (path == "/joystick0/button20" and value == 0.0): 
             self.sx_coefficient = 0.0
-        if (path == "/joystick0/button19" and value == 1.0): 
+        if (path == "/joystick0/button18" and value == 1.0): 
             self.sx_coefficient = -1.0
-        if (path == "/joystick0/button19" and value == 0.0): 
+        if (path == "/joystick0/button18" and value == 0.0): 
             self.sx_coefficient = 0.0
 
-        if (path == "/joystick0/button20" and value == 1.0): 
+        if (path == "/joystick0/button21" and value == 1.0): 
             self.sy_coefficient = 1.0
-        if (path == "/joystick0/button20" and value == 0.0): 
+        if (path == "/joystick0/button21" and value == 0.0): 
             self.sy_coefficient = 0.0
-        if (path == "/joystick0/button18" and value == 1.0): 
+        if (path == "/joystick0/button19" and value == 1.0): 
             self.sy_coefficient = -1.0
-        if (path == "/joystick0/button18" and value == 0.0): 
+        if (path == "/joystick0/button19" and value == 0.0): 
             self.sy_coefficient = 0.0
 
         # Center of rotation
-        if (path == "/joystick0/button23" and value == 1.0): 
+        if (path == "/joystick0/button22" and value == 1.0): 
             self.dx_coefficient = -1.0
-        if (path == "/joystick0/button23" and value == 0.0): 
+        if (path == "/joystick0/button22" and value == 0.0): 
             self.dx_coefficient = 0.0
-        if (path == "/joystick0/button25" and value == 1.0): 
+        if (path == "/joystick0/button24" and value == 1.0): 
             self.dx_coefficient = 1.0
-        if (path == "/joystick0/button25" and value == 0.0): 
+        if (path == "/joystick0/button24" and value == 0.0): 
             self.dx_coefficient = 0.0
 
-        if (path == "/joystick0/button22" and value == 1.0): 
+        if (path == "/joystick0/button23" and value == 1.0): 
             self.dy_coefficient = 1.0
-        if (path == "/joystick0/button22" and value == 0.0): 
+        if (path == "/joystick0/button23" and value == 0.0): 
             self.dy_coefficient = 0.0
-        if (path == "/joystick0/button24" and value == 1.0): 
+        if (path == "/joystick0/button25" and value == 1.0): 
             self.dy_coefficient = -1.0
-        if (path == "/joystick0/button24" and value == 0.0): 
+        if (path == "/joystick0/button25" and value == 0.0): 
             self.dy_coefficient = 0.0
 
 
@@ -289,8 +290,12 @@ class JoystickController(object):
 
         # Reset center of rotation, scaling, and zoom exponent
         if (path == "/joystick0/button5" and value == 1.0): 
-            if (pe.invert): pe.set_control_value('invert', 0.0)
-            else: pe.set_control_value('invert', 1.0)
+            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
+            else: pe.set_control_value('wave_usedots', 1.0)
+
+#        if (path == "/joystick0/button5" and value == 1.0): 
+#            if (pe.invert): pe.set_control_value('invert', 0.0)
+#            else: pe.set_control_value('invert', 1.0)
 
 
         # Warp

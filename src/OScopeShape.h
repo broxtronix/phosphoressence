@@ -83,12 +83,19 @@ public:
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
         if (idx < AUDIO_SAMPLE_RATE) {
-          x_cache[idx] = old_x + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
-          if (x_cache[idx] > aspect) x_cache[idx] -= 2.0*aspect;
+          x_cache[idx] = old_x + f*(2.0*1.0*M_PI/AUDIO_SAMPLE_RATE);
+          if (x_cache[idx] > 1.0) x_cache[idx] -= 2.0;
           left_cache[idx] = *data_ptr++/2.0;   // left audio channel
           right_cache[idx] = *data_ptr++/2.0;  // right audio channel
           old_x = x_cache[idx];
           ++idx;
+
+          // x_cache[idx] = old_x + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
+          // if (x_cache[idx] > aspect) x_cache[idx] -= 2.0*aspect;
+          // left_cache[idx] = *data_ptr++/2.0;   // left audio channel
+          // right_cache[idx] = *data_ptr++/2.0;  // right audio channel
+          // old_x = x_cache[idx];
+          // ++idx;
         } 
 
         // Go to next frame
@@ -118,8 +125,11 @@ public:
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)
       if (x_cache[i-1] < x_cache[i]) {
-        glVertex2d(x_cache[i-1],  (left_cache[i-1]+right_cache[i-1])/2);
-        glVertex2d(x_cache[i], (left_cache[i]+right_cache[i])/2);
+        // glVertex2d(x_cache[i-1],  (left_cache[i-1]+right_cache[i-1])/2);
+        // glVertex2d(x_cache[i], (left_cache[i]+right_cache[i])/2);
+
+        glVertex2d((left_cache[i-1]+right_cache[i-1])/2, x_cache[i-1]);
+        glVertex2d((left_cache[i]+right_cache[i])/2, x_cache[i]);
 
         // Uncomment to draw two separate traces (one for each channel)
         // glVertex2d(x_cache[i-1],  left_cache[i-1]+0.5);
