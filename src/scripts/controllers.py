@@ -200,7 +200,7 @@ class JoystickController(object):
 
 
         # Rotation
-        rot_gain = -0.01
+        rot_gain = 0.01
         if (path == "/joystick0/axis0"):
             delta = -(value-0.5) * rot_gain
             if (math.fabs(value-0.5) > 0.05): 
