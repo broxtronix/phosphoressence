@@ -1,6 +1,13 @@
 # PHOSPHORESSENCE MASTER CONTROL PROGRAM
 #
 import math, sys
+
+import OpenGL
+OpenGL.ERROR_CHECKING = False
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+
 PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 
 # Load various python modules
@@ -42,6 +49,31 @@ def pe_initialize():
 # This method is called by the GraphicsEngine just prior to rendering
 # each frame.  By overriding or augmenting this method, programmers
 # can animate PhosphorEssence parameters.
+
+def pe_sprites():
+    pass
+
+    # square_scale = 0.2;
+    # vertices = [(),(),(),()];
+    # vertices[0] = (-0.25 * square_scale, -0.25 * square_scale)
+    # vertices[1] = (-0.25 * square_scale, 0.25 * square_scale)
+    # vertices[2] = (0.25 * square_scale,  0.25 * square_scale)
+    # vertices[3] = (0.25 * square_scale, -0.25 * square_scale)
+
+
+    # # PyOpenGl Test
+    # glBegin(GL_LINES)
+    # glColor(1.0,0.0,0.0,1.0)
+    # glVertex( vertices[0] )
+    # glVertex( vertices[1] )
+    # glVertex( vertices[1] )
+    # glVertex( vertices[2] )
+    # glVertex( vertices[2] )
+    # glVertex( vertices[3] )
+    # glVertex( vertices[3] )
+    # glVertex( vertices[0] )
+    # glEnd()    
+
 def pe_render():
 
     if ( ENABLE_PRESETS ) :
@@ -57,6 +89,7 @@ def pe_render():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
+        #osc.render_callback()
         joystick.render_callback()
 
         # Update osc parameters
