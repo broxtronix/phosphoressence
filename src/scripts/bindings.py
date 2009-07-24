@@ -9,6 +9,7 @@ class Binding(object):
 	self.lo = lo
 	self.hi = hi
 	self.default_value = default_value
+        pe.set_value(self.parameter, default_value)
         if (mode):
 	    self.mode = mode
         else:

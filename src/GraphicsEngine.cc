@@ -259,6 +259,9 @@ void GraphicsEngine::drawImage() {
     glEnd();
   }
 
+  pe_script_engine().execute("pe_sprites()");
+
+
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
   if (pe_script_engine().get_parameter("wave_enabled") ) {
