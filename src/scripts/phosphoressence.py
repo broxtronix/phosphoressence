@@ -89,8 +89,8 @@ def pe_render():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
-        #osc.render_callback()
-        joystick.render_callback()
+        osc.render_callback()
+        #joystick.render_callback()
 
         # Update osc parameters
         #	 osc.render_callback()
