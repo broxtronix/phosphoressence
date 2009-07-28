@@ -13,7 +13,7 @@
 #include <QApplication>
 #include <QWidget>
 
-// // VW
+// VW
 #include <vw/Core.h>
 #include <vw/Image.h>
 #include <vw/Math.h>
