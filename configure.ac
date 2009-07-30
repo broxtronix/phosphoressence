@@ -77,16 +77,16 @@ AC_SUBST(HAVE_PYTHON)
 AX_PKG_PTHREADS
 
 AX_PKG_BOOST
-AX_PKG_BOOST_CHECK_VERSION([PE_])
+if test x"$HAVE_PKG_BOOST" == "xyes"; then
+  AX_PKG_BOOST_CHECK_VERSION([PE_])
+  AC_MSG_NOTICE([PE will be built using Boost version $BOOST_VERSION])
 
-AC_MSG_NOTICE([Stereo will be built using Boost version $BOOST_VERSION])
-AX_PKG_BOOST_LIB(PROGRAM_OPTIONS, [-lboost_program_options], [boost/program_options.hpp])
-
-AX_PKG_ONE_OF(BOOST_FILESYSTEM,
-    BOOST_FILESYSTEM_PRE_1_35,  [AX_PKG_BOOST_LIB(FILESYSTEM_PRE_1_35,  [-lboost_filesystem], [boost/filesystem/path.hpp])],
-    BOOST_FILESYSTEM_POST_1_35, [AX_PKG_BOOST_LIB(FILESYSTEM_POST_1_35, [-lboost_filesystem -lboost_system], [boost/filesystem/path.hpp])])
-
-AX_PKG_BOOST_LIB(THREAD, [-lboost_thread], [boost/thread/thread.hpp])
+  AX_PKG_BOOST_LIB(PROGRAM_OPTIONS, [-lboost_program_options], [boost/program_options.hpp])
+  AX_PKG_BOOST_LIB(SYSTEM,          [-lboost_system],          [boost/system/error_code.hpp])
+  AX_PKG_BOOST_LIB(FILESYSTEM,      [-lboost_filesystem],      [boost/filesystem/path.hpp], [$PKG_BOOST_SYSTEM_LIBS])
+  AX_PKG_BOOST_LIB(THREAD,          [-lboost_thread],          [boost/thread/thread.hpp])
+  AX_PKG_BOOST_LIB(IOSTREAMS,       [-lboost_iostreams],       [boost/iostreams/stream_buffer.hpp])
+fi
 
 # This provides an easy way for users to override the threads options
 # if they are replacing Boost threads with something else for their platform.
@@ -123,7 +123,6 @@ AX_PKG(CUDA,              [],      [-lcuda -lcudart], [cuda.h])
 AX_PKG(PORTAUDIO,         [],      [-lportaudio], [portaudio.h])
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG(LO,         [],      [-llo], [lo/lo.h])
-AX_PKG(V8,         [],      [-lv8], [v8.h])
 AX_PKG(SDL,        [],      [-lSDL], [SDL.h])
 
 AX_PKG_ONE_OF(CG,
@@ -142,25 +141,25 @@ AX_PKG_ONE_OF(GL,
 # AX_PKG(OPENSCENEGRAPH, [GL], [-losg -losgDB -lOpenThreads -losgViewer -losgText -losgGA -losgFX -losgTerrain -losgUtil], [osg/ref_ptr])
 # AX_PKG(SPICE, [], [-lcspice], [SpiceUsr.h SpiceZfc.h])
 
-# Qt with AutoTroll.
-AT_WITH_QT([+gui +sql +opengl], [], [], [], [HAVE_PKG_QT_INCLUDE=no])
 
-if test x"$HAVE_PKG_QT_INCLUDE" != x"no"; then
-    AT_REQUIRE_QT_VERSION([4.0], [], [HAVE_PKG_QT_INCLUDE=no])
+# Qt with AutoTroll.
+AT_WITH_QT([+gui +sql +opengl], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])
+
+if test x"$HAVE_PKG_QT_BASE" != x"no:missing QT"; then
+    AT_REQUIRE_QT_VERSION([4.0], [HAVE_PKG_QT_BASE="no:wrong QT version"], [])
 fi
 
-# We seed QT_INCLUDE's cppflags with the ones qmake figured out
-PKG_QT_INCLUDE_CPPFLAGS="$PKG_QT_INCLUDE_CPPFLAGS $QT_CPPFLAGS"
-AX_PKG(QT_INCLUDE, [], [], [QVector])
+# We seed QT_BASE's cppflags and libs with the ones qmake figured out
+PKG_QT_BASE_CPPFLAGS="$PKG_QT_BASE_CPPFLAGS $QT_CPPFLAGS"
+AX_PKG(QT_BASE, [], [$QT_LIBS], [QVector])
 
 AX_PKG_ONE_OF(QT,
-    APPLE_QT, [AX_PKG_APPLE(QT, [GL QT_INCLUDE], [$QT_LIBS])],
+    APPLE_QT, [AX_PKG_APPLE(QT, [GL QT_BASE], [])],
     LINUX_QT,
-     [AX_PKG(QT_LIBS,    [],              [$QT_LIBS], [])
-      AX_PKG(QT_OPENGL,  [GL QT_INCLUDE], [],         [QtOpenGL])
-      AX_PKG(QT_GUI,     [QT_INCLUDE],    [],         [QLabel])
-      AX_PKG(QT_SQL,     [QT_INCLUDE],    [],         [QtSql])
-      AX_GROUP_PKG(LINUX_QT, [QT_INCLUDE QT_GUI QT_OPENGL QT_SQL QT_LIBS])])
+     [AX_PKG(QT_OPENGL,  [QT_BASE], [], [QtOpenGL])
+      AX_PKG(QT_GUI,     [QT_BASE], [], [QLabel])
+      AX_PKG(QT_SQL,     [QT_BASE], [], [QtSql])
+      AX_GROUP_PKG(LINUX_QT, [QT_BASE QT_GUI QT_OPENGL QT_SQL])])
 
 ##################################################
 # module definitions
@@ -170,7 +169,7 @@ AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 AX_GROUP_PKG(VW_ALL,       [VW VW_CAMERA VW_CARTOGRAPHY VW_STEREO VW_INTEREST_POINT])
 
-AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE VW_IMAGE QT PORTAUDIO APPLE_COREMIDI LO V8])
+AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE VW_IMAGE QT PORTAUDIO APPLE_COREMIDI LO])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.

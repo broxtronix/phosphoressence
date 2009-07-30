@@ -17,7 +17,7 @@ ENABLE_CONTROLLERS = 1
 # Switches for debugging
 DEBUG = 0;
 JOY_DEBUG = 1;
-pe.show_fps = 0;
+pe.show_fps = 1;
 
 # Instantiate hardware controllers
 osc = OscController()
