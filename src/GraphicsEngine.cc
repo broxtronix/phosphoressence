@@ -189,76 +189,7 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
-  // -----------------------
-  // Outer & Inner Border
-  // ----------------------
-  drawBorders();
-
-  // -----------------------
-  // Wave Shape
-  // ----------------------
-  if (pe_script_engine().get_parameter("square_a") ) {
-    glLoadIdentity();
-    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
-    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
-    glTranslatef(wave_x, wave_y, 0);
-
-    float f = pe_script_engine().get_parameter("square_frequency");
-    Matrix2x2 rotation;
-    double theta = (pe_time()*f*2*M_PI);
-    rotation(0,0) = cos(theta);
-    rotation(0,1) = sin(theta);
-    rotation(1,0) = -sin(theta);
-    rotation(1,1) = cos(theta);
-
-    Matrix<double,2,4> shape_vertices;
-    float square_scale = pe_script_engine().get_parameter("square_scale");
-    shape_vertices(0,0) = -0.25 * square_scale;
-    shape_vertices(1,0) = -0.25 * square_scale;
-    shape_vertices(0,1) = -0.25 * square_scale;
-    shape_vertices(1,1) = 0.25 * square_scale;
-    shape_vertices(0,2) = 0.25 * square_scale;
-    shape_vertices(1,2) = 0.25 * square_scale;
-    shape_vertices(0,3) = 0.25 * square_scale;
-    shape_vertices(1,3) = -0.25 * square_scale;
-  
-    Matrix<double,2,4> vertices = rotation*shape_vertices;
-  
-    glLineWidth(pe_script_engine().get_parameter("square_thick"));
-    glPointSize(pe_script_engine().get_parameter("square_thick")/2.0);
-      
-    float wave_r = pe_script_engine().get_parameter("square_r");
-    float wave_g = pe_script_engine().get_parameter("square_g");
-    float wave_b = pe_script_engine().get_parameter("square_b");
-    float wave_a = pe_script_engine().get_parameter("square_a");
-    vw::Vector3 color(wave_r, wave_g, wave_b);
-    vw::Vector3 norm_color = color;
-    if (pe_script_engine().get_parameter("wave_brighten")) 
-      norm_color = vw::math::normalize(color);
-    glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
-
-    glEnable(GL_LINE_SMOOTH);
-
-    // We will draw the image as a texture on this quad.
-    glBegin(GL_LINES);
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glEnd();
-
-    glBegin(GL_POINTS);
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glEnd();
-  }
-
+  // Call the python environment and allow it to render whatever it wants using PyOpenGL
   pe_script_engine().execute("pe_render()");
 
 
