@@ -2,19 +2,13 @@
 #
 import math, sys
 
-import OpenGL
-OpenGL.ERROR_CHECKING = False
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
-
 PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 
 # Load various python modules
 from parameters import pe
 from presets import pe_presets
-from controllers import OscController, JoystickController
-from bindings import Binding
+from graphics import pe_graphics
+from controllers import osc, joystick
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
@@ -25,10 +19,6 @@ ENABLE_CONTROLLERS = 1
 DEBUG = 0;
 JOY_DEBUG = 1;
 pe.show_fps = 1;
-
-# Instantiate hardware controllers
-osc = OscController()
-joystick = JoystickController(JOY_DEBUG)
 
 # Default initialization handler
 #
@@ -43,38 +33,12 @@ def pe_initialize():
     # pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
     # pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
-
-# Default render callback
+# Animation callback.
 #
-# This method is called by the GraphicsEngine just prior to rendering
-# each frame.  By overriding or augmenting this method, programmers
-# can animate PhosphorEssence parameters.
-
-def pe_sprites():
-    pass
-
-    # square_scale = 0.2;
-    # vertices = [(),(),(),()];
-    # vertices[0] = (-0.25 * square_scale, -0.25 * square_scale)
-    # vertices[1] = (-0.25 * square_scale, 0.25 * square_scale)
-    # vertices[2] = (0.25 * square_scale,  0.25 * square_scale)
-    # vertices[3] = (0.25 * square_scale, -0.25 * square_scale)
-
-
-    # # PyOpenGl Test
-    # glBegin(GL_LINES)
-    # glColor(1.0,0.0,0.0,1.0)
-    # glVertex( vertices[0] )
-    # glVertex( vertices[1] )
-    # glVertex( vertices[1] )
-    # glVertex( vertices[2] )
-    # glVertex( vertices[2] )
-    # glVertex( vertices[3] )
-    # glVertex( vertices[3] )
-    # glVertex( vertices[0] )
-    # glEnd()    
-
-def pe_render():
+# This method is called prior to rendering each frame.  By overriding
+# or augmenting this method, programmers can animate PhosphorEssence
+# parameters.
+def pe_animate():
 
     if ( ENABLE_PRESETS ) :
         preset = pe_presets.current_preset()
@@ -150,3 +114,10 @@ def pe_render():
 
         # wave_x = 0.5 + 0.3*sin(time*0.177);
         # wave_y=0.47
+
+
+# Default render callback
+#
+# This method is called by the GraphicsEngine as it renders each frame.
+def pe_render():
+    pe_graphics.render()
