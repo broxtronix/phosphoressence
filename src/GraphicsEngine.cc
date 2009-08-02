@@ -130,7 +130,7 @@ void GraphicsEngine::drawImage() {
   // JavaScript VM, allowing them to update parameters if they would
   // like.
   pe_script_engine().set_parameter("aspect", m_aspect);
-  pe_script_engine().execute("pe_render()");
+  pe_script_engine().execute("pe_animate()");
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -259,7 +259,7 @@ void GraphicsEngine::drawImage() {
     glEnd();
   }
 
-  pe_script_engine().execute("pe_sprites()");
+  pe_script_engine().execute("pe_render()");
 
 
   // Run through the list of drawables, giving them each a chance to
