@@ -145,7 +145,6 @@ private:
   // Graphic Elements (see GraphicElements.cc for imlementations)
   void drawFeedback();
   void drawDarkenCenter();
-  void drawBorders();
   void drawVectorField();
   void draw_milkdrop_waves();
   

@@ -418,8 +418,5 @@ class JoystickController(object):
         pe.zoomexp = 1
 
 
-# Instantiate hardware controllers
-osc = OscController()
-joystick = JoystickController(JOY_DEBUG)
 
 

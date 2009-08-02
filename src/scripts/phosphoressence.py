@@ -8,7 +8,7 @@ PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 from parameters import pe
 from presets import pe_presets
 from graphics import pe_graphics
-from controllers import osc, joystick
+from controllers import OscController, JoystickController
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
@@ -19,6 +19,10 @@ ENABLE_CONTROLLERS = 1
 DEBUG = 0;
 JOY_DEBUG = 1;
 pe.show_fps = 1;
+
+# Instantiate hardware controllers
+osc = OscController()
+joystick = JoystickController(JOY_DEBUG)
 
 # Default initialization handler
 #
@@ -94,14 +98,6 @@ def pe_animate():
         pe.mv_r += 0.5 * math.sin(15/10.0*pe.time)
         pe.mv_g += 0.5 * math.sin(19/10.0*pe.time)
         pe.mv_b += 0.5 * math.sin(14/10.0*pe.time)
-
-        if pe.wave_move:
-            # Cause elements to move
-            pe.wave_x = 0.5;
-            pe.wave_y = 0.5;
-            pe.set_control_value('wave_x', pe.wave_x + 0.02*( 0.60*math.sin(2.121*pe.time) + 0.40*math.sin(1.621*pe.time) ))
-            pe.set_control_value('wave_y', pe.wave_y + 0.02*( 0.60*math.sin(1.742*pe.time) + 0.40*math.sin(2.322*pe.time) ))
-
 
         # wave_x = wave_x + 0.200*( 0.60*sin(1.321*time) + 0.40*sin(1.621*time) );
         # wave_y = wave_y + 0.200*( 0.60*sin(1.742*time) + 0.40*sin(1.422*time) );

@@ -217,44 +217,6 @@ bool ReversePropagatePoint(float fx, float fy, float *fx2, float *fy2,
   return true;
 }
 
-// <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
-// See the milkdrop license in COPYING for more details.
-
-void GraphicsEngine::drawBorders() {
-
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  if (pe_script_engine().get_parameter("ib_a")) {
-    glLoadIdentity();
-    glLineWidth( pe_script_engine().get_parameter("ib_size") );
-    glColor4f( pe_script_engine().get_parameter("ib_r"),
-               pe_script_engine().get_parameter("ib_g"),
-               pe_script_engine().get_parameter("ib_b"),
-               pe_script_engine().get_parameter("ib_a") );
-
-    // float ib_size = pe_script_engine().get_parameter("ib_size");
-    // float ob_size = pe_script_engine().get_parameter("ob_size");
-
-    // float fInnerRad = (it==0) ? 1.0f - fOuterBorderSize : 
-    //                             1.0f - fOuterBorderSize - fInnerBorderSize;
-    // float fOuterRad = (it==0) ? 1.0f                    : 
-    //                             1.0f - fOuterBorderSize;
-    
-    glBegin(GL_LINES);
-    glVertex2d( -m_aspect, 1.0 );
-    glVertex2d( m_aspect, 1.0 );
-    glVertex2d( m_aspect, 1.0 );
-    glVertex2d( m_aspect, -1.0 );
-    glVertex2d( m_aspect, -1.0 );
-    glVertex2d( -m_aspect, -1.0 );
-    glVertex2d( -m_aspect, -1.0 );
-    glVertex2d( -m_aspect, 1.0 );
-    glEnd();
-  }
-  glDisable( GL_BLEND );
-}
-
 void GraphicsEngine::drawDarkenCenter() {
 
   if (pe_script_engine().get_parameter("darken_center")) {
