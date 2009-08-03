@@ -1,61 +1,61 @@
-name = 'Geiss__Hyperion'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__Hyperion(PePreset):
 
-def per_frame():
-    pe.gamma=1
-    pe.decay=0.98
-    echo_zoom=2
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=2
-    pe.wave_additive=0
-    pe.wave_usedots=0
-    bModWaveAlphaByVolume=1
-    pe.wave_brighten=1
-    pe.wrap=1
-    darken_center=0
-    bMotionVectorsOn=0
-    bRedBlueStereo=0
-    pe.mv_x=12
-    pe.mv_y=9
-    pe.wave_a=8.200001
-    fWaveScale=3.227871
-    fWaveSmoothing=0.9
-    pe.wave_mystery=0
-    fModWaveAlphaStart=1.05
-    fModWaveAlphaEnd=1.65
-    pe.warp_speed=1
-    pe.warp_scale=1
-    pe.zoomexp=1
-    fShader=0
-    pe.zoom=1.205
-    pe.rot=0
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=0
-    pe.warp=0.016046
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0
-    pe.wave_g=0.6
-    pe.wave_b=1
-    pe.wave_x=0.5
-    pe.wave_y=0.5
-    pe.wave_g = pe.wave_g + 0.100*( 0.90*math.sin(0.583*pe.time) + 0.10*math.sin(1.006*pe.time) );
-    pe.wave_b = pe.wave_b + 0.100*( 0.90*math.sin(0.993*pe.time) + 0.10*math.sin(0.933*pe.time) );
-    pe.zoom = pe.zoom + 0.013*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
-    pe.rot = pe.rot + 0.040*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
-    pe.cx = pe.cx + 0.003*( 0.60*math.sin(0.471*pe.time) + 0.40*math.sin(0.297*pe.time) );
-    pe.cy = pe.cy + 0.003*( 0.60*math.sin(0.379*pe.time) + 0.40*math.sin(0.351*pe.time) );
-    pe.dx = pe.dx + 0.003*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
-    pe.rot=pe.rot+0.02*(math.sin(pe.time*2.134)+math.sin(pe.time*1.7134)+math.sin(pe.time*2.834));
-    pe.dx=pe.dx+0.01*(math.sin(pe.time*1.134)+math.sin(pe.time*0.7134)+math.sin(pe.time*2.334));
-    pe.dy=pe.dy+0.01*(math.sin(pe.time*1.8834)+math.sin(pe.time*1.0144)+math.sin(pe.time*1.334));
+    name = 'Geiss__Hyperion'
 
-def per_pixel():
-    pass
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        pe.gamma=1
+        pe.decay=0.98
+        pe.echo_zoom=2
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=2
+        pe.wave_additive=0
+        pe.wave_usedots=0
+        bModWaveAlphaByVolume=1
+        pe.wave_brighten=1
+        pe.wrap=1
+        pe.darken_center=0
+        bMotionVectorsOn=0
+        bRedBlueStereo=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.wave_a=8.200001
+        fWaveScale=3.227871
+        fWaveSmoothing=0.9
+        pe.wave_mystery=0
+        fModWaveAlphaStart=1.05
+        fModWaveAlphaEnd=1.65
+        pe.warp_speed=1
+        pe.warp_scale=1
+        pe.zoomexp=1
+        fShader=0
+        pe.zoom=1.205
+        pe.rot=0
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=0
+        pe.warp=0.016046
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0
+        pe.wave_g=0.6
+        pe.wave_b=1
+        pe.wave_x=0.5
+        pe.wave_y=0.5
+        pe.wave_g = pe.wave_g + 0.100*( 0.90*math.sin(0.583*pe.time) + 0.10*math.sin(1.006*pe.time) );
+        pe.wave_b = pe.wave_b + 0.100*( 0.90*math.sin(0.993*pe.time) + 0.10*math.sin(0.933*pe.time) );
+        pe.zoom = pe.zoom + 0.013*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
+        pe.rot = pe.rot + 0.040*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
+        pe.cx = pe.cx + 0.003*( 0.60*math.sin(0.471*pe.time) + 0.40*math.sin(0.297*pe.time) );
+        pe.cy = pe.cy + 0.003*( 0.60*math.sin(0.379*pe.time) + 0.40*math.sin(0.351*pe.time) );
+        pe.dx = pe.dx + 0.003*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
+        pe.rot=pe.rot+0.02*(math.sin(pe.time*2.134)+math.sin(pe.time*1.7134)+math.sin(pe.time*2.834));
+        pe.dx=pe.dx+0.01*(math.sin(pe.time*1.134)+math.sin(pe.time*0.7134)+math.sin(pe.time*2.334));
+        pe.dy=pe.dy+0.01*(math.sin(pe.time*1.8834)+math.sin(pe.time*1.0144)+math.sin(pe.time*1.334));
+
+    def per_pixel(self):
+        pass

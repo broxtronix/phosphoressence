@@ -1,84 +1,84 @@
-name = 'Geiss__Solar_Flare_Reptile'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__Solar_Flare_Reptile(PePreset):
 
-def per_frame():
-    fRating=3
-    pe.gamma=1.9
-    pe.decay=1
-    echo_zoom=1.061
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=1
-    pe.wave_additive=0
-    pe.wave_usedots=0
-    bWaveThick=1
-    bModWaveAlphaByVolume=0
-    pe.wave_brighten=1
-    pe.wrap=1
-    darken_center=0
-    bRedBlueStereo=0
-    brighten=0
-    darken=0
-    solarize=0
-    pe.invert=0
-    pe.wave_a=0.450375
-    fWaveScale=0.729
-    fWaveSmoothing=0.5
-    pe.wave_mystery=0
-    fModWaveAlphaStart=0.75
-    fModWaveAlphaEnd=0.95
-    pe.warp_speed=1
-    pe.warp_scale=3.138
-    pe.zoomexp=2.7
-    fShader=0
-    pe.zoom=1.031
-    pe.rot=0
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=-0.005
-    pe.warp=0.112
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0.1
-    pe.wave_g=1
-    pe.wave_b=0.1
-    pe.wave_x=0.5
-    pe.wave_y=0.47
-    pe.ob_size=0.01
-    pe.ob_r=0
-    pe.ob_g=0
-    pe.ob_b=0
-    pe.ob_a=0
-    pe.ib_size=0.01
-    pe.ib_r=0.25
-    pe.ib_g=0.25
-    pe.ib_b=0.25
-    pe.ib_a=0
-    pe.mv_x=12
-    pe.mv_y=9
-    pe.mv_dx=0
-    pe.mv_dy=0
-    pe.mv_l=0.9
-    pe.mv_r=1
-    pe.mv_g=1
-    pe.mv_b=1
-    pe.mv_a=0
-    pe.wave_r = pe.wave_r + 0.250*( 0.60*math.sin(2.137*pe.time) + 0.40*math.sin(1.770*pe.time) );
-    pe.wave_g = pe.wave_g + 0.300*( 0.60*math.sin(1.944*pe.time) + 0.40*math.sin(1.541*pe.time) );
-    pe.wave_b = pe.wave_b + 0.250*( 0.60*math.sin(1.251*pe.time) + 0.40*math.sin(1.655*pe.time) );
-    pe.zoom = pe.zoom + 0.007*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
-    pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
-    pe.cx = pe.cx + 0.370*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.294*pe.time) );
-    pe.cy = pe.cy + 0.370*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.223*pe.time) );
-    pe.dx = pe.dx + 0.008*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
-    pe.dy = pe.dy + 0.008*( 0.60*math.sin(0.284*pe.time) + 0.40*math.sin(0.247*pe.time) );
-    pe.warp = pe.warp + 0.100*( 0.60*math.sin(0.324*pe.time) + 0.40*math.sin(0.347*pe.time) );
-    pe.decay = pe.decay - 0.03*math.equal(pe.frame%2,0);
+    name = 'Geiss__Solar_Flare_Reptile'
 
-def per_pixel():
-    pass
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        fRating=3
+        pe.gamma=1.9
+        pe.decay=1
+        pe.echo_zoom=1.061
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=1
+        pe.wave_additive=0
+        pe.wave_usedots=0
+        bWaveThick=1
+        bModWaveAlphaByVolume=0
+        pe.wave_brighten=1
+        pe.wrap=1
+        pe.darken_center=0
+        bRedBlueStereo=0
+        pe.brighten=0
+        pe.darken=0
+        pe.solarize=0
+        pe.invert=0
+        pe.wave_a=0.450375
+        fWaveScale=0.729
+        fWaveSmoothing=0.5
+        pe.wave_mystery=0
+        fModWaveAlphaStart=0.75
+        fModWaveAlphaEnd=0.95
+        pe.warp_speed=1
+        pe.warp_scale=3.138
+        pe.zoomexp=2.7
+        fShader=0
+        pe.zoom=1.031
+        pe.rot=0
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=-0.005
+        pe.warp=0.112
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0.1
+        pe.wave_g=1
+        pe.wave_b=0.1
+        pe.wave_x=0.5
+        pe.wave_y=0.47
+        pe.ob_size=0.01
+        pe.ob_r=0
+        pe.ob_g=0
+        pe.ob_b=0
+        pe.ob_a=0
+        pe.ib_size=0.01
+        pe.ib_r=0.25
+        pe.ib_g=0.25
+        pe.ib_b=0.25
+        pe.ib_a=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.mv_dx=0
+        pe.mv_dy=0
+        pe.mv_l=0.9
+        pe.mv_r=1
+        pe.mv_g=1
+        pe.mv_b=1
+        pe.mv_a=0
+        pe.wave_r = pe.wave_r + 0.250*( 0.60*math.sin(2.137*pe.time) + 0.40*math.sin(1.770*pe.time) );
+        pe.wave_g = pe.wave_g + 0.300*( 0.60*math.sin(1.944*pe.time) + 0.40*math.sin(1.541*pe.time) );
+        pe.wave_b = pe.wave_b + 0.250*( 0.60*math.sin(1.251*pe.time) + 0.40*math.sin(1.655*pe.time) );
+        pe.zoom = pe.zoom + 0.007*( 0.60*math.sin(0.339*pe.time) + 0.40*math.sin(0.276*pe.time) );
+        pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.579*pe.time) );
+        pe.cx = pe.cx + 0.370*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.294*pe.time) );
+        pe.cy = pe.cy + 0.370*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.223*pe.time) );
+        pe.dx = pe.dx + 0.008*( 0.60*math.sin(0.234*pe.time) + 0.40*math.sin(0.277*pe.time) );
+        pe.dy = pe.dy + 0.008*( 0.60*math.sin(0.284*pe.time) + 0.40*math.sin(0.247*pe.time) );
+        pe.warp = pe.warp + 0.100*( 0.60*math.sin(0.324*pe.time) + 0.40*math.sin(0.347*pe.time) );
+        pe.decay = pe.decay - 0.03*math.equal(pe.frame%2,0);
+
+    def per_pixel(self):
+        pass

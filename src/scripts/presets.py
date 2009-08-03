@@ -2,95 +2,75 @@ from parameters import pe
 import math, random, sys, os
 
 #----------------------------------------------------------------------
-#                               Preset Class
-#----------------------------------------------------------------------
-class Preset(object):
-
-    def empty_initialize(self):
-        pass
-
-    def empty_per_frame(self):
-        pass
-
-    def empty_per_pixel(self):
-        pass
-
-    def __init__(self, name, per_frame_func, init_func = None, per_pixel_func = None):
-        self.name = name
-
-        if (init_func):
-            self.initialize = init_func
-        else:
-            self.initialize = self.empty_initialize
-
-        if (per_frame_func):
-            self.per_frame = per_frame_func
-        else:
-            self.per_frame = self.empty_per_frame
-
-        if (per_pixel_func):
-            self.per_pixel = per_pixel_func
-        else:
-            self.per_pixel = self.empty_per_pixel
-
-#----------------------------------------------------------------------
-#                          Global PePresets Object
+#                          PePreset Class
 #----------------------------------------------------------------------
 
-# Preset management
-class PePresets(object):
+# The following idiom registers presets automatically when they are
+# declared as a subclass of PePreset.  This is very handy, because it
+# allows us to "load" presets simply by defining them as classes.  The
+# code here is based off of an example in Ch. 2 of "Pro Django" by
+# Marty Alchin.
+class PresetMount(type):
+    def __init__(cls, name, bases, attrs):
+        if not hasattr(cls, 'presets'):
+            # This branch only executes when processing the moint point
+            # itself.  It sets up an empty lists where presets will go.
+            cls.presets = []
+            cls.current_preset_index = 0
+            cls.current_preset_instance = 0
+        else:
+            # This branch is executed for preset implementations.
+            # Each one registers itself in the preset list.
+            cls.presets.append(cls)
 
-    def __init__(self):
-        self._presets = []
-        self._current_preset = None
-        self._current_index = 0
 
-    def register(self, name, per_frame_func, init_func = None, per_pixel_func = None):
-        p = Preset(name, per_frame_func, init_func, per_pixel_func)
-        self._presets.append(p)
-        if self._current_preset == None:
-            self._current_preset = p
-            self._current_index = len(self._presets) - 1
 
-    def current_preset(self):
-        return self._current_preset
+# This is the superclass for all PhosphorEssence presets.  User
+# presets must subclass from this class.  Once they have done so, they
+# can overide one of the instance methods defined below.
+class PePreset(object):
 
-    def next_preset(self):
-        self._current_index += 1
-        if (self._current_index >= len(self._presets)):
-            self._current_index = 0
+    # Return the ID of the currently running preset
+    @classmethod
+    def current_preset(cls):
+        return cls.current_preset_instance
+
+    @classmethod
+    def select_preset(cls):
         try:
-            self._current_preset = self._presets[self._current_index]
-            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
-        except (IndexError):
-            self._current_preset = None
-            print 'An unexpected error occurred when switching presets.'
+            cls.current_preset_instance = cls.presets[cls.current_preset_index]()
+            print("[Preset " + str(cls.current_preset_index) +
+                  " : " + cls.current_preset().name + '] ')
+        except(IndexError):
+            print 'An unknown error occured when changing presets.'
+        
 
-    def prev_preset(self):
-        self._current_index -= 1
-        if (self._current_index < 0):
-            self._current_index = len(self._presets)-1
-        try:
-            self._current_preset = self._presets[self._current_index]
-            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
-        except (IndexError):
-            self._current_preset = None
-            print 'An unexpected error occurred when switching presets.'
+    # Next preset
+    @classmethod
+    def next_preset(cls):
+        cls.current_preset_index += 1
+        if (cls.current_preset_index >= len(cls.presets)):
+            cls.current_preset_index = 0
+        cls.select_preset()
 
-    def random_preset(self):
-        self._current_index = int(math.random.uniform(0, len(self._presets)-1))
-        try:
-            self._current_preset = self._presets[self._current_index]
-            print("[Preset " + str(self._current_index) + '] ' + self._current_preset.name)
-        except (IndexError):
-            self._current_preset = None
-            print 'An unexpected error occurred when switching presets.'
+    # Previous Preset
+    @classmethod
+    def prev_preset(cls):
+        cls.current_preset_index -= 1
+        if (cls.current_preset_index < 0):
+            cls.current_preset_index = len(cls.presets)-1
+        cls.select_preset()
 
-    def size(self):
-        return len(self._presets)
+    # Random Preset
+    def random_preset(cls):
+        cls.current_preset_index = int(math.random.uniform(0, len(cls.presets)-1))
+        print("[Preset " + str(cls.current_preset_index) +
+              " : " + str(cls.current_preset()) + '] ')
+        cls.select_preset()
 
     # Loads all presets found in a directory.
-    def load_directory(self, directory):
+    @classmethod
+    def load_directory(cls, directory):
         import glob
 
         print 'Loading presets directory: ' + directory
@@ -103,10 +83,27 @@ class PePresets(object):
                 print '\t ** Failed to load ' + f
                 for ei in sys.exc_info():
                     print '\t    ' + str(ei)
-                
-# Create an instance of the presets object
-pe_presets = PePresets()
 
+    # -------------- CLASS INSTANCE METHODS -----------------
+    #
+    # You can override these in the subclass to implement a
+    # PhosphorEssence plugin.
+
+    def initialize(self):
+        pass
+
+    def per_frame(self):
+        pass
+
+    def per_vertex(self):
+        pass
+
+    def render(self):
+        pass
+
+    # Set up the auto-registering behavior using a metaclass.
+    __metaclass__ = PresetMount
+                
 #----------------------------------------------------------------------
 #                        Supplementary Functions
 #----------------------------------------------------------------------

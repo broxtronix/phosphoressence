@@ -128,10 +128,10 @@ def write_per_frame(pe_file, milk_file):
         l2 = fix_standard_objects(l2)
         l2 = fix_variable_names(l2)
         if (l2 != ""):
-            pe_file.write( '    ' + l2 )
+            pe_file.write( '        ' + l2 )
             numlines += 1
     if (numlines == 0):
-            pe_file.write( '    pass\n' )
+            pe_file.write( '        pass\n' )
 
 def write_per_pixel(pe_file, milk_file):
     milk_file.seek(0)
@@ -141,10 +141,10 @@ def write_per_pixel(pe_file, milk_file):
         l2 = fix_standard_objects(l2)
         l2 = fix_variable_names(l2)
         if (l2 != ""):
-            pe_file.write( '    ' + l2 )
+            pe_file.write( '        ' + l2 )
             numlines += 1
     if (numlines == 0):
-            pe_file.write( '    pass\n' )
+            pe_file.write( '        pass\n' )
 
 # -----------------------------------------------------------------------
 #                               MAIN
@@ -168,22 +168,22 @@ for f in files:
     milk_file = open(f)
     pe_file = open(preset_name + ".pe","w")
 
-    # Write the (empty) initialize routine
-    pe_file.write('name = \'' + preset_name + '\'\n\n')
+    # Write the class declaration
+    pe_file.write('from presets import PePreset\n\n')
+    pe_file.write('class ' + preset_name + '(PePreset):\n\n')
 
-    # Write the (empty) initialize routine
-    pe_file.write('def initialize():\n    pass\n')
-                  
+    # Write the preset name
+    pe_file.write('    name = \'' + preset_name + '\'\n\n')
+
     # Write the per-frame equations
-    pe_file.write('\ndef per_frame():\n')
+    pe_file.write('\n    def per_frame(self):\n')
     write_per_frame(pe_file, milk_file);
 
     # Write the per_pixel equations
-    pe_file.write('\ndef per_pixel():\n')
+    pe_file.write('\n    def per_pixel(self):\n')
     write_per_pixel(pe_file, milk_file);
 
-    # Write the final line, and then close both files
-    pe_file.write('\npe_presets.register(name, per_frame, initialize, per_pixel)\n')
+    # Close both files
     milk_file.close()
     pe_file.close()
 

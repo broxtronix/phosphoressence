@@ -1,72 +1,72 @@
-name = 'Geiss__De_La_Moutard_1'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__De_La_Moutard_1(PePreset):
 
-def per_frame():
-    fRating=3
-    pe.gamma=2
-    pe.decay=0.97
-    echo_zoom=2
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=7
-    pe.wave_additive=1
-    pe.wave_usedots=0
-    bModWaveAlphaByVolume=0
-    pe.wave_brighten=0
-    pe.wrap=1
-    darken_center=0
-    bMotionVectorsOn=0
-    bRedBlueStereo=0
-    pe.mv_x=12
-    pe.mv_y=9
-    brighten=0
-    darken=0
-    solarize=0
-    pe.invert=0
-    pe.wave_a=11.94
-    fWaveScale=2.578376
-    fWaveSmoothing=0.6
-    pe.wave_mystery=0
-    fModWaveAlphaStart=0.75
-    fModWaveAlphaEnd=0.95
-    pe.warp_speed=1
-    pe.warp_scale=1.772
-    pe.zoomexp=4.401
-    fShader=0
-    pe.zoom=1.031
-    pe.rot=0.003
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=0
-    pe.warp=0
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0.19
-    pe.wave_g=0.19
-    pe.wave_b=0.19
-    pe.wave_x=0.5
-    pe.wave_y=0.5
-    pe.ob_size=0.01
-    pe.ob_r=0
-    pe.ob_g=0
-    pe.ob_b=0
-    pe.ob_a=0
-    pe.ib_size=0.01
-    pe.ib_r=0.25
-    pe.ib_g=0.25
-    pe.ib_b=0.25
-    pe.ib_a=0
-    pe.wave_r = min(1,max(0,(pe.bass_att-1)*1.3));
-    pe.wave_g = pe.wave_r*0.7;
-    pe.wave_b = pe.wave_r*0.1;
-    pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.038*pe.time) + 0.40*math.sin(0.054*pe.time) );
-    pe.dx = pe.dx + 0.002*( 0.60*math.sin(0.434*pe.time) + 0.40*math.sin(0.277*pe.time) );
-    pe.dy = pe.dy + 0.002*( 0.60*math.sin(0.384*pe.time) + 0.40*math.sin(0.477*pe.time) );
+    name = 'Geiss__De_La_Moutard_1'
 
-def per_pixel():
-    pass
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        fRating=3
+        pe.gamma=2
+        pe.decay=0.97
+        pe.echo_zoom=2
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=7
+        pe.wave_additive=1
+        pe.wave_usedots=0
+        bModWaveAlphaByVolume=0
+        pe.wave_brighten=0
+        pe.wrap=1
+        pe.darken_center=0
+        bMotionVectorsOn=0
+        bRedBlueStereo=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.brighten=0
+        pe.darken=0
+        pe.solarize=0
+        pe.invert=0
+        pe.wave_a=11.94
+        fWaveScale=2.578376
+        fWaveSmoothing=0.6
+        pe.wave_mystery=0
+        fModWaveAlphaStart=0.75
+        fModWaveAlphaEnd=0.95
+        pe.warp_speed=1
+        pe.warp_scale=1.772
+        pe.zoomexp=4.401
+        fShader=0
+        pe.zoom=1.031
+        pe.rot=0.003
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=0
+        pe.warp=0
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0.19
+        pe.wave_g=0.19
+        pe.wave_b=0.19
+        pe.wave_x=0.5
+        pe.wave_y=0.5
+        pe.ob_size=0.01
+        pe.ob_r=0
+        pe.ob_g=0
+        pe.ob_b=0
+        pe.ob_a=0
+        pe.ib_size=0.01
+        pe.ib_r=0.25
+        pe.ib_g=0.25
+        pe.ib_b=0.25
+        pe.ib_a=0
+        pe.wave_r = min(1,max(0,(pe.bass_att-1)*1.3));
+        pe.wave_g = pe.wave_r*0.7;
+        pe.wave_b = pe.wave_r*0.1;
+        pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.038*pe.time) + 0.40*math.sin(0.054*pe.time) );
+        pe.dx = pe.dx + 0.002*( 0.60*math.sin(0.434*pe.time) + 0.40*math.sin(0.277*pe.time) );
+        pe.dy = pe.dy + 0.002*( 0.60*math.sin(0.384*pe.time) + 0.40*math.sin(0.477*pe.time) );
+
+    def per_pixel(self):
+        pass
