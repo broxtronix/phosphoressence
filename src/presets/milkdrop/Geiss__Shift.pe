@@ -1,79 +1,79 @@
-name = 'Geiss__Shift'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__Shift(PePreset):
 
-def per_frame():
-    fRating=4
-    pe.gamma=1.994
-    pe.decay=0.98
-    echo_zoom=2
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=5
-    pe.wave_additive=1
-    pe.wave_usedots=0
-    bModWaveAlphaByVolume=0
-    pe.wave_brighten=1
-    pe.wrap=1
-    darken_center=0
-    bMotionVectorsOn=0
-    bRedBlueStereo=0
-    pe.mv_x=12
-    pe.mv_y=9
-    brighten=0
-    darken=0
-    solarize=0
-    pe.invert=0
-    pe.wave_a=0.8
-    fWaveScale=1.151736
-    fWaveSmoothing=0.1
-    pe.wave_mystery=-0.5
-    fModWaveAlphaStart=0.75
-    fModWaveAlphaEnd=0.95
-    pe.warp_speed=1
-    pe.warp_scale=1.331
-    pe.zoomexp=1
-    fShader=0
-    pe.zoom=1.280549
-    pe.rot=0
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=0
-    pe.warp=0.012485
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0.65
-    pe.wave_g=0.65
-    pe.wave_b=0.65
-    pe.wave_x=0.5
-    pe.wave_y=0.5
-    pe.ob_size=0.01
-    pe.ob_r=0
-    pe.ob_g=0
-    pe.ob_b=0
-    pe.ob_a=0
-    pe.ib_size=0.01
-    pe.ib_r=0.25
-    pe.ib_g=0.25
-    pe.ib_b=0.25
-    pe.ib_a=0
-    pe.wave_r = pe.wave_r + 0.350*( 0.60*math.sin(0.980*pe.time) + 0.40*math.sin(1.047*pe.time) );
-    pe.wave_g = pe.wave_g + 0.350*( 0.60*math.sin(0.835*pe.time) + 0.40*math.sin(1.081*pe.time) );
-    pe.wave_b = pe.wave_b + 0.350*( 0.60*math.sin(0.814*pe.time) + 0.40*math.sin(1.011*pe.time) );
-    pe.rot = pe.rot + 0.030*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.479*pe.time) );
-    pe.cx = pe.cx + 0.110*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.294*pe.time) );
-    pe.cy = pe.cy + 0.110*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.223*pe.time) );
-    pe.zoom=pe.zoom+0.05+0.05*math.sin(pe.time*0.133);
-    pe.decay=pe.decay-0.01*(pe.frame%2);
-    pe.dx = pe.dx + pe.dx_residual;
-    pe.dy = pe.dy + pe.dy_residual;
-    bass_thresh = math.above(pe.bass_att,bass_thresh)*2 + (1-math.above(pe.bass_att,bass_thresh))*((bass_thresh-1.3)*0.96+1.3);
-    dx_residual = math.equal(bass_thresh,2)*0.016*math.sin(pe.time*7) + (1-math.equal(bass_thresh,2))*dx_residual;
-    dy_residual = math.equal(bass_thresh,2)*0.012*math.sin(pe.time*9) + (1-math.equal(bass_thresh,2))*dy_residual;
+    name = 'Geiss__Shift'
 
-def per_pixel():
-    pe.zoom=(pe.zoom-1)*pe.rad+1;
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        fRating=4
+        pe.gamma=1.994
+        pe.decay=0.98
+        pe.echo_zoom=2
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=5
+        pe.wave_additive=1
+        pe.wave_usedots=0
+        bModWaveAlphaByVolume=0
+        pe.wave_brighten=1
+        pe.wrap=1
+        pe.darken_center=0
+        bMotionVectorsOn=0
+        bRedBlueStereo=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.brighten=0
+        pe.darken=0
+        pe.solarize=0
+        pe.invert=0
+        pe.wave_a=0.8
+        fWaveScale=1.151736
+        fWaveSmoothing=0.1
+        pe.wave_mystery=-0.5
+        fModWaveAlphaStart=0.75
+        fModWaveAlphaEnd=0.95
+        pe.warp_speed=1
+        pe.warp_scale=1.331
+        pe.zoomexp=1
+        fShader=0
+        pe.zoom=1.280549
+        pe.rot=0
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=0
+        pe.warp=0.012485
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0.65
+        pe.wave_g=0.65
+        pe.wave_b=0.65
+        pe.wave_x=0.5
+        pe.wave_y=0.5
+        pe.ob_size=0.01
+        pe.ob_r=0
+        pe.ob_g=0
+        pe.ob_b=0
+        pe.ob_a=0
+        pe.ib_size=0.01
+        pe.ib_r=0.25
+        pe.ib_g=0.25
+        pe.ib_b=0.25
+        pe.ib_a=0
+        pe.wave_r = pe.wave_r + 0.350*( 0.60*math.sin(0.980*pe.time) + 0.40*math.sin(1.047*pe.time) );
+        pe.wave_g = pe.wave_g + 0.350*( 0.60*math.sin(0.835*pe.time) + 0.40*math.sin(1.081*pe.time) );
+        pe.wave_b = pe.wave_b + 0.350*( 0.60*math.sin(0.814*pe.time) + 0.40*math.sin(1.011*pe.time) );
+        pe.rot = pe.rot + 0.030*( 0.60*math.sin(0.381*pe.time) + 0.40*math.sin(0.479*pe.time) );
+        pe.cx = pe.cx + 0.110*( 0.60*math.sin(0.374*pe.time) + 0.40*math.sin(0.294*pe.time) );
+        pe.cy = pe.cy + 0.110*( 0.60*math.sin(0.393*pe.time) + 0.40*math.sin(0.223*pe.time) );
+        pe.zoom=pe.zoom+0.05+0.05*math.sin(pe.time*0.133);
+        pe.decay=pe.decay-0.01*(pe.frame%2);
+        pe.dx = pe.dx + pe.dx_residual;
+        pe.dy = pe.dy + pe.dy_residual;
+        bass_thresh = math.above(pe.bass_att,bass_thresh)*2 + (1-math.above(pe.bass_att,bass_thresh))*((bass_thresh-1.3)*0.96+1.3);
+        dx_residual = math.equal(bass_thresh,2)*0.016*math.sin(pe.time*7) + (1-math.equal(bass_thresh,2))*dx_residual;
+        dy_residual = math.equal(bass_thresh,2)*0.012*math.sin(pe.time*9) + (1-math.equal(bass_thresh,2))*dy_residual;
+
+    def per_pixel(self):
+        pe.zoom=(pe.zoom-1)*pe.rad+1;

@@ -6,14 +6,14 @@ PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 
 # Load various python modules
 from parameters import pe
-from presets import pe_presets
+from presets import PePreset
 from graphics import pe_graphics
 from controllers import OscController, JoystickController
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
-ENABLE_PRESETS = 0
-ENABLE_CONTROLLERS = 1
+ENABLE_PRESETS = 1
+ENABLE_CONTROLLERS = 0
 
 # Switches for debugging
 DEBUG = 0;
@@ -34,8 +34,8 @@ def pe_initialize():
     pass
 
     # Load Milkdrop Presets & Bookmarks
-    # pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
-    # pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
+    PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
+    # PePreset.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
 # Animation callback.
 #
@@ -45,7 +45,7 @@ def pe_initialize():
 def pe_animate():
 
     if ( ENABLE_PRESETS ) :
-        preset = pe_presets.current_preset()
+        preset = PePreset.current_preset()
         if (preset):
             try: 
                 preset.per_frame()
