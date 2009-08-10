@@ -34,7 +34,7 @@ def pe_initialize():
     pass
 
     # Load Milkdrop Presets & Bookmarks
-    PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
+    # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
     # PePreset.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
 # Animation callback.

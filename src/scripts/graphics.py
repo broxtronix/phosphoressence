@@ -36,8 +36,8 @@ class SquareSprite(object):
 
             # Create & rotate the square
             square = array([[-0.25, -0.25, 0.25, 0.25],
-                            #                        [-0.25, 0.25, 0.25, -0.25]]) * pe.mid
-                            [-0.25, 0.25, 0.25, -0.25]]) * pe.square_scale
+                            [-0.25, 0.25, 0.25, -0.25]]) * pe.mid
+                            #[-0.25, 0.25, 0.25, -0.25]]) * pe.square_scale
             vertices = dot(rot, square)
         
             # Set up drawing parameters

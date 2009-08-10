@@ -430,14 +430,14 @@ void GraphicsEngine::initializeGL() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  // Uncomment to get rid of the flicker!
-// #ifdef __APPLE__
-//   AGLContext aglContext;
-//   aglContext = aglGetCurrentContext();
-//   GLint swapInt = 1;
-//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-//   this->setAutoBufferSwap(false);
-// #endif
+  // Uncomment to get rid of the tearing (i.e. tearing)!
+#ifdef __APPLE__
+  // AGLContext aglContext;
+  // aglContext = aglGetCurrentContext();
+  // GLint swapInt = 1;
+  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  // this->setAutoBufferSwap(false);
+#endif
 
   // Enable hardware anti-aliasing
   glEnable(GL_MULTISAMPLE);
