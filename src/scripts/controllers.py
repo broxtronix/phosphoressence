@@ -9,20 +9,21 @@ import math
 class OscController(object):
 
     def __init__(self):
+        pass
         # Set up some basic control bindings
-        pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
-        pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
-        pe_bindings.add(self, "/1/xy/1", "rot", 0.785, -0.785, 0.0)
-#        pe_bindings.add(self, "/1/fader2", "warp", 0.0, 2.0, 0.0)
-#        pe_bindings.add(self, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10")
-        pe_bindings.add(self, "/2/fader1", "q1", 0.0, 0.5, 1.0)
-        pe_bindings.add(self, "/2/fader2", "q2", 0.0, 0.5, 0.5)
-        pe_bindings.add(self, "/2/fader3", "q3", 0.0, 1.0, 0.0260)
-        pe_bindings.add(self, "/2/fader4", "q4", 0.0, 1.0, 0.0530)
-        pe_bindings.add(self, "/2/fader5", "q5", 0.0, 1.0, 0.0)
-        pe_bindings.add(self, "/2/fader6", "q6", 0.0, 1.0, 0.0)
-        pe_bindings.add(self, "/2/fader7", "q7", 0.0001, 0.01, 0.0004)
-        pe_bindings.add(self, "/2/fader8", "q8", 0.0, 100.0, 0.0)
+#        pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
+#        pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
+#        pe_bindings.add(self, "/1/xy/1", "rot", 0.785, -0.785, 0.0)
+##        pe_bindings.add(self, "/1/fader2", "warp", 0.0, 2.0, 0.0)
+##        pe_bindings.add(self, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10")
+#        pe_bindings.add(self, "/2/fader1", "q1", 0.0, 0.5, 1.0)
+#        pe_bindings.add(self, "/2/fader2", "q2", 0.0, 0.5, 0.5)
+#        pe_bindings.add(self, "/2/fader3", "q3", 0.0, 1.0, 0.0260)
+#        pe_bindings.add(self, "/2/fader4", "q4", 0.0, 1.0, 0.0530)
+#        pe_bindings.add(self, "/2/fader5", "q5", 0.0, 1.0, 0.0)
+#        pe_bindings.add(self, "/2/fader6", "q6", 0.0, 1.0, 0.0)
+#        pe_bindings.add(self, "/2/fader7", "q7", 0.0001, 0.01, 0.0004)
+#        pe_bindings.add(self, "/2/fader8", "q8", 0.0, 100.0, 0.0)
 
 
         # pe_bindings.add(self, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0)
@@ -91,9 +92,9 @@ class JoystickController(object):
         self.JOY_DEBUG = joystick_debug
 
         # Priceless
-#        pe_bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.05, 0.98, "log10")
-#        pe_bindings.add(self, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0)
-#        pe_bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
+        pe_bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.05, 0.98, "log10")
+        pe_bindings.add(self, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0)
+        pe_bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -304,14 +305,14 @@ class JoystickController(object):
 
 
         # Warp
-        if (path == "/joystick0/button0" and value == 1.0):
-            self.warp_coefficient = 1.0
-        if (path == "/joystick0/button0" and value == 0.0):
-            self.warp_coefficient = 0.0
-        if (path == "/joystick0/button6" and value == 1.0):
-            self.warp_coefficient = -1.0
-        if (path == "/joystick0/button6" and value == 0.0): 
-            self.warp_coefficient = 0.0
+        # if (path == "/joystick0/button0" and value == 1.0):
+        #     self.warp_coefficient = 1.0
+        # if (path == "/joystick0/button0" and value == 0.0):
+        #     self.warp_coefficient = 0.0
+        # if (path == "/joystick0/button6" and value == 1.0):
+        #     self.warp_coefficient = -1.0
+        # if (path == "/joystick0/button6" and value == 0.0): 
+        #     self.warp_coefficient = 0.0
 
 
         # Wave mode

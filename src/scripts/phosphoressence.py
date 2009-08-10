@@ -12,8 +12,8 @@ from controllers import OscController, JoystickController
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
-ENABLE_PRESETS = 1
-ENABLE_CONTROLLERS = 0
+ENABLE_PRESETS = 0
+ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 DEBUG = 0;
@@ -57,8 +57,8 @@ def pe_animate():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
-        osc.render_callback()
-        #joystick.render_callback()
+        #osc.render_callback()
+        joystick.render_callback()
 
         # Update osc parameters
         #	 osc.render_callback()
