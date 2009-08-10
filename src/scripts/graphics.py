@@ -5,7 +5,7 @@ from OpenGL.GLU import *
 from numpy import *
 
 from parameters import pe
-
+from bezier import *
 
 class PeGraphics(object):
 
@@ -123,3 +123,4 @@ class BorderSprite(object):
 pe_graphics = PeGraphics()
 pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
+pe_graphics.register(BezierSprite())
