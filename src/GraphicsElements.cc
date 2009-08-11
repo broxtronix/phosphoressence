@@ -1,5 +1,21 @@
+#ifdef __linux__
+// This is required to get prototypes, according to the opengl linux abi
+#define GL_GLEXT_PROTOTYPES 1
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <AGL/agl.h>
+#else // Linux
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
+#endif 
+
 #include <PeParameters.h>
 #include <GraphicsEngine.h>
+#include <GpuProgram.h>
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 

@@ -30,7 +30,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <math.h>
 #include <memory.h>
-#include "fft.h"
+#include "FFT.h"
 
 #define PI 3.141592653589793238462643383279502884197169399f
 

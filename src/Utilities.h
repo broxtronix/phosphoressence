@@ -8,6 +8,7 @@
 #define __VW_GPU_UTILITIES__
 
 #include <map> 
+#include <string>
 
 namespace vw { 
 namespace GPU {
