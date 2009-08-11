@@ -18,7 +18,9 @@
 #else // Linux
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
 #endif 
+
 #include <QtGui>
 //#include <cuda.h>
 
@@ -29,6 +31,7 @@
 using namespace vw;
 
 #include <GraphicsEngine.h>
+#include <GpuProgram.h>
 #include <PeParameters.h>
 using namespace vw::GPU;
 

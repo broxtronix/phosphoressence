@@ -27,7 +27,7 @@
 #include <ScriptEngine.h>
 #include <PeParameters.h>
 #include <OscController.h>
-#include <MidiController.h>
+//#include <MidiController.h>
 #include <JoystickController.h>
 #include <OScopeShape.h>
 #include <VectorShape.h>
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
     osc_ip = argv[1];
   OscController osc_controller("60002", osc_ip.c_str() , "60000");
 
-  std::cout << "\t--> Initializing MIDI driver\n";
-  MidiController midi_controller;
+  //  std::cout << "\t--> Initializing MIDI driver\n";
+  //  MidiController midi_controller;
 
   std::cout << "\t--> Initializing Joystick drivers\n";
   JoystickController joystick_controller;
