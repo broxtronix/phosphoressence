@@ -432,11 +432,11 @@ void GraphicsEngine::initializeGL() {
 
   // Uncomment to get rid of the tearing (i.e. tearing)!
 #ifdef __APPLE__
-  // AGLContext aglContext;
-  // aglContext = aglGetCurrentContext();
-  // GLint swapInt = 1;
-  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  // this->setAutoBufferSwap(false);
+  AGLContext aglContext;
+  aglContext = aglGetCurrentContext();
+  GLint swapInt = 1;
+  aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  this->setAutoBufferSwap(false);
 #endif
 
   // Enable hardware anti-aliasing

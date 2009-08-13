@@ -6,7 +6,6 @@ import math
 
 from parameters import pe
 
-
 class BezierSprite(object):
 
     def point_on_bezier_curve(self, p1, p2, p3, p4, t):

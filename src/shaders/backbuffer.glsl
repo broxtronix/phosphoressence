@@ -274,11 +274,11 @@ void main() {
 
 
 
-  // if (invert == 1.0) {
-  //   src.r = 1.0 - src.r;
-  //   src.g = 1.0 - src.g;
-  //   src.b = 1.0 - src.b;
-  // }
+  if (invert == 1.0) {
+    src.r = 1.0 - src.r;
+    src.g = 1.0 - src.g;
+    src.b = 1.0 - src.b;
+  }
   
   // Apply gain.  This is done in the HSV color space so that the hue
   // can cycle when the image becomes saturated.

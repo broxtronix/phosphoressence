@@ -20,10 +20,6 @@ DEBUG = 0;
 JOY_DEBUG = 1;
 pe.show_fps = 1;
 
-pe.square_a=0
-pe.wave_a=0
-
-
 # Instantiate hardware controllers
 osc = OscController()
 joystick = JoystickController(JOY_DEBUG)

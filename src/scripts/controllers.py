@@ -296,8 +296,10 @@ class JoystickController(object):
 
         # Reset center of rotation, scaling, and zoom exponent
         if (path == "/joystick0/button5" and value == 1.0): 
-            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
-            else: pe.set_control_value('wave_usedots', 1.0)
+            if (pe.invert): pe.set_control_value('invert', 0.0)
+            else: pe.set_control_value('invert', 1.0)
+#            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
+#            else: pe.set_control_value('wave_usedots', 1.0)
 
 #        if (path == "/joystick0/button5" and value == 1.0): 
 #            if (pe.invert): pe.set_control_value('invert', 0.0)
