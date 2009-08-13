@@ -37,77 +37,18 @@ ScriptEngine& pe_script_engine() {
 // These are disabled for now.  They will serve as a useful template
 // for binding c functions to python objects at some point, but not
 // yet!
-
 static PyObject* pe_py_time(PyObject *self, PyObject *args) {
   return Py_BuildValue("f", pe_time());
 }
 
-// #define PE_READONLY_PARAM(func, param_name)                           \
-// static PyObject* func(PyObject *self, PyObject *args) {               \
-//   return Py_BuildValue("f", pe_parameters().get_value(param_name));   \
-// }
-
-// // General purpose read-only values
-// PE_READONLY_PARAM(pe_fps, "fps")
-// PE_READONLY_PARAM(pe_frame, "frame")
-// PE_READONLY_PARAM(pe_aspect, "aspect")
-// PE_READONLY_PARAM(pe_meshx, "meshx")
-// PE_READONLY_PARAM(pe_meshy, "meshy")
-
-// // Per-pixel values
-// PE_READONLY_PARAM(pe_x, "x")
-// PE_READONLY_PARAM(pe_y, "y")
-// PE_READONLY_PARAM(pe_rad, "rad")
-// PE_READONLY_PARAM(pe_ang, "ang")
-
-// // Band pass filters (left audio channel)
-// PE_READONLY_PARAM(pe_bass, "bass")
-// PE_READONLY_PARAM(pe_mid, "mid")
-// PE_READONLY_PARAM(pe_treb, "treb")
-// PE_READONLY_PARAM(pe_bass_att, "bass_att")
-// PE_READONLY_PARAM(pe_mid_att, "mid_att")
-// PE_READONLY_PARAM(pe_treb_att, "treb_att")
-
-// // Band pass filters (right audio channel)
-// PE_READONLY_PARAM(pe_bass_r, "bass_r")
-// PE_READONLY_PARAM(pe_mid_r, "mid_r")
-// PE_READONLY_PARAM(pe_treb_r, "treb_r")
-// PE_READONLY_PARAM(pe_bass_att_r, "bass_att_r")
-// PE_READONLY_PARAM(pe_mid_att_r, "mid_att_r")
-// PE_READONLY_PARAM(pe_treb_att_r, "treb_att_r")
-
-
-// #define PE_METHOD_DESCRIPTION(name, callback)    \
-//   {name,  callback, METH_VARARGS, "callback"}
 
 static PyMethodDef PeMethods[] = {
   {"pe_time",  pe_py_time, METH_VARARGS, 
    "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running"},
-//   PE_METHOD_DESCRIPTION("pe_fps", pe_fps),
-//   PE_METHOD_DESCRIPTION("pe_frame", pe_frame),
-//   PE_METHOD_DESCRIPTION("pe_aspect", pe_aspect),
-//   PE_METHOD_DESCRIPTION("pe_meshx", pe_meshx),
-//   PE_METHOD_DESCRIPTION("pe_meshy", pe_meshy),
-//   PE_METHOD_DESCRIPTION("pe_y", pe_x),
-//   PE_METHOD_DESCRIPTION("pe_x", pe_y),
-//   PE_METHOD_DESCRIPTION("pe_ang", pe_ang),
-//   PE_METHOD_DESCRIPTION("pe_rad", pe_rad),
-//   PE_METHOD_DESCRIPTION("pe_bass", pe_bass),
-//   PE_METHOD_DESCRIPTION("pe_mid", pe_mid),
-//   PE_METHOD_DESCRIPTION("pe_treb", pe_treb),
-//   PE_METHOD_DESCRIPTION("pe_bass", pe_bass_att),
-//   PE_METHOD_DESCRIPTION("pe_mid", pe_mid_att),
-//   PE_METHOD_DESCRIPTION("pe_treb", pe_treb_att),
-//   PE_METHOD_DESCRIPTION("pe_bass", pe_bass_r),
-//   PE_METHOD_DESCRIPTION("pe_mid", pe_mid_r),
-//   PE_METHOD_DESCRIPTION("pe_treb", pe_treb_r),
-//   PE_METHOD_DESCRIPTION("pe_bass", pe_bass_att_r),
-//   PE_METHOD_DESCRIPTION("pe_mid", pe_mid_att_r),
-//   PE_METHOD_DESCRIPTION("pe_treb", pe_treb_att_r),
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-PyMODINIT_FUNC initpe(void) { (void) Py_InitModule("pe_readonly_bindings", PeMethods); }
+PyMODINIT_FUNC initpe(void) { (void) Py_InitModule("pe_cpp_bridge", PeMethods); }
 
 // ---------------------------------------------------------------------
 //      C++ Callbacks & Basic Python Utility Functions

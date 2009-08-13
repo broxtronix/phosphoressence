@@ -55,43 +55,6 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("q6", pe_script_engine().get_parameter("q6"));
   m_gpu_backbuffer_program->set_input_float("q7", pe_script_engine().get_parameter("q7"));
   m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
-
-
-  // Time
-  //  float time = pe_time();
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     float test = pe_parameters().get_value("cx");
-  //   }
-  //   sw.stop();
-  //   std::cout << "Get_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
-  // }
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     pe_parameters().set_value("cx", .2);
-  //   }
-  //   sw.stop();
-  //   std::cout << "Set_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
-  // }
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-
-  //   float cxz;
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     cxz = pe_script_engine().get_parameter("zoom");
-  //   }
-  //   sw.stop();
-  //   std::cout << "FetchParameter: " << (sw.elapsed_microseconds()/1000.0) << " per call  " << cxz << "\n";
-  //   sleep(2);
-  // }
   
   float warpSpeed = pe_script_engine().get_parameter("warp_speed");
   float warpScale = pe_script_engine().get_parameter("warp_scale");
@@ -105,15 +68,15 @@ void GraphicsEngine::drawFeedback() {
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
   // Extract the per-pixel parameters
-  float zoom = 1;//pe_script_engine().get_parameter("zoom");
-  float zoomExp = 1;//pe_script_engine().get_parameter("zoomexp");
+  float zoom = 1.0;//pe_script_engine().get_parameter("zoom");
+  float zoomExp = 1.0;//pe_script_engine().get_parameter("zoomexp");
   float warpAmount = pe_script_engine().get_parameter("warp");
       
-  float rot = 0;//pe_script_engine().get_parameter("rot");
+  float rot = 0.0;//pe_script_engine().get_parameter("rot");
   float cx = pe_script_engine().get_parameter("cx");
   float cy = pe_script_engine().get_parameter("cy");
-  float dx = 0;//pe_script_engine().get_parameter("dx");
-  float dy = 0;//pe_script_engine().get_parameter("dy");
+  float dx = 0.0;//pe_script_engine().get_parameter("dx");
+  float dy = 0.0;//pe_script_engine().get_parameter("dy");
   float sx = pe_script_engine().get_parameter("sx");
   float sy = pe_script_engine().get_parameter("sy");
 
@@ -172,7 +135,7 @@ void GraphicsEngine::drawFeedback() {
   //  glBlendFunc (GL_ONE, GL_ZERO);
         
   //  We will draw the image as a texture on this quad.
-  qglColor(Qt::white);
+  glColor4f(1.0,1.0,1.0,1.0);
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
     for (int j = 0 ; j < VERT_MESH_SIZE ; ++j) {
@@ -187,6 +150,7 @@ void GraphicsEngine::drawFeedback() {
     }		
   }
   glEnd();
+
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 }
