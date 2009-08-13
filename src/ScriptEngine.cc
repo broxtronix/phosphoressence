@@ -6,7 +6,10 @@
 #include <ScriptEngine.h>
 #include <PeParameters.h>
 #include <ostream>
+
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
+#endif
 
 // -----------------------------------------------------------
 // Create a single instance of the ScriptEngine

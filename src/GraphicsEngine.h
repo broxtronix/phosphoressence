@@ -30,8 +30,13 @@
 #include <string>
 #include <list>
 
-#include <GpuProgram.h>
 #include <ScriptEngine.h>
+
+// Forward declarations
+namespace vw { 
+namespace GPU {
+  class GpuProgram; 
+}}
 
 class QMouseEvent;
 class QWheelEvent;

@@ -40,7 +40,7 @@ std::string pe_resources_directory() {
   std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
 
 #endif
-  return resources_dir;
+  return "/home/mbroxton/projects/phosphoressence/src";
 }
 
 // Erases a file suffix if one exists and returns the base string
