@@ -279,7 +279,7 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  this->swapBuffers();
+  //  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -399,9 +399,10 @@ void GraphicsEngine::initializeGL() {
   // Set up the GLSL fragment shader.
   std::string resources_dir = pe_resources_directory();
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
-  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl",
-                                                std::vector<int>(),
-                                                resources_dir + "/shaders/backbuffer_vertex.glsl");
+  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
+//                                                 std::vector<int>(),
+//                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
+//                                                 std::vector<int>());
 
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -452,7 +453,7 @@ void GraphicsEngine::initializeGL() {
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(10.0); 
+  m_timer->start(33.0); // Limit frame rate to ~30 fps
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {

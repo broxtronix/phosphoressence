@@ -107,12 +107,13 @@ public:
             //            std::cout << spectrum[i] << "\n";
             glColor4f(norm_color[0], norm_color[1], norm_color[2], wave_a );
 
-            // Left
-            // glVertex2d(horiz_pos, -1.0);
-            // glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*10-1.0);
+            // Left (use for horizontal orientation)
+            glVertex2d(horiz_pos, -1.0);
+            glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*10-1.0);
 
-            glVertex2d(-0.4, horiz_pos);
-            glVertex2d((left_spectrum[i]+right_spectrum[i])*3-0.4, horiz_pos);
+            // Left (use for vertical orientation)
+            //             glVertex2d(-0.4, horiz_pos);
+            //             glVertex2d((left_spectrum[i]+right_spectrum[i])*3-0.4, horiz_pos);
 
             // // Right
             // glVertex2d(horiz_pos, 1.0);
