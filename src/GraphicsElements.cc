@@ -26,8 +26,18 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  // Feedback decay, gamma, etc are controlled using a pixel shader.
+  // Vertex Shader
   m_gpu_backbuffer_program->install();
+//   m_gpu_backbuffer_program->set_input_float("time", pe_time());
+//   m_gpu_backbuffer_program->set_input_float("warp", pe_script_engine().get_parameter("warp"));
+//   m_gpu_backbuffer_program->set_input_float("warp_speed", pe_script_engine().get_parameter("warp_speed"));
+//   m_gpu_backbuffer_program->set_input_float("warp_scale", pe_script_engine().get_parameter("warp_scale"));
+//   m_gpu_backbuffer_program->set_input_float("sx", pe_script_engine().get_parameter("sx"));
+//   m_gpu_backbuffer_program->set_input_float("sy", pe_script_engine().get_parameter("sy"));
+//   m_gpu_backbuffer_program->set_input_float("cx", pe_script_engine().get_parameter("cx"));
+//   m_gpu_backbuffer_program->set_input_float("cy", pe_script_engine().get_parameter("cy"));
+
+  // Feedback decay, gamma, etc are controlled using a fragment shader.
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
@@ -87,13 +97,6 @@ void GraphicsEngine::drawFeedback() {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
 
-      // Before we call the per-pixel equations, we need to set the
-      // per-pixel parameters.
-      // pe_script_engine().set_parameter("x",u);
-      // pe_script_engine().set_parameter("y",v);
-      // pe_script_engine().set_parameter("rad",sqrt(u*u+v*v));
-      // pe_script_engine().set_parameter("ang",atan2(v,u));
-      
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
                                               sqrtf(u * u + v * v) * 2.0 * 

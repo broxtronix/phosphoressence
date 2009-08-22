@@ -16,7 +16,7 @@
 // Basic audio settings
 #define NUM_CHANNELS    (2)
 #define FFT_SAMPLES     512
-#define AUDIO_SAMPLE_RATE 48000.0
+#define AUDIO_SAMPLE_RATE 96000.0
 
 class AudioListener {
 

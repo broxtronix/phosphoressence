@@ -28,6 +28,9 @@ uniform float q6;
 uniform float q7;
 uniform float q8;
 
+uniform float time;
+
+
 #define EPS 0.00001
 #define PI 3.14159
 

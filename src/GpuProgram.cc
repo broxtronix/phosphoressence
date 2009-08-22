@@ -249,21 +249,22 @@ namespace GPU {
     // Vertex File Read
     string vertexString;
     GPUVertexShader_GLSL vertexShader;
+
     if(!vertexPath.empty()) {
-      vertexString = find_standard_shader(vertexPath);
-      if (vertexPath.size() == 0 && !ReadFileAsString(shader_base_path + vertexPath, vertexString)) {
+      if (!ReadFileAsString(vertexPath, vertexString)) {
         vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find vertex shader: " 
                                     << (shader_base_path + vertexPath) + "\n";
 	shaderCompilationStatus = SHADER_COMPILATION_STATUS_ERROR_FILE;
 	throw(Exception("GpuProgram creation failed."));	
       }
+      std::cout << "vertexString : " << vertexString << "\n";
+
     }
 
     // Fragment File Read
     string fragmentString;
     if(!fragmentPath.empty()) {			
-      fragmentString = find_standard_shader(fragmentPath);
-      if (fragmentString.size() == 0 && !ReadFileAsString(shader_base_path + fragmentPath, fragmentString)) {
+      if (!ReadFileAsString(shader_base_path + fragmentPath, fragmentString)) {
         vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find fragment shader: " 
                                     << (shader_base_path + fragmentPath) + "\n";
 	shaderCompilationStatus = SHADER_COMPILATION_STATUS_ERROR_FILE;

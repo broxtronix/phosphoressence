@@ -35,7 +35,7 @@ AudioThread::AudioThread(int sample_rate) {
   }
 
 
-  input_parameters.device = 5;//Pa_GetDefaultInputDevice(); // default input device 
+  input_parameters.device = Pa_GetDefaultInputDevice(); // default input device 
   std::cout << "\t    Using audio input: " 
             << Pa_GetDeviceInfo(input_parameters.device)->name << "\n";
   input_parameters.channelCount = NUM_CHANNELS;         // stereo input 
