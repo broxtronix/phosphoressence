@@ -21,6 +21,7 @@ open(OUT, ">$output_filename");
 # Print Initial Code
 print OUT "\#include <vw/Core/Thread.h>\n";
 print OUT "\#include <StandardShaders.h>\n\n";
+print OUT "\#include <iostream>\n\n";
 
 print OUT "static std::map<std::string, const char*> standard_shaders_map;\n\n";
 print OUT "namespace {\n";

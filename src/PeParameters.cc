@@ -34,13 +34,13 @@ std::string pe_resources_directory() {
   resources_dir = bundle_base_str + "/Contents/Resources";
   CFRelease(appUrlRef);
   CFRelease(macPath);
-
+  return resources_dir;
 #else
 
   std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
+  return "/home/mbroxton/projects/phosphoressence/src";
 
 #endif
-  return "/home/mbroxton/projects/phosphoressence/src";
 }
 
 // Erases a file suffix if one exists and returns the base string
