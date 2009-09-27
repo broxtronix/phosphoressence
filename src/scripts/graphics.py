@@ -7,7 +7,7 @@ from numpy import *
 from parameters import pe
 from shapes.bezier import *
 from shapes.polybouncer import *
-from shapes.vu_spirals import *
+#from shapes.vu_spirals import *
 
 class PeGraphics(object):
 
@@ -127,4 +127,4 @@ pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
 #pe_graphics.register(BezierSprite())
 #pe_graphics.register(PolyBouncerSprite(5))
-pe_graphics.register(VuSpiralSprite(1))
+#pe_graphics.register(VuSpiralSprite(1))

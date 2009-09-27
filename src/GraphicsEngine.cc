@@ -44,8 +44,8 @@ using namespace vw::GPU;
 
 
 // Switch from uin8 to floating point textures
-#define PE_GL_FORMAT GL_RGBA16F_ARB
-//#define PE_GL_FORMAT GL_RGBA
+//#define PE_GL_FORMAT GL_RGBA16F_ARB
+#define PE_GL_FORMAT GL_RGBA
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
