@@ -8,10 +8,12 @@
 
 #include <vw/Core.h>
 #include <vw/Math/Vector.h>
-#include <portaudio.h>
-
 #include <PeParameters.h>
 #include <FFT.h>
+
+#include <QObject>
+#include <QAudioDeviceInfo>
+#include <QAudioInput>
 
 // Basic audio settings
 #define NUM_CHANNELS    (2)
@@ -83,41 +85,55 @@ public:
 
 };
 
-/// AudioThread
+// ---------------------------------------------------------------
+class AudioInfo : public QIODevice {
+     Q_OBJECT
+ public:
+     AudioInfo(QObject* parent, QAudioInput* device);
+     ~AudioInfo();
+
+     void start();
+     void stop();
+
+     int LinearMax();
+
+     qint64 readData(char *data, qint64 maxlen);
+     qint64 writeData(const char *data, qint64 len);
+
+     QAudioInput*   input;
+
+ private:
+     int m_maxValue;
+
+ signals:
+     void update();
+ };
+
+
+/// AudioEngine
 ///
 /// This thread capture audio input using PortAudio.  Classes can
 /// register as "AudioListeners" to have their callback called when
 /// new audio samples become available.
-class AudioThread {
-  vw::Mutex m_mutex;
+class AudioEngine : public QObject {
+  Q_OBJECT
 
-  // Port Audio Input Stream
-  PaStream *m_stream;
+  vw::Mutex m_mutex;
+  QAudioFormat   m_format;
+  QAudioInput*   m_audioInput;
+  AudioInfo*     m_audioinfo;
+  QIODevice*     m_input;
+
+  bool           m_pullMode;
+  char*          m_buffer;
 
   // List of Audio Listeners
   std::list<boost::shared_ptr<AudioListener> > m_listeners;
 
 public:
-  int member_callback(const void *input, void *output,
-                      unsigned long frameCount,
-                      const PaStreamCallbackTimeInfo* timeInfo,
-                      PaStreamCallbackFlags statusFlags);
-
-  // This static class helps to bridge the gap between PortAudio's C
-  // API and the world of C++.  It simply forwards the callback to
-  // this instance's member_callback() method.
-  static int pa_callback(const void *input, void *output,
-                         unsigned long frameCount,
-                         const PaStreamCallbackTimeInfo* timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData ) {
-    return ((AudioThread*)userData)->member_callback(input, output, 
-                                                     frameCount, timeInfo, 
-                                                     statusFlags);
-  }
   
-  AudioThread(int sample_rate = AUDIO_SAMPLE_RATE);
-  ~AudioThread();
+  AudioEngine(QObject *parent, int sample_rate = AUDIO_SAMPLE_RATE);
+  ~AudioEngine();
 
   void register_listener(boost::shared_ptr<AudioListener> listener) {
     vw::Mutex::Lock lock(m_mutex);
@@ -129,6 +145,12 @@ public:
     m_listeners.clear();
   }
 
+private slots:
+  void audio_callback();
+  void test_callback();
+  void state(QAudio::State s);
+  void toggleMode();
+  void deviceChanged(int idx);
 };
 
 #endif // __AUDIOENGINE_H__

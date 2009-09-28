@@ -69,18 +69,18 @@ int main(int argc, char *argv[]) {
   // Create the audio thread, and create the sound statistics listener
   // that keeps up-to-date sound statistics (moving averages, etc).
   std::cout << "\t--> Opening audio stream\n";
-  // AudioThread audio_thread;
+  AudioEngine audio_engine(&main_window);
   // boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
-  // audio_thread.register_listener(stats_listener);
+  // audio_engine.register_listener(stats_listener);
 
   // Create some Waveshapes
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
   boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
-  // audio_thread.register_listener(oscope);
-  // audio_thread.register_listener(phasescope);
-  // audio_thread.register_listener(spectrograph);
+  audio_engine.register_listener(oscope);
+  audio_engine.register_listener(phasescope);
+  audio_engine.register_listener(spectrograph);
   main_window.gl_widget()->register_drawable(phasescope);
   main_window.gl_widget()->register_drawable(spectrograph);
   main_window.gl_widget()->register_drawable(oscope);

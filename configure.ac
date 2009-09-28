@@ -107,7 +107,7 @@ AX_PKG_ONE_OF(GL,
      AX_PKG(LINUX_GL, [X11], [-lGL -lGLU -lglut], [GL/gl.h GL/glu.h GL/glut.h], [])])
 
 # Qt with AutoTroll.
-AT_WITH_QT([+gui +sql +opengl], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])
+AT_WITH_QT([+gui +sql +opengl +multimedia], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])
 
 if test x"$HAVE_PKG_QT_BASE" != x"no:missing QT"; then
     AT_REQUIRE_QT_VERSION([4.0], [HAVE_PKG_QT_BASE="no:wrong QT version"], [])

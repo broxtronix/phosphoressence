@@ -10,7 +10,7 @@
 StandardShaders.cc:
 	perl StandardShaders.pl
 
-CLEANFILES = StandardShaders.cc
+CLEANFILES = StandardShaders.cc *.moc.cc
 
 bin_PROGRAMS=
 
@@ -27,10 +27,11 @@ if MAKE_APP_PHOSPHORESSENCE
   bin_PROGRAMS += pe
   pe_SOURCES = pe.cc MainWindow.cc MainWindow.moc.cc GraphicsEngine.cc	\
 	            GraphicsEngine.moc.cc GraphicsElements.cc		\
-	            AudioEngine.cc SpectrographShape.moc.cc		\
-	            ScriptEngine.cc PeParameters.cc Controller.cc	\
-	            OscController.cc JoystickController.cc FFT.cc	\
-	            $(gpu_module_sources) $(header_sources)
+	            AudioEngine.cc AudioEngine.moc.cc			\
+	            SpectrographShape.moc.cc ScriptEngine.cc		\
+	            PeParameters.cc Controller.cc OscController.cc	\
+	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
+	            $(header_sources)
 
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
