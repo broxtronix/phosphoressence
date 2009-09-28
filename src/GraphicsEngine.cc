@@ -255,7 +255,7 @@ void GraphicsEngine::drawImage() {
   float h_texture = 0.5 * 1.0/m_framebuffer_radius;      // r_texture * ( h_object / r_object )
 
   //  We will draw the image as a texture on this quad.
-  qglColor(Qt::white);
+  qglColor(Qt::blue);
   glBegin(GL_QUADS);
   glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
   glVertex2d( -m_aspect, -1.0);
@@ -269,7 +269,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-  m_gpu_backbuffer_program->uninstall();
+  m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {
     char fps_cstr[255];
@@ -279,7 +279,7 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  //  this->swapBuffers();
+  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -436,10 +436,10 @@ void GraphicsEngine::initializeGL() {
 
   // Uncomment to get rid of the tearing (i.e. tearing)!
 #ifdef __APPLE__
-  AGLContext aglContext;
-  aglContext = aglGetCurrentContext();
-  GLint swapInt = 1;
-  aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  // AGLContext aglContext;
+  // aglContext = aglGetCurrentContext();
+  // GLint swapInt = 1;
+  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
   this->setAutoBufferSwap(false);
 #endif
 

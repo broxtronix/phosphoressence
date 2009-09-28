@@ -22,7 +22,7 @@
 
 // Local files
 #include <MainWindow.h>
-#include <AudioEngine.h>
+//#include <AudioEngine.h>
 #include <GraphicsEngine.h>
 #include <ScriptEngine.h>
 #include <PeParameters.h>
@@ -77,14 +77,14 @@ int main(int argc, char *argv[]) {
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-   boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
   // audio_thread.register_listener(oscope);
   // audio_thread.register_listener(phasescope);
   // audio_thread.register_listener(spectrograph);
   main_window.gl_widget()->register_drawable(phasescope);
   main_window.gl_widget()->register_drawable(spectrograph);
   main_window.gl_widget()->register_drawable(oscope);
-   main_window.gl_widget()->register_drawable(lissajous);
+  main_window.gl_widget()->register_drawable(lissajous);
 
 
   // Start the script engine & start the command interpreter

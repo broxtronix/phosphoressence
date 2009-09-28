@@ -32,6 +32,7 @@ std::string pe_resources_directory() {
                                                 kCFURLPOSIXPathStyle);
   std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
   resources_dir = bundle_base_str + "/Contents/Resources";
+  //  resources_dir = "/Users/mbroxton/projects/phosphoressence/src/Contents/Resources";
   CFRelease(appUrlRef);
   CFRelease(macPath);
   return resources_dir;
