@@ -37,10 +37,8 @@ std::string pe_resources_directory() {
   CFRelease(macPath);
   return resources_dir;
 #else
-
   std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
   return "/home/mbroxton/projects/phosphoressence/src";
-
 #endif
 }
 

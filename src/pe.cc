@@ -86,7 +86,6 @@ int main(int argc, char *argv[]) {
   main_window.gl_widget()->register_drawable(oscope);
   main_window.gl_widget()->register_drawable(lissajous);
 
-
   // Start the script engine & start the command interpreter
   // pe_script_engine().register_controller(osc_controller, "OscController", "osc");
   // pe_script_engine().register_controller(midi_controller, "MidiController", "midi");
