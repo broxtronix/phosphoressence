@@ -17,7 +17,7 @@ bin_PROGRAMS=
 header_sources = MainWindow.h GraphicsEngine.h AudioEngine.h		\
 		 ScriptEngine.h PeParameters.h OScopeShape.h		\
 		 SpectrographShape.h Controller.h OscController.h	\
-		 MidiController.h JoystickController.h FFT.h
+		 JoystickController.h FFT.h
 
 gpu_module_sources = GpuProgram.h GpuProgram.cc Utilities.cc		\
 		     Utilities.h StandardShaders.h StandardShaders.h	\
@@ -29,15 +29,14 @@ if MAKE_APP_PHOSPHORESSENCE
 	            GraphicsEngine.moc.cc GraphicsElements.cc		\
 	            AudioEngine.cc SpectrographShape.moc.cc		\
 	            ScriptEngine.cc PeParameters.cc Controller.cc	\
-	            OscController.cc MidiController.cc			\
-	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
-	            $(header_sources) 
+	            OscController.cc JoystickController.cc FFT.cc	\
+	            $(gpu_module_sources) $(header_sources)
 
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 
-AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/opt/local/include/SDL
-AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt
+AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/Users/mbroxton/local/include -I/Users/mbroxton/local/include/SDL
+AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation
 
 ##############################################################################
 #                             Tests					     #

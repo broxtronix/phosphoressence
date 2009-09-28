@@ -1,81 +1,81 @@
-name = 'Geiss__Toy'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__Toy(PePreset):
 
-def per_frame():
-    fRating=3
-    pe.gamma=2
-    pe.decay=1
-    echo_zoom=2
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=2
-    pe.wave_additive=0
-    pe.wave_usedots=0
-    bWaveThick=1
-    bModWaveAlphaByVolume=0
-    pe.wave_brighten=0
-    pe.wrap=1
-    darken_center=0
-    bRedBlueStereo=0
-    brighten=0
-    darken=0
-    solarize=0
-    pe.invert=0
-    pe.wave_a=11.94
-    fWaveScale=0.387
-    fWaveSmoothing=0.7
-    pe.wave_mystery=0
-    fModWaveAlphaStart=0.75
-    fModWaveAlphaEnd=0.95
-    pe.warp_speed=1
-    pe.warp_scale=1.772
-    pe.zoomexp=4.401
-    fShader=0
-    pe.zoom=1.031
-    pe.rot=0.003
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=0
-    pe.warp=0
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0.19
-    pe.wave_g=0.19
-    pe.wave_b=0.19
-    pe.wave_x=0.5
-    pe.wave_y=0.5
-    pe.ob_size=0.01
-    pe.ob_r=0
-    pe.ob_g=0
-    pe.ob_b=0
-    pe.ob_a=0
-    pe.ib_size=0.01
-    pe.ib_r=0.25
-    pe.ib_g=0.25
-    pe.ib_b=0.25
-    pe.ib_a=0
-    pe.mv_x=12
-    pe.mv_y=9
-    pe.mv_dx=0
-    pe.mv_dy=0
-    pe.mv_l=0.9
-    pe.mv_r=1
-    pe.mv_g=1
-    pe.mv_b=1
-    pe.mv_a=0
-    pe.wave_x = pe.wave_x + 0.350*( 0.70*math.sin(2.221*pe.time) + 0.30*math.sin(1.821*pe.time) );
-    pe.wave_y = pe.wave_y + 0.350*( 0.30*math.sin(1.942*pe.time) + 0.70*math.sin(2.522*pe.time) );
-    pe.wave_r = pe.wave_r + 0.890*( 0.60*math.sin(0.823*pe.time) + 0.40*math.sin(0.916*pe.time) );
-    pe.wave_g = pe.wave_g + 0.890*( 0.60*math.sin(0.900*pe.time) + 0.40*math.sin(1.023*pe.time) );
-    pe.wave_b = pe.wave_b + 0.890*( 0.60*math.sin(0.808*pe.time) + 0.40*math.sin(0.949*pe.time) );
-    pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.038*pe.time) + 0.40*math.sin(0.054*pe.time) );
-    pe.dx = pe.dx + 0.002*( 0.60*math.sin(0.434*pe.time) + 0.40*math.sin(0.277*pe.time) );
-    pe.dy = pe.dy + 0.002*( 0.60*math.sin(0.384*pe.time) + 0.40*math.sin(0.477*pe.time) );
+    name = 'Geiss__Toy'
 
-def per_pixel():
-    pass
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        fRating=3
+        pe.gamma=2
+        pe.decay=1
+        pe.echo_zoom=2
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=2
+        pe.wave_additive=0
+        pe.wave_usedots=0
+        bWaveThick=1
+        bModWaveAlphaByVolume=0
+        pe.wave_brighten=0
+        pe.wrap=1
+        pe.darken_center=0
+        bRedBlueStereo=0
+        pe.brighten=0
+        pe.darken=0
+        pe.solarize=0
+        pe.invert=0
+        pe.wave_a=11.94
+        fWaveScale=0.387
+        fWaveSmoothing=0.7
+        pe.wave_mystery=0
+        fModWaveAlphaStart=0.75
+        fModWaveAlphaEnd=0.95
+        pe.warp_speed=1
+        pe.warp_scale=1.772
+        pe.zoomexp=4.401
+        fShader=0
+        pe.zoom=1.031
+        pe.rot=0.003
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=0
+        pe.warp=0
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0.19
+        pe.wave_g=0.19
+        pe.wave_b=0.19
+        pe.wave_x=0.5
+        pe.wave_y=0.5
+        pe.ob_size=0.01
+        pe.ob_r=0
+        pe.ob_g=0
+        pe.ob_b=0
+        pe.ob_a=0
+        pe.ib_size=0.01
+        pe.ib_r=0.25
+        pe.ib_g=0.25
+        pe.ib_b=0.25
+        pe.ib_a=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.mv_dx=0
+        pe.mv_dy=0
+        pe.mv_l=0.9
+        pe.mv_r=1
+        pe.mv_g=1
+        pe.mv_b=1
+        pe.mv_a=0
+        pe.wave_x = pe.wave_x + 0.350*( 0.70*math.sin(2.221*pe.time) + 0.30*math.sin(1.821*pe.time) );
+        pe.wave_y = pe.wave_y + 0.350*( 0.30*math.sin(1.942*pe.time) + 0.70*math.sin(2.522*pe.time) );
+        pe.wave_r = pe.wave_r + 0.890*( 0.60*math.sin(0.823*pe.time) + 0.40*math.sin(0.916*pe.time) );
+        pe.wave_g = pe.wave_g + 0.890*( 0.60*math.sin(0.900*pe.time) + 0.40*math.sin(1.023*pe.time) );
+        pe.wave_b = pe.wave_b + 0.890*( 0.60*math.sin(0.808*pe.time) + 0.40*math.sin(0.949*pe.time) );
+        pe.rot = pe.rot + 0.010*( 0.60*math.sin(0.038*pe.time) + 0.40*math.sin(0.054*pe.time) );
+        pe.dx = pe.dx + 0.002*( 0.60*math.sin(0.434*pe.time) + 0.40*math.sin(0.277*pe.time) );
+        pe.dy = pe.dy + 0.002*( 0.60*math.sin(0.384*pe.time) + 0.40*math.sin(0.477*pe.time) );
+
+    def per_pixel(self):
+        pass

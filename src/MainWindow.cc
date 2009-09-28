@@ -28,8 +28,8 @@ MainWindow::MainWindow() {
   QGLFormat gl_frmt = QGLFormat::defaultFormat();
   gl_frmt.setSampleBuffers(true);
   gl_frmt.setDoubleBuffer(true);
-  //  gl_frmt.setSamples(16);
-  gl_frmt.setSwapInterval(0);
+  //gl_frmt.setSamples(16);
+  gl_frmt.setSwapInterval(1);
   m_graphics_engine = new GraphicsEngine(this, gl_frmt);
   setCentralWidget(m_graphics_engine);
 
@@ -38,8 +38,8 @@ MainWindow::MainWindow() {
   create_menus();
 
   // Maximize the main window
-  //this->showMaximized();
-  this->showFullScreen();
+  this->showMaximized();
+  //this->showFullScreen();
 }
 
 //********************************************************************

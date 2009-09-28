@@ -19,6 +19,18 @@ uniform float rot;
 uniform float dx;
 uniform float dy;
 
+uniform float q1;
+uniform float q2;
+uniform float q3;
+uniform float q4;
+uniform float q5;
+uniform float q6;
+uniform float q7;
+uniform float q8;
+
+uniform float time;
+
+
 #define EPS 0.00001
 #define PI 3.14159
 
@@ -78,7 +90,18 @@ vec4 hsv_to_rgb(in vec4 hsv) {
   return vec4(r,g,b,hsv.a);
 }
 
-// Multiply two complex number together
+/// Compute the laplacian at a point
+vec4 laplace_4(vec2 p, float width) {
+  vec4 laplacian = vec4(-4.0,-4.0,-4.0,1.0) * texture2D(feedback_texture, p);
+  laplacian += texture2D(feedback_texture, p.st + vec2(-width/framebuffer_radius,0.0) );
+  laplacian += texture2D(feedback_texture, p.st + vec2( width/framebuffer_radius,0.0) );
+  laplacian += texture2D(feedback_texture, p.st + vec2(0.0,-width/framebuffer_radius) );
+  laplacian += texture2D(feedback_texture, p.st + vec2(0.0, width/framebuffer_radius) );
+  laplacian.a = 1.0;
+  return laplacian;
+}
+
+/// Multiply two complex number together
 vec2 cmult(in vec2 a, in vec2 b) {
   return vec2(a.x*b.x-a.y*b.y,  // Real Part
               a.x*b.y+a.y*b.x); // Complex Part
@@ -88,7 +111,7 @@ vec2 cmult_polar(in vec2 a, in vec2 b) {
   return vec2(a.x*b.x, a.y+b.y);
 }
 
-// Divide two complex numbers
+/// Divide two complex numbers
 vec2 cdiv(in vec2 a, in vec2 b) {
   float numerator = b.x*b.x+b.y*b.y;
   return vec2((a.x*b.x+a.y*b.y) / numerator,  // Real Part
@@ -103,6 +126,7 @@ vec2 polar_to_cartesian(in vec2 a) {
   return vec2(a.x * cos(a.y), a.x * sin(a.y));
 }
 
+/// Compute the mobius transform of a complex number z.
 vec2 mobius_transform(in vec2 z, in vec2 a, in vec2 b, in vec2 c) {
   float z_exp = pow(a.x, -1.0 * pow(zoomexp, 
                                     z.x * 2.0 * framebuffer_radius - framebuffer_radius));
@@ -119,12 +143,19 @@ vec2 mobius_transform(in vec2 z, in vec2 a, in vec2 b, in vec2 c) {
   return cdiv(numerator,denominator);
 }
 
+
+
+// -------------------------------------------------------------------
+//                              MAIN
+// -------------------------------------------------------------------
+
 void main() { 
 
   // For debugging.  Uncomment to disable the rest of the shader.
   //
   // gl_FragColor = texture2D(feedback_texture, gl_TexCoord[0].st);
   // return;
+
 
   // Compute the source texture coordinates
   //
@@ -166,7 +197,8 @@ void main() {
     
   } 
 
-  // Mobius Transform
+  // ------------------------  Mobius Transform  -----------------------------
+
   float xx = remapped_coords.x;
   float yy = remapped_coords.y;
   float rr = sqrt(xx*xx+yy*yy);
@@ -177,9 +209,7 @@ void main() {
                                      vec2(dx,dy),    // cartesian  : x & y translation 
                                      vec2(0,0));     // polar      : rotation & orientation of 3D sphere
 
-  // ----------------------------------------------------------------------
-  //                             Kaleidoscope
-  // ----------------------------------------------------------------------
+  // --------------------------  Kaleidoscope  --------------------------------
 
   if (kaleidoscope == 1.0) {
 
@@ -211,6 +241,7 @@ void main() {
                                   remapped_coords.y / 
                                   (2.0*framebuffer_radius) + 0.5);
 
+
   // Texture Flip
   // float xmodval = mod(unnormalized_coords.x,2.0);
   // float ymodval = mod(unnormalized_coords.x,2.0);
@@ -218,6 +249,7 @@ void main() {
   //   unnormalized_coords.x = 2.0 - xmodval;
   // if (ymodval > 1.0)
   //   unnormalized_coords.y = 2.0 - ymodval;
+
 
   // Texture Wrap
   if (edge_extend == 1.0) {
@@ -230,15 +262,37 @@ void main() {
   
   vec4 src = texture2D(feedback_texture, unnormalized_coords);
 
-  // if (invert == 1.0) {
-  //   src.r = 1.0 - src.r;
-  //   src.g = 1.0 - src.g;
-  //   src.b = 1.0 - src.b;
-  // }
+  // <testing reaction diffusion>  
+  // vec4 l4 = laplace_4(unnormalized_coords, q7);
+  // vec4 rd = src;
+  // float rbb = src.r * src.b * src.b;
+  // rd.r = src.r + q8 * ( q1 * l4.r - rbb + q3 * (1.0 - src.r) );
+  // rd.b = src.b + q8 * ( q2 * l4.b + rbb - (q3 + q4) * src.b );
+  // rd.g = 0.0;
+  // rd.a = 1.0;
+    
+  // src = rd;
+  // </testing>
+
+
+
+
+  if (invert == 1.0) {
+    src.r = 1.0 - src.r;
+    src.g = 1.0 - src.g;
+    src.b = 1.0 - src.b;
+  }
   
   // Apply gain.  This is done in the HSV color space so that the hue
   // can cycle when the image becomes saturated.
-  vec4 g = vec4(decay, decay, decay, 1.0);
+  vec4 g;
+  if (decay >= 1.0) 
+    // When gain is greater than 1.0, we fade up all channels
+    g = vec4(decay, decay, decay, 1.0);
+  else
+    // But when less than 1.0, we only fade out the luminance channel
+    g = vec4(1.0, 1.0, decay, 1.0);
+
   vec4 hsv_texel = g * rgb_to_hsv(src);
   hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
   hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance

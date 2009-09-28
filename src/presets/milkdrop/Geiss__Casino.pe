@@ -1,78 +1,78 @@
-name = 'Geiss__Casino'
+from presets import PePreset
 
-def initialize():
-    pass
+class Geiss__Casino(PePreset):
 
-def per_frame():
-    fRating=3
-    pe.gamma=1.993
-    pe.decay=0.98
-    echo_zoom=2
-    echo_alpha=0
-    echo_orient=0
-    pe.wave_mode=7
-    pe.wave_additive=0
-    pe.wave_usedots=0
-    bWaveThick=1
-    bModWaveAlphaByVolume=0
-    pe.wave_brighten=0
-    pe.wrap=1
-    darken_center=0
-    bRedBlueStereo=0
-    brighten=0
-    darken=0
-    solarize=0
-    pe.invert=0
-    pe.wave_a=0.3
-    fWaveScale=0.672168
-    fWaveSmoothing=0.9
-    pe.wave_mystery=0
-    fModWaveAlphaStart=0.75
-    fModWaveAlphaEnd=0.95
-    pe.warp_speed=1
-    pe.warp_scale=1.331
-    pe.zoomexp=0.5
-    fShader=0
-    pe.zoom=1.150549
-    pe.rot=0
-    pe.cx=0.5
-    pe.cy=0.5
-    pe.dx=0
-    pe.dy=0
-    pe.warp=0.012485
-    pe.sx=1
-    pe.sy=1
-    pe.wave_r=0.65
-    pe.wave_g=0.85
-    pe.wave_b=0.65
-    pe.wave_x=0.5
-    pe.wave_y=0.37
-    pe.ob_size=0.01
-    pe.ob_r=0
-    pe.ob_g=0
-    pe.ob_b=0
-    pe.ob_a=0
-    pe.ib_size=0.01
-    pe.ib_r=0.25
-    pe.ib_g=0.25
-    pe.ib_b=0.25
-    pe.ib_a=0
-    pe.mv_x=12
-    pe.mv_y=9
-    pe.mv_dx=0
-    pe.mv_dy=0
-    pe.mv_l=0.9
-    pe.mv_r=1
-    pe.mv_g=1
-    pe.mv_b=1
-    pe.mv_a=0
-    pe.wave_r = pe.wave_r + 0.150*( 0.60*math.sin(0.980*pe.time) + 0.40*math.sin(1.047*pe.time) );
-    pe.wave_g = pe.wave_g + 0.350*( 0.60*math.sin(0.835*pe.time) + 0.40*math.sin(1.081*pe.time) );
-    pe.wave_b = pe.wave_b + 0.150*( 0.60*math.sin(0.814*pe.time) + 0.40*math.sin(1.011*pe.time) );
-    pe.dx = pe.dx + 0.03*( 0.60*math.sin(0.334*pe.time) + 0.40*math.sin(0.264*pe.time) );
-    pe.decay = pe.decay - 0.01*(pe.frame%2);
+    name = 'Geiss__Casino'
 
-def per_pixel():
-    pe.zoom=(pe.zoom-1)*pe.rad+1;
 
-pe_presets.register(name, per_frame, initialize, per_pixel)
+    def per_frame(self):
+        fRating=3
+        pe.gamma=1.993
+        pe.decay=0.98
+        pe.echo_zoom=2
+        pe.echo_alpha=0
+        pe.echo_orient=0
+        pe.wave_mode=7
+        pe.wave_additive=0
+        pe.wave_usedots=0
+        bWaveThick=1
+        bModWaveAlphaByVolume=0
+        pe.wave_brighten=0
+        pe.wrap=1
+        pe.darken_center=0
+        bRedBlueStereo=0
+        pe.brighten=0
+        pe.darken=0
+        pe.solarize=0
+        pe.invert=0
+        pe.wave_a=0.3
+        fWaveScale=0.672168
+        fWaveSmoothing=0.9
+        pe.wave_mystery=0
+        fModWaveAlphaStart=0.75
+        fModWaveAlphaEnd=0.95
+        pe.warp_speed=1
+        pe.warp_scale=1.331
+        pe.zoomexp=0.5
+        fShader=0
+        pe.zoom=1.150549
+        pe.rot=0
+        pe.cx=0.5
+        pe.cy=0.5
+        pe.dx=0
+        pe.dy=0
+        pe.warp=0.012485
+        pe.sx=1
+        pe.sy=1
+        pe.wave_r=0.65
+        pe.wave_g=0.85
+        pe.wave_b=0.65
+        pe.wave_x=0.5
+        pe.wave_y=0.37
+        pe.ob_size=0.01
+        pe.ob_r=0
+        pe.ob_g=0
+        pe.ob_b=0
+        pe.ob_a=0
+        pe.ib_size=0.01
+        pe.ib_r=0.25
+        pe.ib_g=0.25
+        pe.ib_b=0.25
+        pe.ib_a=0
+        pe.mv_x=12
+        pe.mv_y=9
+        pe.mv_dx=0
+        pe.mv_dy=0
+        pe.mv_l=0.9
+        pe.mv_r=1
+        pe.mv_g=1
+        pe.mv_b=1
+        pe.mv_a=0
+        pe.wave_r = pe.wave_r + 0.150*( 0.60*math.sin(0.980*pe.time) + 0.40*math.sin(1.047*pe.time) );
+        pe.wave_g = pe.wave_g + 0.350*( 0.60*math.sin(0.835*pe.time) + 0.40*math.sin(1.081*pe.time) );
+        pe.wave_b = pe.wave_b + 0.150*( 0.60*math.sin(0.814*pe.time) + 0.40*math.sin(1.011*pe.time) );
+        pe.dx = pe.dx + 0.03*( 0.60*math.sin(0.334*pe.time) + 0.40*math.sin(0.264*pe.time) );
+        pe.decay = pe.decay - 0.01*(pe.frame%2);
+
+    def per_pixel(self):
+        pe.zoom=(pe.zoom-1)*pe.rad+1;

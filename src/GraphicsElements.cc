@@ -1,5 +1,21 @@
+#ifdef __linux__
+// This is required to get prototypes, according to the opengl linux abi
+#define GL_GLEXT_PROTOTYPES 1
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <AGL/agl.h>
+#else // Linux
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
+#endif 
+
 #include <PeParameters.h>
 #include <GraphicsEngine.h>
+#include <GpuProgram.h>
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 
@@ -10,8 +26,18 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  // Feedback decay, gamma, etc are controlled using a pixel shader.
+  // Vertex Shader
   m_gpu_backbuffer_program->install();
+//   m_gpu_backbuffer_program->set_input_float("time", pe_time());
+//   m_gpu_backbuffer_program->set_input_float("warp", pe_script_engine().get_parameter("warp"));
+//   m_gpu_backbuffer_program->set_input_float("warp_speed", pe_script_engine().get_parameter("warp_speed"));
+//   m_gpu_backbuffer_program->set_input_float("warp_scale", pe_script_engine().get_parameter("warp_scale"));
+//   m_gpu_backbuffer_program->set_input_float("sx", pe_script_engine().get_parameter("sx"));
+//   m_gpu_backbuffer_program->set_input_float("sy", pe_script_engine().get_parameter("sy"));
+//   m_gpu_backbuffer_program->set_input_float("cx", pe_script_engine().get_parameter("cx"));
+//   m_gpu_backbuffer_program->set_input_float("cy", pe_script_engine().get_parameter("cy"));
+
+  // Feedback decay, gamma, etc are controlled using a fragment shader.
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
@@ -31,42 +57,14 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("dx", pe_script_engine().get_parameter("dx"));
   m_gpu_backbuffer_program->set_input_float("dy", pe_script_engine().get_parameter("dy"));
 
-
-  // Time
-  //  float time = pe_time();
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     float test = pe_parameters().get_value("cx");
-  //   }
-  //   sw.stop();
-  //   std::cout << "Get_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
-  // }
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     pe_parameters().set_value("cx", .2);
-  //   }
-  //   sw.stop();
-  //   std::cout << "Set_Value: " << (sw.elapsed_microseconds()/1000.0) << " per call\n";
-  // }
-
-  // {
-  //   vw::Stopwatch sw;
-  //   sw.start();
-
-  //   float cxz;
-  //   for (unsigned int i = 0; i < 1000; ++i) {
-  //     cxz = pe_script_engine().get_parameter("zoom");
-  //   }
-  //   sw.stop();
-  //   std::cout << "FetchParameter: " << (sw.elapsed_microseconds()/1000.0) << " per call  " << cxz << "\n";
-  //   sleep(2);
-  // }
+  m_gpu_backbuffer_program->set_input_float("q1", pe_script_engine().get_parameter("q1"));
+  m_gpu_backbuffer_program->set_input_float("q2", pe_script_engine().get_parameter("q2"));
+  m_gpu_backbuffer_program->set_input_float("q3", pe_script_engine().get_parameter("q3"));
+  m_gpu_backbuffer_program->set_input_float("q4", pe_script_engine().get_parameter("q4"));
+  m_gpu_backbuffer_program->set_input_float("q5", pe_script_engine().get_parameter("q5"));
+  m_gpu_backbuffer_program->set_input_float("q6", pe_script_engine().get_parameter("q6"));
+  m_gpu_backbuffer_program->set_input_float("q7", pe_script_engine().get_parameter("q7"));
+  m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
   
   float warpSpeed = pe_script_engine().get_parameter("warp_speed");
   float warpScale = pe_script_engine().get_parameter("warp_scale");
@@ -80,15 +78,15 @@ void GraphicsEngine::drawFeedback() {
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
   // Extract the per-pixel parameters
-  float zoom = 1;//pe_script_engine().get_parameter("zoom");
-  float zoomExp = 1;//pe_script_engine().get_parameter("zoomexp");
+  float zoom = 1.0;//pe_script_engine().get_parameter("zoom");
+  float zoomExp = 1.0;//pe_script_engine().get_parameter("zoomexp");
   float warpAmount = pe_script_engine().get_parameter("warp");
       
-  float rot = 0;//pe_script_engine().get_parameter("rot");
+  float rot = 0.0;//pe_script_engine().get_parameter("rot");
   float cx = pe_script_engine().get_parameter("cx");
   float cy = pe_script_engine().get_parameter("cy");
-  float dx = 0;//pe_script_engine().get_parameter("dx");
-  float dy = 0;//pe_script_engine().get_parameter("dy");
+  float dx = 0.0;//pe_script_engine().get_parameter("dx");
+  float dy = 0.0;//pe_script_engine().get_parameter("dy");
   float sx = pe_script_engine().get_parameter("sx");
   float sy = pe_script_engine().get_parameter("sy");
 
@@ -99,13 +97,6 @@ void GraphicsEngine::drawFeedback() {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
 
-      // Before we call the per-pixel equations, we need to set the
-      // per-pixel parameters.
-      // pe_script_engine().set_parameter("x",u);
-      // pe_script_engine().set_parameter("y",v);
-      // pe_script_engine().set_parameter("rad",sqrt(u*u+v*v));
-      // pe_script_engine().set_parameter("ang",atan2(v,u));
-      
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
                                               sqrtf(u * u + v * v) * 2.0 * 
@@ -147,7 +138,7 @@ void GraphicsEngine::drawFeedback() {
   //  glBlendFunc (GL_ONE, GL_ZERO);
         
   //  We will draw the image as a texture on this quad.
-  qglColor(Qt::white);
+  glColor4f(1.0,1.0,1.0,1.0);
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
     for (int j = 0 ; j < VERT_MESH_SIZE ; ++j) {
@@ -162,6 +153,7 @@ void GraphicsEngine::drawFeedback() {
     }		
   }
   glEnd();
+
   glDisable( GL_TEXTURE_2D );
   m_gpu_backbuffer_program->uninstall();
 }
@@ -206,44 +198,6 @@ bool ReversePropagatePoint(float fx, float fy, float *fx2, float *fy2,
   *fx2 = tu;
   *fy2 = tv;
   return true;
-}
-
-// <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
-// See the milkdrop license in COPYING for more details.
-
-void GraphicsEngine::drawBorders() {
-
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  if (pe_script_engine().get_parameter("ib_a")) {
-    glLoadIdentity();
-    glLineWidth( pe_script_engine().get_parameter("ib_size") );
-    glColor4f( pe_script_engine().get_parameter("ib_r"),
-               pe_script_engine().get_parameter("ib_g"),
-               pe_script_engine().get_parameter("ib_b"),
-               pe_script_engine().get_parameter("ib_a") );
-
-    // float ib_size = pe_script_engine().get_parameter("ib_size");
-    // float ob_size = pe_script_engine().get_parameter("ob_size");
-
-    // float fInnerRad = (it==0) ? 1.0f - fOuterBorderSize : 
-    //                             1.0f - fOuterBorderSize - fInnerBorderSize;
-    // float fOuterRad = (it==0) ? 1.0f                    : 
-    //                             1.0f - fOuterBorderSize;
-    
-    glBegin(GL_LINES);
-    glVertex2d( -m_aspect, 1.0 );
-    glVertex2d( m_aspect, 1.0 );
-    glVertex2d( m_aspect, 1.0 );
-    glVertex2d( m_aspect, -1.0 );
-    glVertex2d( m_aspect, -1.0 );
-    glVertex2d( -m_aspect, -1.0 );
-    glVertex2d( -m_aspect, -1.0 );
-    glVertex2d( -m_aspect, 1.0 );
-    glEnd();
-  }
-  glDisable( GL_BLEND );
 }
 
 void GraphicsEngine::drawDarkenCenter() {

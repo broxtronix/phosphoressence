@@ -13,7 +13,7 @@
 #include <QApplication>
 #include <QWidget>
 
-// // VW
+// VW
 #include <vw/Core.h>
 #include <vw/Image.h>
 #include <vw/Math.h>
@@ -22,12 +22,12 @@
 
 // Local files
 #include <MainWindow.h>
-#include <AudioEngine.h>
+//#include <AudioEngine.h>
 #include <GraphicsEngine.h>
 #include <ScriptEngine.h>
 #include <PeParameters.h>
 #include <OscController.h>
-#include <MidiController.h>
+//#include <MidiController.h>
 #include <JoystickController.h>
 #include <OScopeShape.h>
 #include <VectorShape.h>
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
     osc_ip = argv[1];
   OscController osc_controller("60002", osc_ip.c_str() , "60000");
 
-  std::cout << "\t--> Initializing MIDI driver\n";
-  MidiController midi_controller;
+  //  std::cout << "\t--> Initializing MIDI driver\n";
+  //  MidiController midi_controller;
 
   std::cout << "\t--> Initializing Joystick drivers\n";
   JoystickController joystick_controller;
@@ -69,23 +69,22 @@ int main(int argc, char *argv[]) {
   // Create the audio thread, and create the sound statistics listener
   // that keeps up-to-date sound statistics (moving averages, etc).
   std::cout << "\t--> Opening audio stream\n";
-  AudioThread audio_thread;
-  boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
-  audio_thread.register_listener(stats_listener);
+  // AudioThread audio_thread;
+  // boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
+  // audio_thread.register_listener(stats_listener);
 
   // Create some Waveshapes
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  //  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
-  audio_thread.register_listener(oscope);
-  audio_thread.register_listener(phasescope);
-  audio_thread.register_listener(spectrograph);
+  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+  // audio_thread.register_listener(oscope);
+  // audio_thread.register_listener(phasescope);
+  // audio_thread.register_listener(spectrograph);
   main_window.gl_widget()->register_drawable(phasescope);
   main_window.gl_widget()->register_drawable(spectrograph);
   main_window.gl_widget()->register_drawable(oscope);
-  //  main_window.gl_widget()->register_drawable(lissajous);
-
+  main_window.gl_widget()->register_drawable(lissajous);
 
   // Start the script engine & start the command interpreter
   // pe_script_engine().register_controller(osc_controller, "OscController", "osc");

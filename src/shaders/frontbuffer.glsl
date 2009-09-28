@@ -43,8 +43,8 @@ void main() {
   // Apply invert
   vec4 ones = vec4(1.0, 1.0, 1.0, 1.0);
   vec4 neg_ones = vec4(-1.0, -1.0, -1.0, -1.0);
-  if (invert == 1.0) 
-    final_texel = final_texel * neg_ones + ones;
+  // if (invert == 1.0) 
+  //   final_texel = final_texel * neg_ones + ones;
 
   // Brighten
   if (brighten == 1.0) 

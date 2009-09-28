@@ -32,15 +32,14 @@ std::string pe_resources_directory() {
                                                 kCFURLPOSIXPathStyle);
   std::string bundle_base_str = std::string( CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding()) );
   resources_dir = bundle_base_str + "/Contents/Resources";
+  //  resources_dir = "/Users/mbroxton/projects/phosphoressence/src/Contents/Resources";
   CFRelease(appUrlRef);
   CFRelease(macPath);
-
-#else
-
-  std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
-
-#endif
   return resources_dir;
+#else
+  std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
+  return "/home/mbroxton/projects/phosphoressence/src";
+#endif
 }
 
 // Erases a file suffix if one exists and returns the base string

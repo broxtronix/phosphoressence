@@ -13,7 +13,7 @@ $output_filename = $pwd . "/StandardShaders.cc";
 
 #Get Input File List
 `rm -f $output_filename`;
-@files = `find ./StandardShaders -maxdepth 2 -type f \! -path "*.svn*"`;
+@files = `find ./shaders -maxdepth 2 -type f \! -path "*.svn*"`;
 
 # Create Output File
 open(OUT, ">$output_filename");
@@ -21,6 +21,7 @@ open(OUT, ">$output_filename");
 # Print Initial Code
 print OUT "\#include <vw/Core/Thread.h>\n";
 print OUT "\#include <StandardShaders.h>\n\n";
+print OUT "\#include <iostream>\n\n";
 
 print OUT "static std::map<std::string, const char*> standard_shaders_map;\n\n";
 print OUT "namespace {\n";
@@ -52,6 +53,7 @@ print OUT "  std::map<std::string, const char*>::iterator iter_map = standard_sh
 print OUT "  if(iter_map != standard_shaders_map.end()) {\n";
 print OUT "    return (*iter_map).second;\n";
 print OUT "  } else {\n";
-print OUT "    return \"\";\n";
+print OUT "    std::cout << \"ERROR: Could not find requested shader: \" << path << \"\\n\";";
+print OUT "    exit(0);";
 print OUT "  } \n";
 print OUT "}\n";

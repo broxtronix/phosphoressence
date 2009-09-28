@@ -1,13 +1,14 @@
 # PHOSPHORESSENCE MASTER CONTROL PROGRAM
 #
 import math, sys
+
 PE_RESOURCES = '/Users/mbroxton/projects/pe/src/'
 
 # Load various python modules
 from parameters import pe
-from presets import pe_presets
+from presets import PePreset
+from graphics import pe_graphics
 from controllers import OscController, JoystickController
-from bindings import Binding
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
@@ -33,19 +34,18 @@ def pe_initialize():
     pass
 
     # Load Milkdrop Presets & Bookmarks
-    # pe_presets.load_directory(PE_RESOURCES + '/presets/milkdrop')
-    # pe_presets.load_directory(PE_RESOURCES + '/presets/bookmarks')
+    # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
+    # PePreset.load_directory(PE_RESOURCES + '/presets/bookmarks')
 
-
-# Default render callback
+# Animation callback.
 #
-# This method is called by the GraphicsEngine just prior to rendering
-# each frame.  By overriding or augmenting this method, programmers
-# can animate PhosphorEssence parameters.
-def pe_render():
+# This method is called prior to rendering each frame.  By overriding
+# or augmenting this method, programmers can animate PhosphorEssence
+# parameters.
+def pe_animate():
 
     if ( ENABLE_PRESETS ) :
-        preset = pe_presets.current_preset()
+        preset = PePreset.current_preset()
         if (preset):
             try: 
                 preset.per_frame()
@@ -57,12 +57,13 @@ def pe_render():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
+        #osc.render_callback()
         joystick.render_callback()
 
         # Update osc parameters
         #	 osc.render_callback()
 
-        # Cycle through OB colors
+        # Cycle through IB colors
         pe.ib_r = 0.5
         pe.ib_g = 0.5
         pe.ib_b = 0.5
@@ -98,14 +99,6 @@ def pe_render():
         pe.mv_g += 0.5 * math.sin(19/10.0*pe.time)
         pe.mv_b += 0.5 * math.sin(14/10.0*pe.time)
 
-        if pe.wave_move:
-            # Cause elements to move
-            pe.wave_x = 0.5;
-            pe.wave_y = 0.5;
-            pe.set_control_value('wave_x', pe.wave_x + 0.02*( 0.60*math.sin(2.121*pe.time) + 0.40*math.sin(1.621*pe.time) ))
-            pe.set_control_value('wave_y', pe.wave_y + 0.02*( 0.60*math.sin(1.742*pe.time) + 0.40*math.sin(2.322*pe.time) ))
-
-
         # wave_x = wave_x + 0.200*( 0.60*sin(1.321*time) + 0.40*sin(1.621*time) );
         # wave_y = wave_y + 0.200*( 0.60*sin(1.742*time) + 0.40*sin(1.422*time) );
 
@@ -117,3 +110,10 @@ def pe_render():
 
         # wave_x = 0.5 + 0.3*sin(time*0.177);
         # wave_y=0.47
+
+
+# Default render callback
+#
+# This method is called by the GraphicsEngine as it renders each frame.
+def pe_render():
+    pe_graphics.render()

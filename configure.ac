@@ -90,34 +90,8 @@ fi
 
 # This provides an easy way for users to override the threads options
 # if they are replacing Boost threads with something else for their platform.
-AX_PKG(THREADS, [BOOST_THREAD], [], [])
-
-AX_PKG_ONE_OF(LAPACK,
-  APPLE_LAPACK,
-    [AX_PKG_APPLE(LAPACK, [], [-framework vecLib])],
-  CLAPACK,
-    [AX_PKG(CLAPACK, [], [-lclapack -lblas -lf2c], [])],
-  SLAPACK,
-    [AX_PKG(SLAPACK, [], [-llapack -lblas], [])],
-  FLAPACK,
-    [AX_PKG(FLAPACK, [], [-llapack -lblas -lgfortran], [])],
-  STANDALONE_LAPACK_BLAS,
-    [AX_PKG(STANDALONE_BLAS, [], [-lblas], [])
-     AX_PKG(STANDALONE_LAPACK, [], [-llapack], [])
-     AX_GROUP_PKG(STANDALONE_LAPACK_AND_BLAS, [STANDALONE_LAPACK STANDALONE_BLAS])],
-  STANDALONE_FLAPACK_FBLAS,
-    [AX_PKG(STANDALONE_F2C, [], [-lf2c], [])
-     AX_PKG(STANDALONE_FBLAS, [STANDALONE_F2C], [-lblas], [])
-     AX_PKG(STANDALONE_FLAPACK, [STANDALONE_F2C], [-llapack], [])
-     AX_GROUP_PKG(STANDALONE_FLAPACK_FBLAS, [STANDALONE_FLAPACK STANDALONE_FBLAS STANDALONE_F2C])])
-
-AX_PKG(VW,                [BOOST], [-lvw],            [vw/Image/ImageView.h vw/Math/LinearAlgebra.h])
+AX_PKG(THREADS,           [BOOST_THREAD], [], [])
 AX_PKG(VW_CORE,           [BOOST], [-lvwCore],        [vw/Core/Thread.h])
-AX_PKG(VW_IMAGE,          [BOOST], [-lvwImage],       [vw/Image/ImageView.h])
-AX_PKG(VW_STEREO,         [BOOST], [-lvwStereo],      [vw/Stereo/OptimizedCorrelator.h])
-AX_PKG(VW_CAMERA,         [BOOST], [-lvwCamera],      [vw/Camera/CAHVModel.h])
-AX_PKG(VW_CARTOGRAPHY,    [BOOST], [-lvwCartography], [vw/Cartography/GeoReference.h])
-AX_PKG(VW_INTEREST_POINT, [BOOST], [-lvwInterestPoint])
 
 AX_PKG(CUDA,              [],      [-lcuda -lcudart], [cuda.h])
 AX_PKG(PORTAUDIO,         [],      [-lportaudio], [portaudio.h])
@@ -125,22 +99,12 @@ AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG(LO,         [],      [-llo], [lo/lo.h])
 AX_PKG(SDL,        [],      [-lSDL], [SDL.h])
 
-AX_PKG_ONE_OF(CG,
-  APPLE_CG,
-    [AX_PKG_APPLE(CG, [], [-framework Cg])],
-  LINUX_CG,
-    [AX_PKG(LINUX_CG,       [],      [-lCg -lCgGL],     [Cg/cg.h])])
-
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
     [AX_PKG_APPLE([GL], [], [-framework OpenGL -framework GLUT -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib])],
   LINUX_GL,
     [AX_PKG(X11, [], [-lXext -lX11 -lXmu -lXi -lXt], [])
      AX_PKG(LINUX_GL, [X11], [-lGL -lGLU -lglut], [GL/gl.h GL/glu.h GL/glut.h], [])])
-
-# AX_PKG(OPENSCENEGRAPH, [GL], [-losg -losgDB -lOpenThreads -losgViewer -losgText -losgGA -losgFX -losgTerrain -losgUtil], [osg/ref_ptr])
-# AX_PKG(SPICE, [], [-lcspice], [SpiceUsr.h SpiceZfc.h])
-
 
 # Qt with AutoTroll.
 AT_WITH_QT([+gui +sql +opengl], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])
@@ -167,9 +131,8 @@ AX_PKG_ONE_OF(QT,
 
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
-AX_GROUP_PKG(VW_ALL,       [VW VW_CAMERA VW_CARTOGRAPHY VW_STEREO VW_INTEREST_POINT])
 
-AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE VW_IMAGE QT PORTAUDIO APPLE_COREMIDI LO])
+AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE QT PORTAUDIO LO])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.

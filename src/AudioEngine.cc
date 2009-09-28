@@ -23,18 +23,21 @@ AudioThread::AudioThread(int sample_rate) {
 
   // TODO: Use this code someday to select audio inputs
   //
-  // const PaDeviceInfo *deviceInfo;
-  // for(int i=0; i<numDevices; i++ ) {
-  //   deviceInfo = Pa_GetDeviceInfo( i );
-  //   std::cout << "\t    Found " << deviceInfo->name << "\n";
+  const PaDeviceInfo *deviceInfo;
+  for(int i=0; i<numDevices; i++ ) {
+    deviceInfo = Pa_GetDeviceInfo( i );
+    std::cout << "\t    Found " << deviceInfo->name << "\n";
   //   if (std::string(deviceInfo->name) == "FireWire 410 Multichannel") {
   //     std::cout << "\t -->" << input_parameters.device << "\n";
   //     std::cout << "\t -->Overriding default audio input with " << deviceInfo->name << "\n";
   //     input_parameters.device = i;
   //   }
-  // }
+  }
+
 
   input_parameters.device = Pa_GetDefaultInputDevice(); // default input device 
+  std::cout << "\t    Using audio input: " 
+            << Pa_GetDeviceInfo(input_parameters.device)->name << "\n";
   input_parameters.channelCount = NUM_CHANNELS;         // stereo input 
   input_parameters.sampleFormat = paFloat32;
   input_parameters.suggestedLatency = Pa_GetDeviceInfo( input_parameters.device )->defaultLowInputLatency;

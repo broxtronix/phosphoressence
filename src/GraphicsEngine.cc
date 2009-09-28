@@ -18,7 +18,9 @@
 #else // Linux
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
 #endif 
+
 #include <QtGui>
 //#include <cuda.h>
 
@@ -29,6 +31,7 @@
 using namespace vw;
 
 #include <GraphicsEngine.h>
+#include <GpuProgram.h>
 #include <PeParameters.h>
 using namespace vw::GPU;
 
@@ -41,8 +44,8 @@ using namespace vw::GPU;
 
 
 // Switch from uin8 to floating point textures
-#define PE_GL_FORMAT GL_RGBA16F_ARB
-//#define PE_GL_FORMAT GL_RGBA
+//#define PE_GL_FORMAT GL_RGBA16F_ARB
+#define PE_GL_FORMAT GL_RGBA
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -130,7 +133,7 @@ void GraphicsEngine::drawImage() {
   // JavaScript VM, allowing them to update parameters if they would
   // like.
   pe_script_engine().set_parameter("aspect", m_aspect);
-  pe_script_engine().execute("pe_render()");
+  pe_script_engine().execute("pe_animate()");
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -189,75 +192,9 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
-  // -----------------------
-  // Outer & Inner Border
-  // ----------------------
-  drawBorders();
+  // Call the python environment and allow it to render whatever it wants using PyOpenGL
+  pe_script_engine().execute("pe_render()");
 
-  // -----------------------
-  // Wave Shape
-  // ----------------------
-  if (pe_script_engine().get_parameter("square_a") ) {
-    glLoadIdentity();
-    float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
-    float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;
-    glTranslatef(wave_x, wave_y, 0);
-
-    float f = pe_script_engine().get_parameter("square_frequency");
-    Matrix2x2 rotation;
-    double theta = (pe_time()*f*2*M_PI);
-    rotation(0,0) = cos(theta);
-    rotation(0,1) = sin(theta);
-    rotation(1,0) = -sin(theta);
-    rotation(1,1) = cos(theta);
-
-    Matrix<double,2,4> shape_vertices;
-    float square_scale = pe_script_engine().get_parameter("square_scale");
-    shape_vertices(0,0) = -0.25 * square_scale;
-    shape_vertices(1,0) = -0.25 * square_scale;
-    shape_vertices(0,1) = -0.25 * square_scale;
-    shape_vertices(1,1) = 0.25 * square_scale;
-    shape_vertices(0,2) = 0.25 * square_scale;
-    shape_vertices(1,2) = 0.25 * square_scale;
-    shape_vertices(0,3) = 0.25 * square_scale;
-    shape_vertices(1,3) = -0.25 * square_scale;
-  
-    Matrix<double,2,4> vertices = rotation*shape_vertices;
-  
-    glLineWidth(pe_script_engine().get_parameter("square_thick"));
-    glPointSize(pe_script_engine().get_parameter("square_thick")/2.0);
-      
-    float wave_r = pe_script_engine().get_parameter("square_r");
-    float wave_g = pe_script_engine().get_parameter("square_g");
-    float wave_b = pe_script_engine().get_parameter("square_b");
-    float wave_a = pe_script_engine().get_parameter("square_a");
-    vw::Vector3 color(wave_r, wave_g, wave_b);
-    vw::Vector3 norm_color = color;
-    if (pe_script_engine().get_parameter("wave_brighten")) 
-      norm_color = vw::math::normalize(color);
-    glColor4f(norm_color[0] , norm_color[1], norm_color[2], wave_a );
-
-    glEnable(GL_LINE_SMOOTH);
-
-    // We will draw the image as a texture on this quad.
-    glBegin(GL_LINES);
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glEnd();
-
-    glBegin(GL_POINTS);
-    glVertex2f( vertices(0,0), vertices(1,0) );
-    glVertex2f( vertices(0,1), vertices(1,1) );
-    glVertex2f( vertices(0,2), vertices(1,2) );
-    glVertex2f( vertices(0,3), vertices(1,3) );
-    glEnd();
-  }
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
@@ -318,7 +255,7 @@ void GraphicsEngine::drawImage() {
   float h_texture = 0.5 * 1.0/m_framebuffer_radius;      // r_texture * ( h_object / r_object )
 
   //  We will draw the image as a texture on this quad.
-  qglColor(Qt::white);
+  qglColor(Qt::blue);
   glBegin(GL_QUADS);
   glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
   glVertex2d( -m_aspect, -1.0);
@@ -332,7 +269,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-  m_gpu_backbuffer_program->uninstall();
+  m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {
     char fps_cstr[255];
@@ -342,7 +279,7 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  this->swapBuffers();
+  //  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -462,9 +399,10 @@ void GraphicsEngine::initializeGL() {
   // Set up the GLSL fragment shader.
   std::string resources_dir = pe_resources_directory();
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
-  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl",
-                                                std::vector<int>(),
-                                                resources_dir + "/shaders/backbuffer_vertex.glsl");
+  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
+//                                                 std::vector<int>(),
+//                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
+//                                                 std::vector<int>());
 
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -496,14 +434,14 @@ void GraphicsEngine::initializeGL() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  // Uncomment to get rid of the flicker!
-// #ifdef __APPLE__
-//   AGLContext aglContext;
-//   aglContext = aglGetCurrentContext();
-//   GLint swapInt = 1;
-//   aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-//   this->setAutoBufferSwap(false);
-// #endif
+  // Uncomment to get rid of the tearing (i.e. tearing)!
+#ifdef __APPLE__
+  // AGLContext aglContext;
+  // aglContext = aglGetCurrentContext();
+  // GLint swapInt = 1;
+  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  this->setAutoBufferSwap(false);
+#endif
 
   // Enable hardware anti-aliasing
   glEnable(GL_MULTISAMPLE);
@@ -515,7 +453,7 @@ void GraphicsEngine::initializeGL() {
   // Now that GL is setup, we can start the Qt Timer
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(10.0); 
+  m_timer->start(33.0); // Limit frame rate to ~30 fps
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
@@ -689,14 +627,14 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
   
   switch (event->key()) {
   case Qt::Key_Left: 
-    pe_script_engine().execute("pe_presets.prev_preset();");
+    pe_script_engine().execute("PePreset.prev_preset();");
     break;
   case Qt::Key_Right:  
-    pe_script_engine().execute("pe_presets.next_preset();");
+    pe_script_engine().execute("PePreset.next_preset();");
     break;
 
   case Qt::Key_R:  
-    pe_script_engine().execute("pe_presets.random_preset();");
+    pe_script_engine().execute("PePreset.random_preset();");
     break;
 
   case Qt::Key_Up:  

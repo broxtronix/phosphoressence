@@ -10,12 +10,22 @@ class OscController(object):
 
     def __init__(self):
         pass
-        # # Set up some basic control bindings
-        # pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
-        # pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
-        # pe_bindings.add(self, "/1/xy/1", "rot", 0.785, -0.785, 0.0)
-        # #pe_bindings.add(self, "/1/fader2", "warp", 0.0, 2.0, 0.0)
-        # #pe_bindings.add(self, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10")
+        # Set up some basic control bindings
+#        pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
+#        pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
+#        pe_bindings.add(self, "/1/xy/1", "rot", 0.785, -0.785, 0.0)
+##        pe_bindings.add(self, "/1/fader2", "warp", 0.0, 2.0, 0.0)
+##        pe_bindings.add(self, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10")
+#        pe_bindings.add(self, "/2/fader1", "q1", 0.0, 0.5, 1.0)
+#        pe_bindings.add(self, "/2/fader2", "q2", 0.0, 0.5, 0.5)
+#        pe_bindings.add(self, "/2/fader3", "q3", 0.0, 1.0, 0.0260)
+#        pe_bindings.add(self, "/2/fader4", "q4", 0.0, 1.0, 0.0530)
+#        pe_bindings.add(self, "/2/fader5", "q5", 0.0, 1.0, 0.0)
+#        pe_bindings.add(self, "/2/fader6", "q6", 0.0, 1.0, 0.0)
+#        pe_bindings.add(self, "/2/fader7", "q7", 0.0001, 0.01, 0.0004)
+#        pe_bindings.add(self, "/2/fader8", "q8", 0.0, 100.0, 0.0)
+
+
         # pe_bindings.add(self, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0)
         # pe_bindings.add(self, "/1/fader4", "zoomexp", 0.25, 5.0, 1.0, "log10")  
         # pe_bindings.add(self, "/1/push1", "ib_size", 0, 0, 0)  
@@ -65,7 +75,7 @@ class OscController(object):
 
     def receive_callback(self, path, value):
         #        if (DEBUG):
-        # print("[OSC]    Path: " + path + "   Value: " + str(value))
+        print("[OSC]    Path: " + path + "   Value: " + str(value))
         pe_bindings.controller_to_parameter(self, path, value)
     
     def render_callback(self): 
@@ -81,14 +91,10 @@ class JoystickController(object):
 
         self.JOY_DEBUG = joystick_debug
 
-        # Langton bEATS
-        pe_bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.05, 0.98, "log10")
-        pe_bindings.add(self, "/joystick0/axis4", "warp", 2.0, 0.0, 0.0)
-        #pe_bindings.add(self, "/joystick0/axis5", "warp_scale", 0.25, 2.0)
-        #pe_bindings.add(self, "/joystick0/axis4", "kaleidoscope_radius", 0.0, 2.0, 0.5)
-        pe_bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
-        #pe_bindings.add(self, "/joystick0/axis4", "echo_zoom", 0.0, 2.0, 1.0)
-
+        # Priceless
+        pe_bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
+        pe_bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
+        pe_bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -116,8 +122,8 @@ class JoystickController(object):
         pe.mv_x = 36
         pe.mv_y = 36
         pe.mv_l = 0
-        pe.rot = -0.001
-        pe.sx=0.999
+#        pe.rot = -0.001
+#        pe.sx=0.999
         pe.kaleidoscope_radius=0.05
         
 
@@ -290,8 +296,10 @@ class JoystickController(object):
 
         # Reset center of rotation, scaling, and zoom exponent
         if (path == "/joystick0/button5" and value == 1.0): 
-            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
-            else: pe.set_control_value('wave_usedots', 1.0)
+            if (pe.invert): pe.set_control_value('invert', 0.0)
+            else: pe.set_control_value('invert', 1.0)
+#            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
+#            else: pe.set_control_value('wave_usedots', 1.0)
 
 #        if (path == "/joystick0/button5" and value == 1.0): 
 #            if (pe.invert): pe.set_control_value('invert', 0.0)
@@ -299,14 +307,14 @@ class JoystickController(object):
 
 
         # Warp
-        if (path == "/joystick0/button0" and value == 1.0):
-            self.warp_coefficient = 1.0
-        if (path == "/joystick0/button0" and value == 0.0):
-            self.warp_coefficient = 0.0
-        if (path == "/joystick0/button6" and value == 1.0):
-            self.warp_coefficient = -1.0
-        if (path == "/joystick0/button6" and value == 0.0): 
-            self.warp_coefficient = 0.0
+        # if (path == "/joystick0/button0" and value == 1.0):
+        #     self.warp_coefficient = 1.0
+        # if (path == "/joystick0/button0" and value == 0.0):
+        #     self.warp_coefficient = 0.0
+        # if (path == "/joystick0/button6" and value == 1.0):
+        #     self.warp_coefficient = -1.0
+        # if (path == "/joystick0/button6" and value == 0.0): 
+        #     self.warp_coefficient = 0.0
 
 
         # Wave mode
@@ -411,5 +419,7 @@ class JoystickController(object):
         pe.sx = 1
         pe.sy = 1
         pe.zoomexp = 1
-        
+
+
+
 

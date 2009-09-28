@@ -30,8 +30,13 @@
 #include <string>
 #include <list>
 
-#include <GpuProgram.h>
 #include <ScriptEngine.h>
+
+// Forward declarations
+namespace vw { 
+namespace GPU {
+  class GpuProgram; 
+}}
 
 class QMouseEvent;
 class QWheelEvent;
@@ -145,7 +150,6 @@ private:
   // Graphic Elements (see GraphicElements.cc for imlementations)
   void drawFeedback();
   void drawDarkenCenter();
-  void drawBorders();
   void drawVectorField();
   void draw_milkdrop_waves();
   

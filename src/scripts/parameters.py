@@ -54,14 +54,14 @@ class Parameter(object):
 # Bring in the read only parameters which are exposed through the
 # c/python bridge and loaded into the module space by ScriptEngine.cc
 try:
-    import pe_readonly_bindings
+    import pe_cpp_bridge
 except:
     # If we are running the python environment in "debug mode" without
     # the C code at the same time, we have to spoof a few things,
     # including the pe_readonly_bindings module.
-    class PeReadonlyBindingsDummy:
+    class PeCppBridgeDummy:
         def pe_time(self, value): return 0.0;
-    pe_readonly_bindings = PeReadonlyBindingsDummy()
+    pe_cpp_bridge = PeCppBridgeDummy()
 
 
 # --------------------------------------------------------------
@@ -119,7 +119,7 @@ class PhosphorEssence(object):
         pass
 
     # The time parameter is special, so we bind it by hand.
-    time = property(pe_readonly_bindings.pe_time, set_read_only)    
+    time = property(pe_cpp_bridge.pe_time, set_read_only)    
 
     # ------------------------- --------- ---------------------------
 
