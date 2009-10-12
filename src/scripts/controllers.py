@@ -124,7 +124,7 @@ class JoystickController(object):
         pe.mv_l = 0
 #        pe.rot = -0.001
 #        pe.sx=0.999
-        pe.kaleidoscope_radius=0.05
+        pe.kaleidoscope_radius=0.15
         
 
     def receive_callback(self, path, value): 
@@ -154,6 +154,7 @@ class JoystickController(object):
             pe.set_control_value('wave_mode', 2)
             pe.set_control_value('wave_enabled',1.0)
             pe.set_control_value('square_a',1.0)
+            pe.set_control_value('ib_size',10.0)
     
         # Waveshape Enable
         if (path == "/joystick0/button0" and value == 1):

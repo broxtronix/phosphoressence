@@ -35,11 +35,11 @@ MainWindow::MainWindow() {
 
   // Set up the basic layout of the window and its menus
   create_actions();
-  create_menus();
+  // create_menus();
 
   // Maximize the main window
-  this->showMaximized();
-  //this->showFullScreen();
+  //this->showMaximized();
+  this->showFullScreen();
 }
 
 //********************************************************************

@@ -427,7 +427,7 @@ pe.register(Parameter( name = "ob_a",
 pe.register(Parameter( name = "ib_size",
            description = "0..0.5 thickness of the outer border drawn " +
            "at the edges of the screen every frame", 
-           default_value = 0.25))
+           default_value = 10.0))
 
 pe.register(Parameter( name = "ib_r",
            description = "0..1   amount of red color in the outer border",
@@ -609,7 +609,7 @@ pe.register(Parameter( name = "kaleidoscope",
 
 pe.register(Parameter( name = "kaleidoscope_radius",
            description = "Set the radius for the kaleidoscope effect.",
-           default_value = 0.0))
+           default_value = 0.15))
 
 pe.register(Parameter( name = "wave_move",
            description = "Cause the wave shapes to move.",
