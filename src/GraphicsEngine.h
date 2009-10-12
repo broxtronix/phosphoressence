@@ -30,6 +30,11 @@
 #include <string>
 #include <list>
 
+// ShivaVG
+#include <vg/openvg.h>
+#include <vg/vgu.h>
+
+// PhosphorEssence
 #include <ScriptEngine.h>
 
 // Forward declarations
@@ -157,7 +162,7 @@ private:
   GLuint m_feedback_texture;
   GLuint m_feedback_pbo;
   GLuint m_framebuffer_texture0;
-  GLuint m_framebuffer_texture1;
+  GLuint m_framebuffer_stencil0;
   GLuint m_framebuffer;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
@@ -190,6 +195,13 @@ private:
   
   // Image Parameters
   vw::BBox2 m_current_viewport;
+
+  // Testing ShivaVG
+  VGPath m_iApple;
+  VGPath m_iPear;
+  VGPath m_iMorph;
+  VGPaint m_fill;
+
 };
 
 #endif  // __GRAPHICS_ENGINE_H__
