@@ -42,10 +42,125 @@ using namespace vw::GPU;
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
+// ShivaVG
+#include <vg/openvg.h>
+#include <vg/vgu.h>
+
 
 // Switch from uin8 to floating point textures
 //#define PE_GL_FORMAT GL_RGBA16F_ARB
 #define PE_GL_FORMAT GL_RGBA
+
+// VGPath testCreatePath() {
+//   return vgCreatePath(VG_PATH_FORMAT_STANDARD, VG_PATH_DATATYPE_F,
+//                       1,0,0,0, VG_PATH_CAPABILITY_ALL);
+// }
+
+// void testMoveTo(VGPath p, float x, float y, VGPathAbsRel absrel)
+// {
+//   VGubyte seg = VG_MOVE_TO | absrel;
+//   VGfloat data[2];
+  
+//   data[0] = x; data[1] = y;
+//   vgAppendPathData(p, 1, &seg, data);
+// }
+
+// void testLineTo(VGPath p, float x, float y, VGPathAbsRel absrel)
+// {
+//   VGubyte seg = VG_LINE_TO | absrel;
+//   VGfloat data[2];
+  
+//   data[0] = x; data[1] = y;
+//   vgAppendPathData(p, 1, &seg, data);
+// }
+
+// void testClosePath(VGPath p)
+// {
+//   VGubyte seg = VG_CLOSE_PATH;
+//   VGfloat data = 0.0f;
+//   vgAppendPathData(p, 1, &seg, &data);
+// }
+
+
+// void createApple(VGPath p)
+// {
+//   VGPath temp;
+  
+//   VGubyte segs[] = {
+//     VG_MOVE_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS,
+//     VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS,
+//     VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CLOSE_PATH,
+//     VG_MOVE_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CLOSE_PATH };
+  
+//   VGfloat data[] = {
+//     1.53125,-44.681982, -3.994719,-44.681982, -8.0085183,-50.562501,
+//     -26.5625,-50.562501, -42.918439,-50.562501, -56.46875,-34.239393,
+//     -56.46875,-12.187501, -56.46875,26.520416, -34.65822,61.731799,
+//     -16.84375,61.812499, -7.1741233,61.812499, -2.9337937,55.656199,
+//     4.15625,55.656199, 11.746294,55.656199, 17.981627,62.281199,
+//     25.4375,62.281199, 33.88615,62.281199, 50.53251,44.282999,
+//     58.75,15.718799, 47.751307,9.086518, 40.999985,-0.228074,
+//     41,-13.046574, 41,-27.849147, 46.64686,-34.763001,
+//     52.4375,-39.937501, 46.111827,-47.219094, 39.0413,-50.503784,
+//     29.09375,-50.446384, 11.146487,-50.342824, 8.6341912,-44.681982,
+//     1.53125,-44.681982,
+    
+//     0.23972344,-52.075169, -2.8344902,-69.754133, 5.9303785,-81.915323,
+//     24.152707,-86.881406, 23.71828,-70.367255, 15.114064,-58.365865,
+//     0.23972344,-52.075169 };
+  
+//   temp = testCreatePath();
+//   vgAppendPathData(temp, sizeof(segs), segs, data);
+
+//   vgSeti(VG_MATRIX_MODE, VG_MATRIX_PATH_USER_TO_SURFACE);
+//   vgLoadIdentity();
+//   vgScale(1,-1);
+//   vgTransformPath(p, temp);
+//   vgDestroyPath(temp);
+// }
+
+// void createPear(VGPath p)
+// {
+//   VGPath temp;
+  
+//   VGubyte segs[] = {
+//     VG_MOVE_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS,
+//     VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS,
+//     VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CLOSE_PATH,
+//     VG_MOVE_TO_ABS, VG_CUBIC_TO_ABS, VG_CUBIC_TO_ABS, VG_CLOSE_PATH };
+  
+//   VGfloat data[] = {
+//     0.0625,-90.625001, -29.44062,-89.191161, -23.07159,-32.309301,
+//     -30.5625,-14.062501, -38.29681,4.7771994, -56.8077,20.767199,
+//     -56.46875,42.812499, -56.1298,64.502999, -40.15822,79.731799,
+//     -22.34375,79.812499, -4.17446,79.893199, -1.93369,71.113999,
+//     4.15625,71.156199, 10.49619,71.198499, 13.70293,80.336799,
+//     30.4375,80.281199, 42.49257,80.241199, 53.53251,70.782999,
+//     58.75,58.218799, 47.0442,54.768499, 38.5,43.943499,
+//     38.5,31.124999, 38.50001,22.754099, 42.14686,15.236999,
+//     47.9375,10.062499, 42.2834,1.5737994, 36.5413,-6.6199006,
+//     34.09375,-14.062501, 28.48694,-31.111801, 32.99356,-90.265511,
+//     1.5,-90.625001,
+    
+//     5.1056438,-97.8762, -12.766585,-99.48239, -22.244878,-111.09615,
+//     -22.325466,-129.98288, -6.486451,-125.28908, 2.8790668,-113.87186,
+//     5.1056438,-97.8762 };
+  
+//   temp = testCreatePath();
+//   vgAppendPathData(temp, sizeof(segs), segs, data);
+
+//   vgSeti(VG_MATRIX_MODE, VG_MATRIX_PATH_USER_TO_SURFACE);
+//   vgLoadIdentity();
+//   vgScale(1,-1);
+//   vgTransformPath(p, temp);
+//   vgDestroyPath(temp);
+// }
+
+// void createMorph(VGPath iApple, VGPath iPear, VGPath iMorph, VGfloat amount) {
+//   vgClearPath(iMorph, VG_PATH_CAPABILITY_ALL);
+//   vgInterpolatePath(iMorph, iApple, iPear, amount);
+// }
+
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -107,11 +222,10 @@ GraphicsEngine::~GraphicsEngine() {
 
   // De-allocate feedback texture and PBO
   glDeleteTextures(1, &m_feedback_texture);
-  //  glDeleteBuffers(1, &m_feedback_pbo);
 
   // De-allocate any previously allocated textures or framebuffers
   glDeleteTextures(1, &m_framebuffer_texture0);
-  glDeleteTextures(1, &m_framebuffer_texture1);
+  //  glDeleteTextures(1, &m_framebuffer_stencil0);
   glDeleteFramebuffersEXT(1, &m_framebuffer);
 }
 
@@ -150,7 +264,7 @@ void GraphicsEngine::drawImage() {
 
   // Set the background color and viewport.
   qglClearColor(QColor(0, 0, 0)); // Black Background
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
 
   // Set up the orthographic view of the scene.  The exact extent of
@@ -194,7 +308,6 @@ void GraphicsEngine::drawImage() {
 
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
   pe_script_engine().execute("pe_render()");
-
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
@@ -279,7 +392,7 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  //  this->swapBuffers();
+  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -347,51 +460,12 @@ void GraphicsEngine::saveFeedback() {
   // Activate the framebuffer.  All of the following steps pull data
   // from the framebuffer rather than the main screen.
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
-  // glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-  // glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
-  // -------------------------------------------
-  // Old Code for saving the feedback texture...
-  // -------------------------------------------
+  // Copy the contents of the framebuffer into the feedback texture.
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, m_framebuffer_width, m_framebuffer_height, 0);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, 
+                   m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
-
-  // -- Save Feedback --
-  // glBindBuffer(GL_PIXEL_PACK_BUFFER, m_feedback_pbo);
-  // glReadPixels(0,0,m_framebuffer_width,m_framebuffer_height,GL_BGRA,GL_UNSIGNED_BYTE,NULL);
-  // glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-
-  // -- Debug --
-  // vw::uint8* data = (vw::uint8*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-  // uint8 lo, hi;
-  // ImageView<PixelRGBA<uint8> > view(m_framebuffer_width, m_framebuffer_height);
-  //  int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
-  // memcpy(view.data(), data, size);
-  // min_max_channel_values(view,lo,hi);
-  // std::cout << "Writing a frame: " << int(lo) << " " << int(hi) << "\n";
-  // write_image("test.tif", view);
-  // glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-  // Thread::sleep_ms(2000);
-  // -- Debug --
-  
-  // -- CUDA --
-  // pboRegister(m_feedback_pbo);
-  // copy_image(m_feedback_pbo, m_framebuffer_width, m_framebuffer_height);
-
-  // According to the CUDA API reference, you must unbind the buffer
-  // object before writing to it.  You can rebind it immediately
-  // afterwards.  (Todo: Test this??)
-  //  pboUnregister(m_feedback_pbo);
-
-  // glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_feedback_pbo);
-  // glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 
-  //                 m_framebuffer_width, m_framebuffer_height,
-  //                 GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-  // glBindTexture(GL_TEXTURE_2D, 0);
-  // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 
 void GraphicsEngine::initializeGL() {  
@@ -422,17 +496,18 @@ void GraphicsEngine::initializeGL() {
 
   // Create the framebuffer & framebuffer texture
   glGenFramebuffersEXT(1, &m_framebuffer);
+
+  // Create the main framebuffer texture
   glGenTextures(1, &m_framebuffer_texture0);
-  glGenTextures(1, &m_framebuffer_texture1);
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
-  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Create the main stencil texture
+  //glGenTextures(1, &m_framebuffer_stencil0);
+  glGenRenderbuffersEXT(1, &m_framebuffer_stencil0);
 
   // Uncomment to get rid of the tearing (i.e. tearing)!
 #ifdef __APPLE__
@@ -445,7 +520,7 @@ void GraphicsEngine::initializeGL() {
 
   // Enable hardware anti-aliasing
   glEnable(GL_MULTISAMPLE);
-  
+
   // Set the grid size
   pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
   pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
@@ -466,53 +541,51 @@ void GraphicsEngine::resizeGL(int width, int height) {
   m_aspect = float(m_viewport_width) / m_viewport_height;
   m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
 
-  // Compute framebuffer dimensions.  The framebuffer is a square that
-  // circumscribes the circle that circumscribes the rectangle of the
-  // viewport.  (Did you follow that?)  (Though, for now we override
-  // this with a fixed size defined above.)
-  //
-  //  m_framebuffer_width = int( roundf(sqrtf(powf(m_viewport_width,2) + powf(m_viewport_height,2))) );
+  // Set the framebuffer dimensions.  
   m_framebuffer_width = FRAMEBUFFER_SIZE;
-  m_framebuffer_height = m_framebuffer_width;  
+  m_framebuffer_height = FRAMEBUFFER_SIZE;
 
+  //------------------------------------
+  // Setup the OpenVG rendering engine
+  //------------------------------------
+  vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
+  
   //------------------------------------
   // Set up the framebuffer and textures
   //------------------------------------
-
-  // De-allocate any previously allocated textures or framebuffers
-  // glDeleteBuffers(1, &m_feedback_pbo);
-
   int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
-  // std::cout << "Framebuffer Dimensions: " 
-  //           << m_framebuffer_width << " " << m_framebuffer_height 
-  //           << "   (" << size << " bytes)\n";
-
-  // Allocate two pixel buffer object to store (and modify) the
-  // feedback texture.  One of these is the input into the cuda
-  // shaders, and one is the output.
-  // cudaGLSetGLDevice ( 0 );
-  // glGenBuffers(1, &m_feedback_pbo);
-  // glBindBuffer(GL_ARRAY_BUFFER, m_feedback_pbo);
-  // glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_COPY);
-  // glBindBuffer(GL_ARRAY_BUFFER, 0);
-  // pboRegister(m_feedback_pbo);
 
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+
+  // Bind the main texture to the framebuffer
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
   glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
                m_framebuffer_width, m_framebuffer_height, 
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
-  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
-               m_framebuffer_width, m_framebuffer_height, 
-               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
-                            GL_TEXTURE_2D, m_framebuffer_texture1, 0);
-  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-  glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+
+  // Bind the stencil buffer to the framebuffer
+  // glBindTexture(GL_TEXTURE_2D, m_framebuffer_stencil0);
+  // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, 
+  //              m_framebuffer_width, m_framebuffer_height, 
+  //              0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
+  // glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+  //                           GL_TEXTURE_2D, m_framebuffer_stencil0, 0);
+  // glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+  //                           GL_TEXTURE_2D, m_framebuffer_stencil0, 0);
+
+
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, 
+                           m_framebuffer_width, m_framebuffer_height);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_DEPTH_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_STENCIL_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+
+  // Make sure that the framebuffer is correctly configured.
   GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
   if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
     vw_throw(vw::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
