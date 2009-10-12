@@ -63,7 +63,7 @@ def pe_animate():
         # Update osc parameters
         #	 osc.render_callback()
 
-        # Cycle through OB colors
+        # Cycle through IB colors
         pe.ib_r = 0.5
         pe.ib_g = 0.5
         pe.ib_b = 0.5

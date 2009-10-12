@@ -6,6 +6,14 @@
 Installation, short version
 ===========================
 
+Prerequisites:
+  - boost
+  - sdl
+  - Vision Workbench
+  - liblo
+  - portaudio
+  - qt4
+
 ./configure
 make
 make install

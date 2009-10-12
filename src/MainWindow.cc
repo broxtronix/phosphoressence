@@ -27,9 +27,11 @@ MainWindow::MainWindow() {
   // Set up GraphicsEngine
   QGLFormat gl_frmt = QGLFormat::defaultFormat();
   gl_frmt.setSampleBuffers(true);
+  gl_frmt.setSamples(16);
+
   gl_frmt.setDoubleBuffer(true);
-  //  gl_frmt.setSamples(16);
-  gl_frmt.setSwapInterval(0);
+  gl_frmt.setSwapInterval(1);
+
   m_graphics_engine = new GraphicsEngine(this, gl_frmt);
   setCentralWidget(m_graphics_engine);
 
