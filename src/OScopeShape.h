@@ -84,9 +84,13 @@ public:
       while (m_data.read_index != m_data.write_index) {
         if (idx < AUDIO_SAMPLE_RATE) {
           x_cache[idx] = old_x + f*(2.0*aspect*M_PI/AUDIO_SAMPLE_RATE);
-          if (x_cache[idx] > aspect) x_cache[idx] -= 2.0*aspect;
           left_cache[idx] = *data_ptr++/2.0;   // left audio channel
           right_cache[idx] = *data_ptr++/2.0;  // right audio channel
+
+          // Retrace the scope only if the signal is positive.  This
+          // should give us some rudimentary triggering.
+          if (x_cache[idx] > aspect && left_cache[idx] > 0) 
+            x_cache[idx] -= 2.0*aspect;
           old_x = x_cache[idx];
           ++idx;
         } 
