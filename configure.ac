@@ -98,7 +98,6 @@ AX_PKG(PORTAUDIO,         [],      [-lportaudio], [portaudio.h])
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG(LO,         [],      [-llo], [lo/lo.h])
 AX_PKG(SDL,        [],      [-lSDL], [SDL.h])
-AX_PKG(OPENVG,        [],      [-lOpenVG], [vg/openvg.h])
 
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
@@ -106,6 +105,8 @@ AX_PKG_ONE_OF(GL,
   LINUX_GL,
     [AX_PKG(X11, [], [-lXext -lX11 -lXmu -lXi -lXt], [])
      AX_PKG(LINUX_GL, [X11], [-lGL -lGLU -lglut], [GL/gl.h GL/glu.h GL/glut.h], [])])
+
+AX_PKG(OPENVG,        [GL],      [-lOpenVG], [vg/openvg.h])
 
 # Qt with AutoTroll.
 AT_WITH_QT([+gui +sql +opengl], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])

@@ -27,7 +27,7 @@ class TestSprite(object):
     
     def render(self):
 
-        VG.set(VG_STROKE_LINE_WIDTH, 4.0)
+        VG.set(VG_STROKE_LINE_WIDTH, pe.q1)
                 
         fill_paint = VG.ColorPaint((0.0, 1.0, 1.0, 1.0))
         stroke_paint = VG.ColorPaint((  0.65 + 0.350*( 0.60*math.sin(0.742*pe.time) + 
@@ -55,7 +55,7 @@ class TestSprite(object):
         VG.scale(0.001, 0.001)
         p.draw(VG_STROKE_PATH);
 
-        if random()<.001:
+        if random()<.01:
             self.at = 0
 
         if self.x<-1000 or self.x>1000 or self.y<-1000 or self.y>1000:

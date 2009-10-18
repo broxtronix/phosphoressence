@@ -35,7 +35,7 @@ if MAKE_APP_PHOSPHORESSENCE
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 
-AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/Users/mbroxton/local/include -I/Users/mbroxton/local/include/SDL
+AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/Users/mbroxton/local/include -I/Users/mbroxton/local/include/SDL -I/usr/include/SDL
 AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation
 
 ##############################################################################
