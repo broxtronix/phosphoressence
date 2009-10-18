@@ -55,7 +55,7 @@ class TestSprite(object):
         VG.scale(0.001, 0.001)
         p.draw(VG_STROKE_PATH);
 
-        if random()<.001:
+        if random()<.01:
             self.at = 0
 
         if self.x<-1000 or self.x>1000 or self.y<-1000 or self.y>1000:
