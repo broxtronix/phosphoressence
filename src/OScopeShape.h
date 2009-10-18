@@ -87,10 +87,11 @@ public:
           left_cache[idx] = *data_ptr++/2.0;   // left audio channel
           right_cache[idx] = *data_ptr++/2.0;  // right audio channel
 
-          // Retrace the scope only if the signal is positive.  This
-          // should give us some rudimentary triggering.
-          if (x_cache[idx] > aspect && left_cache[idx] > 0) 
-            x_cache[idx] -= 2.0*aspect;
+          // Retrace the scope only if the signal is close to zero.
+          // This should give us some rudimentary triggering.
+          if (x_cache[idx] > aspect 
+              && fabs(left_cache[idx]) < 0.01) 
+            x_cache[idx] = -aspect;
           old_x = x_cache[idx];
           ++idx;
         } 
