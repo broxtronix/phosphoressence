@@ -31,7 +31,11 @@ joystick = JoystickController(JOY_DEBUG)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pass
+    pe.square_a = 0
+    pe.wave_a = 0
+    pe.echo_alpha = 0
+#    pass
+
 
     # Load Milkdrop Presets & Bookmarks
     # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
@@ -117,3 +121,9 @@ def pe_animate():
 # This method is called by the GraphicsEngine as it renders each frame.
 def pe_render():
     pe_graphics.render()
+
+def pe_render_back():
+    pe_graphics.render_back()
+
+def pe_render_bg():
+    pe_graphics.render_bg()

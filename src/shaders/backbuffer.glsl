@@ -291,7 +291,7 @@ void main() {
     g = vec4(decay, decay, decay, 1.0);
   else
     // But when less than 1.0, we only fade out the luminance channel
-    g = vec4(1.0, 1.0, decay, 1.0);
+    g = vec4(1.0, 1.0, decay, decay); // XXX
 
   vec4 hsv_texel = g * rgb_to_hsv(src);
   hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
