@@ -27,7 +27,7 @@ class TestSprite(object):
     
     def render(self):
 
-        VG.set(VG_STROKE_LINE_WIDTH, pe.q1)
+        VG.set(VG_STROKE_LINE_WIDTH, pe.treb*10000)
                 
         fill_paint = VG.ColorPaint((0.0, 1.0, 1.0, 1.0))
         stroke_paint = VG.ColorPaint((  0.65 + 0.350*( 0.60*math.sin(0.742*pe.time) + 
