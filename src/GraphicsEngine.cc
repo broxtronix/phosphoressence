@@ -22,7 +22,6 @@
 #endif 
 
 #include <QtGui>
-//#include <cuda.h>
 
 // Vision Workbench
 #include <vw/Image.h>
@@ -36,11 +35,6 @@ using namespace vw;
 using namespace vw::GPU;
 
 #include <fstream>
-
-#include <cuda.h>
-#include <cudaGL.h>
-#include <cuda_runtime_api.h>
-#include <cuda_gl_interop.h>
 
 // ShivaVG
 #include <vg/openvg.h>
