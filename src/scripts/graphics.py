@@ -8,6 +8,8 @@ from parameters import pe
 from shapes.bezier import *
 from shapes.test import *
 from shapes.polybouncer import *
+from shapes.wheelsprite import *
+from shapes.earthquakesprite import *
 #from shapes.vu_spirals import *
 
 class PeGraphics(object):
@@ -20,7 +22,18 @@ class PeGraphics(object):
     
     def render(self):
         for sprite in self.sprites:
-            sprite.render()
+            if hasattr(sprite, "render"):
+                sprite.render()
+
+    def render_back(self):
+        for sprite in self.sprites:
+            if hasattr(sprite, "render_back"):
+                sprite.render_back()
+
+    def render_bg(self):
+        for sprite in self.sprites:
+            if hasattr(sprite, "render_bg"):
+                sprite.render_bg()
 
 class SquareSprite(object):
     def render(self):
@@ -122,10 +135,13 @@ class BorderSprite(object):
 
             glDisable( GL_BLEND );
 
+
 # Instantiate the graphics object
 pe_graphics = PeGraphics()
 pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
+pe_graphics.register(WheelSprite())
+pe_graphics.register(EarthquakeSprite())
 #pe_graphics.register(BezierSprite())
 #pe_graphics.register(PolyBouncerSprite(5))
 #pe_graphics.register(TestSprite())

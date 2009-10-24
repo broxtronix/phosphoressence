@@ -258,7 +258,8 @@ void GraphicsEngine::drawImage() {
 
   // Set the background color and viewport.
   qglClearColor(QColor(0, 0, 0)); // Black Background
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
 
   // Set up the orthographic view of the scene.  The exact extent of
@@ -277,6 +278,7 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Start by drawing a black frame.
+  /*
   glColor4f(0.0,0.0,0.0,1.0);
   glBegin(GL_QUADS);
   glVertex2f( -m_framebuffer_radius, -m_framebuffer_radius);
@@ -284,6 +286,7 @@ void GraphicsEngine::drawImage() {
   glVertex2f( m_framebuffer_radius, m_framebuffer_radius);
   glVertex2f( -m_framebuffer_radius, m_framebuffer_radius);
   glEnd() ;
+  */
 
   // -----------------------
   // FEEDBACK TEXTURE 
@@ -316,11 +319,6 @@ void GraphicsEngine::drawImage() {
     }
   }
 
-  // ----------------- <Feedback> ----------------------
-
-  // Save the feedback texture 
-  saveFeedback();
-
   // -------------- <Render to Screen> -----------------
 
   // Make the real screen the OpenGL target
@@ -342,7 +340,13 @@ void GraphicsEngine::drawImage() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  // Let the script draw a background (that won't become part of the feedback)
+  pe_script_engine().execute("pe_render_bg()");
+  glLoadIdentity();
+
   // Draw the framebuffer to the real screen.
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
   glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
 
@@ -355,7 +359,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_frontbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
   m_gpu_frontbuffer_program->set_input_float("darken", pe_script_engine().get_parameter("darken"));
   m_gpu_frontbuffer_program->set_input_float("solarize", pe_script_engine().get_parameter("solarize"));
-        
+    
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.
   float w_texture = 0.5 * m_aspect/m_framebuffer_radius; // r_texture * ( w_object / r_object )
@@ -376,6 +380,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
+  glDisable(GL_BLEND);
   m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {
@@ -398,6 +403,24 @@ void GraphicsEngine::drawImage() {
 
   m_fps_last_time = new_time;
   pe_script_engine().set_parameter("frame", pe_script_engine().get_parameter("frame") + 1.0);
+
+  // ----------------- <Feedback> ----------------------
+
+  // Feedback-only rendering
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  glOrtho(-m_framebuffer_radius, m_framebuffer_radius, 
+          -m_framebuffer_radius, m_framebuffer_radius, 
+          -1.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  pe_script_engine().execute("pe_render_back()");
+
+  // Save the feedback texture 
+  saveFeedback();
 }
 
 void GraphicsEngine::drawLegend(QPainter* painter) {

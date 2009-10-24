@@ -57,9 +57,10 @@ void main() {
   }
 
   // Solarize
-  if (solarize == 1.0) 
+  if (solarize == 1.0) {
     final_texel = final_texel - (final_texel * neg_ones + ones);
-  final_texel.a = 1.0;
+    final_texel.a = 1.0;
+  }
     
   gl_FragColor = final_texel;
 }

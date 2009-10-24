@@ -95,7 +95,8 @@ class JoystickController(object):
         pe_bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
         pe_bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
         pe_bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
-#        pe_bindings.add(self, "/joystick0/axis2", "q1", 1.0, 100, 1.0)
+#        pe_bindings.add(self, "/joystick0/axis2", "q1", 0, 1.0, .5)
+ #       pe_bindings.add(self, "/joystick0/axis5", "q2", 0, 1.0, .5)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
