@@ -615,3 +615,8 @@ pe.register(Parameter( name = "wave_move",
            description = "Cause the wave shapes to move.",
            default_value = 0.0))
 
+
+
+pe.register(Parameter( name = "vg_mode",
+                       description = "",
+                       default_value = 0))

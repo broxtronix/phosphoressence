@@ -31,10 +31,7 @@ joystick = JoystickController(JOY_DEBUG)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pe.square_a = 0
-    pe.wave_a = 0
-    pe.echo_alpha = 0
-#    pass
+    pass
 
 
     # Load Milkdrop Presets & Bookmarks

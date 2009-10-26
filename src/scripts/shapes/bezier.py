@@ -34,33 +34,34 @@ class BezierSprite(object):
         
     
     def render(self):
-        speed = 0.3
-        start_point = [ math.cos(2*math.pi*0.42*speed*pe.time),  
-                        math.cos(2*math.pi*0.17*speed*pe.time),  
-                        0]
-        control_point1 = [ math.cos(2*math.pi*.38*speed*pe.time),  
-                           math.cos(2*math.pi*.29*speed*pe.time),  
-                           0]        
-        control_point2 = [ math.cos(2*math.pi*.12*speed*pe.time),  
-                           math.cos(2*math.pi*.40*speed*pe.time),  
-                           0]
-        control_point3 = [ math.cos(2*math.pi*.24*speed*pe.time),  
-                           math.cos(2*math.pi*.13*speed*pe.time),
-                           0]
- 
-        glLoadIdentity()
-        glLineWidth(pe.square_thick)
+        if (pe.vg_mode == 4):
+            speed = 0.3
+            start_point = [ math.cos(2*math.pi*0.42*speed*pe.time),  
+                            math.cos(2*math.pi*0.17*speed*pe.time),  
+                            0]
+            control_point1 = [ math.cos(2*math.pi*.38*speed*pe.time),  
+                               math.cos(2*math.pi*.29*speed*pe.time),  
+                               0]        
+            control_point2 = [ math.cos(2*math.pi*.12*speed*pe.time),  
+                               math.cos(2*math.pi*.40*speed*pe.time),  
+                               0]
+            control_point3 = [ math.cos(2*math.pi*.24*speed*pe.time),  
+                               math.cos(2*math.pi*.13*speed*pe.time),
+                               0]
 
-        glColor3f( 0.0, 1.0, 1.0)
+            glLoadIdentity()
+            glLineWidth(pe.square_thick)
 
-        glBegin(GL_LINE_STRIP)
-        for i in range(200): 
-            t = float(i)/200.0
+            glColor3f( 0.0, 1.0, 1.0)
 
-            # Get the current point on the curve, depending on the time.
-            curvePoint = self.point_on_bezier_curve(start_point, control_point1, control_point2, control_point3, t)
-	   
-            # Draw the current point at distance "t" of the curve.
-            glVertex3f(curvePoint[0], curvePoint[1], curvePoint[2]);
-	 	   
-        glEnd()
+            glBegin(GL_LINE_STRIP)
+            for i in range(200): 
+                t = float(i)/200.0
+
+                # Get the current point on the curve, depending on the time.
+                curvePoint = self.point_on_bezier_curve(start_point, control_point1, control_point2, control_point3, t)
+
+                # Draw the current point at distance "t" of the curve.
+                glVertex3f(curvePoint[0], curvePoint[1], curvePoint[2]);
+
+            glEnd()

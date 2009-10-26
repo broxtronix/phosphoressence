@@ -278,7 +278,6 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Start by drawing a black frame.
-  /*
   glColor4f(0.0,0.0,0.0,1.0);
   glBegin(GL_QUADS);
   glVertex2f( -m_framebuffer_radius, -m_framebuffer_radius);
@@ -286,7 +285,6 @@ void GraphicsEngine::drawImage() {
   glVertex2f( m_framebuffer_radius, m_framebuffer_radius);
   glVertex2f( -m_framebuffer_radius, m_framebuffer_radius);
   glEnd() ;
-  */
 
   // -----------------------
   // FEEDBACK TEXTURE 
@@ -345,8 +343,8 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Draw the framebuffer to the real screen.
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//   glEnable(GL_BLEND);
+//   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
   glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
 
@@ -380,7 +378,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-  glDisable(GL_BLEND);
+  //  glDisable(GL_BLEND);
   m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {

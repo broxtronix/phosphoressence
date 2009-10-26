@@ -38,7 +38,7 @@ class PeGraphics(object):
 class SquareSprite(object):
     def render(self):
 
-        if (pe.square_a != 0.0):
+        if (pe.square_a != 0.0 and pe.vg_mode == 0):
 
             glLoadIdentity()
             glEnable(GL_BLEND);
@@ -142,7 +142,7 @@ pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
 pe_graphics.register(WheelSprite())
 pe_graphics.register(EarthquakeSprite())
-#pe_graphics.register(BezierSprite())
-#pe_graphics.register(PolyBouncerSprite(5))
-#pe_graphics.register(TestSprite())
+pe_graphics.register(BezierSprite())
+pe_graphics.register(PolyBouncerSprite(5))
+pe_graphics.register(TestSprite())
 #pe_graphics.register(VuSpiralSprite(1))
