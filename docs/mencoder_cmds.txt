@@ -1,0 +1,1 @@
+mencoder "mf://*.jpg" -ovc xvid -xvidencopts pass=1 -o pe_test2.avi
