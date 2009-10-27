@@ -10,7 +10,7 @@ from shapes.test import *
 from shapes.polybouncer import *
 from shapes.wheelsprite import *
 from shapes.earthquakesprite import *
-#from shapes.vu_spirals import *
+from shapes.vu_spirals import *
 
 class PeGraphics(object):
 

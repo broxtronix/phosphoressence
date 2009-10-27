@@ -42,8 +42,8 @@ using namespace vw::GPU;
 
 
 // Switch from uin8 to floating point textures
-#define PE_GL_FORMAT GL_RGBA16F_ARB
-//#define PE_GL_FORMAT GL_RGBA
+//#define PE_GL_FORMAT GL_RGBA16F_ARB
+#define PE_GL_FORMAT GL_RGBA
 
 // VGPath testCreatePath() {
 //   return vgCreatePath(VG_PATH_FORMAT_STANDARD, VG_PATH_DATATYPE_F,
@@ -389,7 +389,7 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  //  this->swapBuffers();
+  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;

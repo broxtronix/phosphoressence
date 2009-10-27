@@ -96,8 +96,10 @@ AX_PKG(VW_CORE,           [BOOST], [-lvwCore],        [vw/Core/Thread.h])
 AX_PKG(CUDA,              [],      [-lcuda -lcudart], [cuda.h])
 AX_PKG(PORTAUDIO,         [],      [-lportaudio], [portaudio.h])
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
-AX_PKG(LO,         [],      [-llo], [lo/lo.h])
-AX_PKG(SDL,        [],      [-lSDL], [SDL.h])
+AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
+AX_PKG(RTAUDIO,           [APPLE_COREAUDIO],      [-lrtaudio], [RtAudio.h])
+AX_PKG(LO,                [],      [-llo], [lo/lo.h])
+AX_PKG(SDL,               [],      [-lSDL], [SDL.h])
 
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
@@ -134,7 +136,7 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
-AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE QT PORTAUDIO LO OPENVG])
+AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD VW_CORE QT RTAUDIO LO OPENVG])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.

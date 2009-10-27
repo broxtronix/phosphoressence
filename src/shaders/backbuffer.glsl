@@ -297,6 +297,7 @@ void main() {
   hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
   hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance
   vec4 final_texel = hsv_to_rgb(hsv_texel);
+  final_texel.a = 1.0;
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.

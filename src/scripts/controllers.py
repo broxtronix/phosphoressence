@@ -8,8 +8,14 @@ import math
 
 class OscController(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, osc_debug = False):
+        self.OSC_DEBUG = osc_debug
+
+        # Bindings for the wiimote
+        pe_bindings.add(self, "/wii/1/accel/pry/0", "zoom", 0.9, 1.1, 1.0)
+        pe_bindings.add(self, "/wii/1/accel/pry/1", "rot", 0.785, -0.785, 1.0)
+        pe_bindings.add(self, "/wii/1/accel/pry/2", "decay", 0.9, 1.1, 1.0)
+        
         # Set up some basic control bindings
 #        pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
 #        pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
@@ -74,8 +80,9 @@ class OscController(object):
     # pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0)
 
     def receive_callback(self, path, value):
-        #        if (DEBUG):
-        print("[OSC]    Path: " + path + "   Value: " + str(value))
+        if (self.OSC_DEBUG and (path.find("pry") == -1)):
+            print("[OSC]    Path: " + path + "   Value: " + str(value))
+
         pe_bindings.controller_to_parameter(self, path, value)
     
     def render_callback(self): 
@@ -124,8 +131,8 @@ class JoystickController(object):
         pe.mv_x = 36
         pe.mv_y = 36
         pe.mv_l = 0
-#        pe.rot = -0.001
-#        pe.sx=0.999
+        pe.rot = -0.001
+        pe.sx=0.999
         pe.kaleidoscope_radius=0.15
         
 
