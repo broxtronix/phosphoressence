@@ -57,10 +57,10 @@ def pe_animate():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
-        # joystick.render_callback()
+        joystick.render_callback()
 
         # Update osc parameters
-        osc.render_callback()
+        # osc.render_callback()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

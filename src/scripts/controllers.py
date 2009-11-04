@@ -102,8 +102,6 @@ class JoystickController(object):
         pe_bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
         pe_bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
         pe_bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
-#        pe_bindings.add(self, "/joystick0/axis2", "q1", 0, 1.0, .5)
- #       pe_bindings.add(self, "/joystick0/axis5", "q2", 0, 1.0, .5)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -131,8 +129,10 @@ class JoystickController(object):
         pe.mv_x = 36
         pe.mv_y = 36
         pe.mv_l = 0
-        pe.rot = -0.001
-        pe.sx=0.999
+        pe.rot = 0
+        pe.sx=1.0
+#        pe.rot = -0.001
+#        pe.sx=0.999
         pe.kaleidoscope_radius=0.15
         
 
@@ -158,8 +158,10 @@ class JoystickController(object):
             pe.set_control_value('mv_x', 36)
             pe.set_control_value('mv_y', 36)
             pe.set_control_value('mv_l', 0)
-            pe.set_control_value('rot', -0.001)
-            pe.set_control_value('sx',0.999)
+            pe.set_control_value('rot', 0)
+            pe.set_control_value('sx',1.0)
+#            pe.set_control_value('rot', -0.001)
+#            pe.set_control_value('sx',0.999)
             pe.set_control_value('wave_mode', 2)
             pe.set_control_value('wave_enabled',1.0)
             pe.set_control_value('square_a',1.0)
@@ -172,11 +174,11 @@ class JoystickController(object):
 
         # Squareshape Enable
         if (path == "/joystick0/button6" and value == 1):
-            if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
-            else: pe.set_control_value('mv_a', 1.0);    
+            if (pe.square_a): pe.set_control_value('square_a', 0.0)
+            else: pe.set_control_value('square_a', 1.0)
+#            if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
+#            else: pe.set_control_value('mv_a', 1.0);    
 
-#            if (pe.square_a): pe.set_control_value('square_a', 0.0)
-#            else: pe.set_control_value('square_a', 1.0)
 
         # Border Enable
         if (path == "/joystick0/button2" and value == 1): 
@@ -365,6 +367,7 @@ class JoystickController(object):
         pe_bindings.controller_to_parameter(self, path, value)
 
 
+
     def render_callback(self):
 
         # Update scaling
@@ -438,5 +441,10 @@ class JoystickController(object):
         pe.zoomexp = 1
 
 
+        # Tweak decay
+        if (pe.decay < 0.87):
+            pe.decay = 0.01
 
+        if (pe.decay > 0.99 and pe.decay <1.01):
+            pe.decay = 1.0
 

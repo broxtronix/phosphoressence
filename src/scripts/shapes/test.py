@@ -29,14 +29,14 @@ class TestSprite(object):
         if (pe.vg_mode == 3):
             VG.set(VG_STROKE_LINE_WIDTH, 15.0)
 
-            fill_paint = VG.ColorPaint((0.0, 1.0, 1.0, 1.0))
+            fill_paint = VG.ColorPaint((pe.square_r, pe.square_g, pe.square_b, pe.square_a))
             stroke_paint = VG.ColorPaint((  0.65 + 0.350*( 0.60*math.sin(0.742*pe.time) + 
                                                            0.40*math.sin(1.021*pe.time) ),
                                             0.65 + 0.350*( 0.60*math.sin(0.703*pe.time) + 
                                                            0.40*math.sin(0.969*pe.time) ),
                                             0.65 + 0.350*( 0.60*math.sin(1.090*pe.time) + 
                                                            0.40*math.sin(0.963*pe.time) ),
-                                            1.0))
+                                            pe.square_a))
             VG.set_paint(fill_paint, VG_FILL_PATH)
             VG.set_paint(stroke_paint, VG_STROKE_PATH)
 

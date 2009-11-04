@@ -52,7 +52,7 @@ class BezierSprite(object):
             glLoadIdentity()
             glLineWidth(pe.square_thick)
 
-            glColor3f( 0.0, 1.0, 1.0)
+            glColor4f( pe.square_r, pe.square_g, pe.square_b, pe.square_a )
 
             glBegin(GL_LINE_STRIP)
             for i in range(200): 
