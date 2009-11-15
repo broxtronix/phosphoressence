@@ -18,6 +18,141 @@
 #include <GpuProgram.h>
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
+#include <vw/Core/FundamentalTypes.h>
+
+// -------------------------------------------------------------------
+
+void print_stats(std::string variable, float *x) {
+  float lo = vw::ScalarTypeLimits<float>::highest(), hi = vw::ScalarTypeLimits<float>::lowest();
+  float avg_sum = 0;
+  
+  for (int i = 0; i < FLUID_SIZE; ++i) {
+    avg_sum += x[i];
+    if (x[i] < lo) lo = x[i];
+    if (x[i] > hi) hi = x[i];
+  }
+  std::cout << "[" << variable << "] - Mean: " << (avg_sum / FLUID_SIZE) 
+            << "  Min: " << lo <<  "  Max: " << hi << "\n"; 
+}
+
+
+// Fluid simulation code.  Taken pretty much verbatim from Jos Stam's
+// paper entitled: "Real-Time Fluid Dynamics Simulations for Games."
+#define IX(i,j) ((i)+(FLUID_DIMENSION+2)*(j))
+#define SWAP(x0,x) {float *tmp=x0;x0=x;x=tmp;}
+
+void set_bnd ( int N, int b, float * x ) {
+  
+  for ( int i=1 ; i<=N ; i++ ) { 
+    x[IX(0  ,i)] = b==1 ? -x[IX(1,i)] : x[IX(1,i)];
+    x[IX(N+1,i)] = b==1 ? -x[IX(N,i)] : x[IX(N,i)];
+    x[IX(i  ,0)] = b==2 ? -x[IX(i,1)] : x[IX(i,1)];
+    x[IX(i,N+1)] = b==2 ? -x[IX(i,N)] : x[IX(i,N)];
+  }
+  x[IX(0,  0  )] = 0.5*(x[IX(1,0 )]+x[IX(0 ,1)]);
+  x[IX(0,  N+1)] = 0.5*(x[IX(1,N+1)]+x[IX(0,N)]); 
+  x[IX(N+1,0  )] = 0.5*(x[IX(N,0 )]+x[IX(N+1,1)]); 
+  x[IX(N+1,N+1)] = 0.5*(x[IX(N,N+1)]+x[IX(N+1,N)]);
+}
+
+
+void add_source ( int N, float * x, float * s, float dt ) {
+  int i, size=(N+2)*(N+2); 
+  for ( i=0 ; i<size ; i++ ) 
+    x[i] += dt*s[i];
+}
+
+void diffuse ( int N, int b, float * x, float * x0, float diff, float dt ) {
+  float a=dt*diff*N*N;
+
+  for ( int k=0 ; k<20 ; k++ ) { 
+    for ( int i=1 ; i<=N ; i++ ) {
+      for ( int j=1 ; j<=N ; j++ ) { 
+        x[IX(i,j)] = (x0[IX(i,j)] + a*(x[IX(i-1,j)]+x[IX(i+1,j)] + 
+                                       x[IX(i,j-1)]+x[IX(i,j+1)]))/(1+4*a);
+      }
+    }
+    set_bnd ( N, b, x );
+  }
+}
+
+
+void advect ( int N, int b, float * d, float * d0, float * u, float * v, float dt ) {
+  int i0, i1, j0, j1;
+  float x, y, s0, t0, s1, t1;
+
+  float dt0 = dt*N; 
+  for ( int i=1 ; i<=N ; i++ ) {
+    for ( int j=1 ; j<=N ; j++ ) {
+      x = i-dt0*u[IX(i,j)]; 
+      y = j-dt0*v[IX(i,j)]; 
+
+      if (x<0.5) x=0.5; if (x>N+0.5) x=N+0.5; 
+      i0=(int)x; i1=i0+1; 
+
+      if (y<0.5) y=0.5; if (y>N+0.5) y=N+0.5; 
+      j0=(int)y; j1=j0+1; 
+      
+      s1 = x-i0; s0 = 1-s1; 
+      t1 = y-j0; t0 = 1-t1; 
+
+      d[IX(i,j)] = (s0*(t0*d0[IX(i0,j0)]+t1*d0[IX(i0,j1)]) +
+                    s1*(t0*d0[IX(i1,j0)]+t1*d0[IX(i1,j1)]));
+    } 
+  }
+  set_bnd ( N, b, d );
+}
+
+void project ( int N, float * u, float * v, float * p, float * div ) {
+  float h = 1.0/N; 
+  
+  for ( int i=1 ; i<=N ; i++ ) {
+    for ( int j=1 ; j<=N ; j++ ) { 
+      div[IX(i,j)] = -0.5*h*(u[IX(i+1,j)]-u[IX(i-1,j)]+
+                             v[IX(i,j+1)]-v[IX(i,j-1)]);
+      p[IX(i,j)] = 0;
+    }
+  }
+  set_bnd ( N, 0, div ); set_bnd ( N, 0, p );
+
+  for ( int k=0 ; k<20 ; k++ ) {
+    for ( int i=1 ; i<=N ; i++ ) { 
+      for ( int j=1 ; j<=N ; j++ ) {
+        p[IX(i,j)] = (div[IX(i,j)]+p[IX(i-1,j)]+p[IX(i+1,j)]+ 
+                      p[IX(i,j-1)]+p[IX(i,j+1)])/4;
+      }
+    }
+    set_bnd ( N, 0, p );
+  }
+
+  for ( int i=1 ; i<=N ; i++ ) { 
+    for ( int j=1 ; j<=N ; j++ ) {
+      u[IX(i,j)] -= 0.5*(p[IX(i+1,j)]-p[IX(i-1,j)])/h; 
+      v[IX(i,j)] -= 0.5*(p[IX(i,j+1)]-p[IX(i,j-1)])/h;
+    }
+  }
+  set_bnd ( N, 1, u ); set_bnd ( N, 2, v );
+}
+
+void dens_step ( int N, float * x, float * x0, float * u, float * v, float diff, float dt ) {
+  add_source ( N, x, x0, dt ); 
+  SWAP ( x0, x ); diffuse ( N, 0, x, x0, diff, dt ); 
+  SWAP ( x0, x ); advect ( N, 0, x, x0, u, v, dt );
+}
+
+void vel_step ( int N, float * u, float * v, float * u0, float * v0, float visc, float dt ) {
+  add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt ); 
+  SWAP ( u0, u ); diffuse ( N, 1, u, u0, visc, dt ); 
+  SWAP ( v0, v ); diffuse ( N, 2, v, v0, visc, dt ); 
+  project ( N, u, v, u0, v0 );
+  SWAP ( u0, u ); SWAP ( v0, v ); 
+  advect ( N, 1, u, u0, u0, v0, dt ); advect ( N, 2, v, v0, u0, v0, dt ); 
+  project ( N, u, v, u0, v0 );
+}
+
+
+
+// -------------------------------------------------------------------
 
 void GraphicsEngine::drawFeedback() {
 
@@ -28,6 +163,8 @@ void GraphicsEngine::drawFeedback() {
 
   // Vertex Shader
   m_gpu_backbuffer_program->install();
+
+
 //   m_gpu_backbuffer_program->set_input_float("time", pe_time());
 //   m_gpu_backbuffer_program->set_input_float("warp", pe_script_engine().get_parameter("warp"));
 //   m_gpu_backbuffer_program->set_input_float("warp_speed", pe_script_engine().get_parameter("warp_speed"));
@@ -67,7 +204,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("q8", pe_script_engine().get_parameter("q8"));
   
   float warpSpeed = pe_script_engine().get_parameter("warp_speed");
-  float warpScale = pe_script_engine().get_parameter("warp_scale");
+  float warpScale = pe_script_engine().get_parameter("warp_scale")+0.0001;
   float warpTime = pe_time() * warpSpeed;
   float warpScaleInv = 1.0f / warpScale;
 
@@ -87,8 +224,18 @@ void GraphicsEngine::drawFeedback() {
   float cy = pe_script_engine().get_parameter("cy");
   float dx = 0.0;//pe_script_engine().get_parameter("dx");
   float dy = 0.0;//pe_script_engine().get_parameter("dy");
-  float sx = pe_script_engine().get_parameter("sx");
-  float sy = pe_script_engine().get_parameter("sy");
+  float sx = pe_script_engine().get_parameter("sx")+0.00001;
+  float sy = pe_script_engine().get_parameter("sy")+0.00001;
+
+  // Fluid dynamics simulation
+  float fluid_dt = pe_time() - m_fluid_previous_time;
+  m_fluid_previous_time = pe_time();
+  float fluid_visc = pe_script_engine().get_parameter("fluid_viscosity");
+  float fluid_diff = pe_script_engine().get_parameter("fluid_diffusion");
+  vel_step ( FLUID_DIMENSION, m_fluid_u.get(), m_fluid_v.get(), 
+             m_fluid_u_prev.get(), m_fluid_v_prev.get(), fluid_visc, fluid_dt ); 
+  dens_step ( FLUID_DIMENSION, m_fluid_density.get(), m_fluid_density_prev.get(), 
+              m_fluid_u.get(), m_fluid_v.get(), fluid_diff, fluid_dt ); 
 
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate
   // mesh distortion.  THIS IS WHERE THE MAGIC HAPPENS, FOLKS
@@ -101,19 +248,33 @@ void GraphicsEngine::drawFeedback() {
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
                                               sqrtf(u * u + v * v) * 2.0 * 
                                               m_framebuffer_radius - m_framebuffer_radius));
+
+      // Apply the zoom effect (disabled for now... see backbuffer.glsl...)
       u = u * zoomCoefficient;
       v = v * zoomCoefficient;
 
-      // Apply the scaling effect
+      // Apply the scaling effect (disabled for now... see backbuffer.glsl...)
       u = (u - cx)/sx + cx;
       v = (v - cy)/sy + cy;
 
       // Apply the Milkdrop warp effect (most of these constants were
       // taken from the milkdrop source code)
-      u += warpAmount * 0.0035f * sinf(warpTime * 0.333f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] - m_feedback_screencoords(i,j)[1] * f[3]));
-      v += warpAmount * 0.0035f * cosf(warpTime * 0.375f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[2] + m_feedback_screencoords(i,j)[1] * f[1]));
-      u += warpAmount * 0.0035f * cosf(warpTime * 0.753f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[1] - m_feedback_screencoords(i,j)[1] * f[2]));
-      v += warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3]));
+      m_fluid_u_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.333f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] - m_feedback_screencoords(i,j)[1] * f[3]));
+      m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * cosf(warpTime * 0.375f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[2] + m_feedback_screencoords(i,j)[1] * f[1]));
+      m_fluid_u_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * cosf(warpTime * 0.753f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[1] - m_feedback_screencoords(i,j)[1] * f[2]));
+      m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3]));
+
+      // Rotation in the fluid is... a little to much.  Centrifugal
+      // force causes everything to move away from the center of the
+      // screen.  Disabling for now...
+      // float direction_u = rot * (v);
+      // float direction_v = rot * (-u);
+      // m_fluid_u_prev[IX(i+1,j+1)] += direction_u;
+      // m_fluid_v_prev[IX(i+1,j+1)] += direction_v;
+
+      // Add in the fluid simulation effect
+      u += m_fluid_u[IX(i+1,j+1)];
+      v += m_fluid_v[IX(i+1,j+1)];
 
       // Apply the rotation effect
       float u2 = u - cx;
@@ -142,6 +303,7 @@ void GraphicsEngine::drawFeedback() {
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
     for (int j = 0 ; j < VERT_MESH_SIZE ; ++j) {
+      //      glColor3f(0.0, m_fluid_density[IX(i+1,j+1)]/5.0, 0.0);
       glTexCoord2f( m_feedback_texcoords(i,j)[0], m_feedback_texcoords(i,j)[1] ); 
       glVertex2f(   m_warped_screencoords(i,j)[0] , m_warped_screencoords(i,j)[1] );
       glTexCoord2f( m_feedback_texcoords(i,j+1)[0], m_feedback_texcoords(i,j+1)[1] ); 

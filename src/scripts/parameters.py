@@ -180,6 +180,10 @@ pe = PhosphorEssence()
 # Someday when I have more time these might get properly moved to the
 # python/c bridge where thery can be locked down properly.
 
+pe.register(Parameter( name = "initialized",
+                       description = "This special parameter is set to true once the scripting engine has be activated",
+                       default_value = 1.0,
+                       read_only = True))
 pe.register(Parameter( name = "x",
                        description = "Retrieves the x-position of the current pixel" +
                        "(for per-pixel equations)",
@@ -302,6 +306,15 @@ pe.register(Parameter( name = "warp_speed",
 pe.register(Parameter( name = "warp_scale",
                        description = "controls the size of the warp effects.",
                        default_value = 1.0 ))
+
+pe.register(Parameter( name = "fluid_viscosity",
+                       description = "controls the viscosity of the fluid dynamics effect.",
+                       default_value = 0.00001 ))
+pe.register(Parameter( name = "fluid_diffusion",
+                       description = "controls the diffusion rate of pressure in the fluid effect.",
+                       default_value = 1.0 ))
+
+
 
 # AFFINE PARAMETERS
 pe.register(Parameter( name = "rot",

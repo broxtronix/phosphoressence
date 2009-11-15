@@ -299,14 +299,6 @@ void main() {
   vec4 final_texel = hsv_to_rgb(hsv_texel);
   final_texel.a = 1.0;
 
-  // NaNs are the bane of our existence here!  We replace them with
-  // null values.
-  if (final_texel.r != final_texel.r ||
-      final_texel.g != final_texel.g ||
-      final_texel.b != final_texel.b ||
-      final_texel.a != final_texel.a)
-    final_texel = vec4(0.0,0.0,0.0,1.0);
-
   // Video echo
   vec2 prev_coords = gl_TexCoord[0].st;
   vec2 echo_coords = vec2((prev_coords.x-0.5) * echo_zoom + 0.5, 
@@ -315,8 +307,16 @@ void main() {
     echo_coords.x *= -1.0;
   if (echo_orient >= 1.0)
     echo_coords.y *= -1.0;
-  vec4 src_prev = texture2D(feedback_texture, echo_coords);
+  vec4 prev_texel = texture2D(feedback_texture, echo_coords);
 
   // Return the final value
-  gl_FragColor = mix(final_texel, src_prev, echo_alpha);
+  gl_FragColor = mix(final_texel, prev_texel, echo_alpha);
+
+  // NaNs are the bane of our existence here!  We replace them with
+  // null values.
+  if (gl_FragColor.r != gl_FragColor.r ||
+      gl_FragColor.g != gl_FragColor.g ||
+      gl_FragColor.b != gl_FragColor.b ||
+      gl_FragColor.a != gl_FragColor.a)
+    gl_FragColor = vec4(0.0,0.0,0.0,1.0);
 }

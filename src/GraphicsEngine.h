@@ -15,13 +15,6 @@
 
 // Vision Workbench
 #include <vw/Core/Log.h>
-#include <vw/Image/ImageResource.h>
-#include <vw/Image/ImageViewRef.h>
-#include <vw/Image/ImageView.h>
-#include <vw/Image/Manipulation.h>
-#include <vw/Image/Statistics.h>
-#include <vw/FileIO/DiskImageResource.h>
-#include <vw/FileIO/DiskImageView.h>
 #include <vw/Math/BBox.h>
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
@@ -29,10 +22,6 @@
 // STL
 #include <string>
 #include <list>
-
-// ShivaVG
-#include <vg/openvg.h>
-#include <vg/vgu.h>
 
 // PhosphorEssence
 #include <ScriptEngine.h>
@@ -48,7 +37,9 @@ class QWheelEvent;
 class QPoint;
 
 #define HORIZ_MESH_SIZE 64
-#define VERT_MESH_SIZE 64
+#define VERT_MESH_SIZE HORIZ_MESH_SIZE
+#define FLUID_DIMENSION HORIZ_MESH_SIZE
+#define FLUID_SIZE (FLUID_DIMENSION+2)*(FLUID_DIMENSION+2)
 #define FRAMEBUFFER_SIZE 2048
 
 /// Drawable
@@ -83,18 +74,7 @@ class GraphicsEngine : public QGLWidget {
 public:
   
   // Constructors/Destructor
-  GraphicsEngine(QWidget *parent, QGLFormat const& frmt) : 
-    QGLWidget(frmt, parent) {
-
-     if (!format().sampleBuffers())
-       std::cout << "\n\nCould not activate FSAA; results will be suboptimal\n\n";
-     if (!format().doubleBuffer())
-       std::cout << "\n\nCould not set double buffering; results will be suboptimal\n\n";
-
-     //     std::cout << "\n***\nBuffers: " << format().sampleBuffers() << "\n***\n";
-
-    setup();
-  }
+  GraphicsEngine(QWidget *parent, QGLFormat const& frmt);
   virtual ~GraphicsEngine();
   
   // Set a default size for this widget.  This is usually overridden
@@ -128,7 +108,6 @@ public slots:
 protected:
 
   // Setup
-  void setup();
   void initializeGL();
   void resizeGL(int width, int height);
   void setup_mesh();
@@ -192,16 +171,16 @@ private:
   vw::Matrix<vw::Vector2> m_feedback_texcoords;
   vw::Matrix<vw::Vector2> m_feedback_screencoords;
   vw::Matrix<vw::Vector2> m_warped_screencoords;
+
+  // Fluid simulation
+  boost::shared_array<float> m_fluid_u, m_fluid_v;
+  boost::shared_array<float> m_fluid_u_prev, m_fluid_v_prev; 
+  boost::shared_array<float> m_fluid_density, m_fluid_density_prev;
+  float m_fluid_previous_time;
+  
   
   // Image Parameters
   vw::BBox2 m_current_viewport;
-
-  // Testing ShivaVG
-  VGPath m_iApple;
-  VGPath m_iPear;
-  VGPath m_iMorph;
-  VGPaint m_fill;
-
 };
 
 #endif  // __GRAPHICS_ENGINE_H__

@@ -20,7 +20,7 @@ class Binding(object):
 class PeBindings(object):
     def __init__(self, debug = False):
         self._bindings = {}
-        self.DEBUG = debug
+        self.DEBUG = True
 
         # Send updates from the controller to the parameters
     def controller_to_parameter(self, controller, path, value):
