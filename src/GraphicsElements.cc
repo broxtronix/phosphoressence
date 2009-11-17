@@ -19,17 +19,37 @@
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 #include <vw/Core/FundamentalTypes.h>
+using namespace vw;
 
 // -------------------------------------------------------------------
 
+void print_hasnan(int N, std::string variable, float *x) {
+  bool hasNaN = false;
+
+  int i, size=(N+2)*(N+2); 
+  for ( i=0 ; i<size ; i++ ) {
+    if (x[i] != x[i])
+      hasNaN = true;
+  }
+  
+  if (hasNaN)
+    std::cout << "The " << variable << " variable has NaNs!\n";
+  else
+    std::cout << "The " << variable << " variable is all clear!\n";
+
+}
+
 void print_stats(std::string variable, float *x) {
+  
   float lo = vw::ScalarTypeLimits<float>::highest(), hi = vw::ScalarTypeLimits<float>::lowest();
   float avg_sum = 0;
   
-  for (int i = 0; i < FLUID_SIZE; ++i) {
-    avg_sum += x[i];
-    if (x[i] < lo) lo = x[i];
-    if (x[i] > hi) hi = x[i];
+  for (int j = 1; j <= FLUID_SIZE; ++j) {
+    for (int i = 1; i <= FLUID_SIZE; ++i) {
+      avg_sum += x[i];
+      if (x[i] < lo) lo = x[i];
+      if (x[i] > hi) hi = x[i];
+    }
   }
   std::cout << "[" << variable << "] - Mean: " << (avg_sum / FLUID_SIZE) 
             << "  Min: " << lo <<  "  Max: " << hi << "\n"; 
@@ -43,7 +63,7 @@ void print_stats(std::string variable, float *x) {
 
 void set_bnd ( int N, int b, float * x ) {
   
-  for ( int i=1 ; i<=N ; i++ ) { 
+  for ( int i=1 ; i<=N ; ++i ) { 
     x[IX(0  ,i)] = b==1 ? -x[IX(1,i)] : x[IX(1,i)];
     x[IX(N+1,i)] = b==1 ? -x[IX(N,i)] : x[IX(N,i)];
     x[IX(i  ,0)] = b==2 ? -x[IX(i,1)] : x[IX(i,1)];
@@ -58,18 +78,26 @@ void set_bnd ( int N, int b, float * x ) {
 
 void add_source ( int N, float * x, float * s, float dt ) {
   int i, size=(N+2)*(N+2); 
-  for ( i=0 ; i<size ; i++ ) 
+  for ( i=0 ; i<size ; i++ ) {
     x[i] += dt*s[i];
+  }
 }
+
 
 void diffuse ( int N, int b, float * x, float * x0, float diff, float dt ) {
   float a=dt*diff*N*N;
 
   for ( int k=0 ; k<20 ; k++ ) { 
     for ( int i=1 ; i<=N ; i++ ) {
-      for ( int j=1 ; j<=N ; j++ ) { 
+      for ( int j=1 ; j<=N ; j++ ) {
+        float x_prev = x[IX(i,j)];
         x[IX(i,j)] = (x0[IX(i,j)] + a*(x[IX(i-1,j)]+x[IX(i+1,j)] + 
                                        x[IX(i,j-1)]+x[IX(i,j+1)]))/(1+4*a);
+        // if (x[IX(i,j)] != x[IX(i,j)]) {
+        //   std::cout << "processing (" << i << " " << j << ")...\n";
+        //   std::cout << "diffuse (" << x_prev << "  " << x0[IX(i,j)] << "...\n";
+        // }
+
       }
     }
     set_bnd ( N, b, x );
@@ -81,9 +109,11 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
   int i0, i1, j0, j1;
   float x, y, s0, t0, s1, t1;
 
+  //  std::cout << "Call to advect...\n";
+
   float dt0 = dt*N; 
-  for ( int i=1 ; i<=N ; i++ ) {
-    for ( int j=1 ; j<=N ; j++ ) {
+  for ( int j=1 ; j<=N ; j++ ) {
+    for ( int i=1 ; i<=N ; i++ ) {
       x = i-dt0*u[IX(i,j)]; 
       y = j-dt0*v[IX(i,j)]; 
 
@@ -95,6 +125,11 @@ void advect ( int N, int b, float * d, float * d0, float * u, float * v, float d
       
       s1 = x-i0; s0 = 1-s1; 
       t1 = y-j0; t0 = 1-t1; 
+
+      VW_ASSERT(i0 >=0 || i0 <= N+1, LogicErr() << "Out of bounds memory access: i0 in advect().");
+      VW_ASSERT(j0 >=0 || j0 <= N+1, LogicErr() << "Out of bounds memory access: j0 in advect().");
+      VW_ASSERT(i1 >=0 || i1 <= N+1, LogicErr() << "Out of bounds memory access: i1 in advect().");
+      VW_ASSERT(j1 >=0 || j1 <= N+1, LogicErr() << "Out of bounds memory access: j1 in advect().");
 
       d[IX(i,j)] = (s0*(t0*d0[IX(i0,j0)]+t1*d0[IX(i0,j1)]) +
                     s1*(t0*d0[IX(i1,j0)]+t1*d0[IX(i1,j1)]));
@@ -158,24 +193,17 @@ void GraphicsEngine::drawFeedback() {
 
   // Copy the pixel data from the pixel buffer object to the feedback texture.
   glEnable( GL_TEXTURE_2D );
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  // Vertex Shader
+  // Fragment Shader
   m_gpu_backbuffer_program->install();
-
-
-//   m_gpu_backbuffer_program->set_input_float("time", pe_time());
-//   m_gpu_backbuffer_program->set_input_float("warp", pe_script_engine().get_parameter("warp"));
-//   m_gpu_backbuffer_program->set_input_float("warp_speed", pe_script_engine().get_parameter("warp_speed"));
-//   m_gpu_backbuffer_program->set_input_float("warp_scale", pe_script_engine().get_parameter("warp_scale"));
-//   m_gpu_backbuffer_program->set_input_float("sx", pe_script_engine().get_parameter("sx"));
-//   m_gpu_backbuffer_program->set_input_float("sy", pe_script_engine().get_parameter("sy"));
-//   m_gpu_backbuffer_program->set_input_float("cx", pe_script_engine().get_parameter("cx"));
-//   m_gpu_backbuffer_program->set_input_float("cy", pe_script_engine().get_parameter("cy"));
 
   // Feedback decay, gamma, etc are controlled using a fragment shader.
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
+  m_gpu_backbuffer_program->set_input_int("framebuffer_texture", 1);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
@@ -214,12 +242,17 @@ void GraphicsEngine::drawFeedback() {
   f[2] = 10.54f + 3.0f*cosf(warpTime*1.233f + 3);
   f[3] = 11.49f + 4.0f*cosf(warpTime*0.933f + 5);
 
-  // Extract the per-pixel parameters
+  // Extract the per-pixel parameters.  Some of these are disable here
+  // because they are now handled by the pixel shader (above).  The
+  // effect is similar, except that you can get nice texture wrapping
+  // effects when using the pixel shader.
   float zoom = 1.0;//pe_script_engine().get_parameter("zoom");
+  float zoom_rate = pe_script_engine().get_parameter("zoom_rate");
   float zoomExp = 1.0;//pe_script_engine().get_parameter("zoomexp");
   float warpAmount = pe_script_engine().get_parameter("warp");
       
   float rot = 0.0;//pe_script_engine().get_parameter("rot");
+  float rot_rate = pe_script_engine().get_parameter("rot_rate");
   float cx = pe_script_engine().get_parameter("cx");
   float cy = pe_script_engine().get_parameter("cy");
   float dx = 0.0;//pe_script_engine().get_parameter("dx");
@@ -243,6 +276,8 @@ void GraphicsEngine::drawFeedback() {
     for (int j = 0; j < VERT_MESH_SIZE + 1; j++) {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
+      float radius = sqrt(u*u+v*v);
+      float angle = atan2(v,u);
 
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
@@ -264,13 +299,21 @@ void GraphicsEngine::drawFeedback() {
       m_fluid_u_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * cosf(warpTime * 0.753f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[1] - m_feedback_screencoords(i,j)[1] * f[2]));
       m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3]));
 
-      // Rotation in the fluid is... a little to much.  Centrifugal
-      // force causes everything to move away from the center of the
-      // screen.  Disabling for now...
-      // float direction_u = rot * (v);
-      // float direction_v = rot * (-u);
-      // m_fluid_u_prev[IX(i+1,j+1)] += direction_u;
-      // m_fluid_v_prev[IX(i+1,j+1)] += direction_v;
+      // Apply the fluid rotation effect
+      if (radius != 0) {
+        float direction_u = (v/radius);
+        float direction_v = (-u/radius);
+        m_fluid_u_prev[IX(i+1,j+1)] += rot_rate * direction_u;
+        m_fluid_v_prev[IX(i+1,j+1)] += rot_rate * direction_v;
+      }
+
+      // Apply the fluid zoom effect
+      if (radius != 0) {
+        float direction_u = (-u/radius);
+        float direction_v = (-v/radius);
+        m_fluid_u_prev[IX(i+1,j+1)] += zoom_rate * direction_u;
+        m_fluid_v_prev[IX(i+1,j+1)] += zoom_rate * direction_v;
+      }
 
       // Add in the fluid simulation effect
       u += m_fluid_u[IX(i+1,j+1)];
@@ -293,12 +336,9 @@ void GraphicsEngine::drawFeedback() {
       m_warped_screencoords(i,j)[1] = v;
     }
   }
- 
-  //  glEnable(GL_BLEND);
-  glDisable(GL_BLEND);
-  //  glBlendFunc (GL_ONE, GL_ZERO);
-        
+
   //  We will draw the image as a texture on this quad.
+  glDisable(GL_BLEND);
   glColor4f(1.0,1.0,1.0,1.0);
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {

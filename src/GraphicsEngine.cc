@@ -207,9 +207,9 @@ void GraphicsEngine::drawImage() {
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
   // Set the background color and viewport.
-  qglClearColor(QColor(0, 0, 0)); // Black Background
-  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  qglClearColor(QColor(0, 0, 0, 1.0)); // Black Background
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  //  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
 
   // Set up the orthographic view of the scene.  The exact extent of

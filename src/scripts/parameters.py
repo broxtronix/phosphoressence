@@ -290,6 +290,10 @@ pe.register(Parameter( name = "zoom",
                        "0.9=zoom out 10% per frame, 1.0=no zoom, 1.1=zoom in 10%",
                        default_value = 1.0 ))
 
+pe.register(Parameter( name = "zoom_rate",
+                       description = "Rate of inward/outward zoom",
+                       default_value = 0.0 ))
+
 pe.register(Parameter( name = "zoomexp",
                        description = ">0     controls the curvature of the zoom; 1=normal",
                        default_value = 1.0 ))
@@ -320,6 +324,10 @@ pe.register(Parameter( name = "fluid_diffusion",
 pe.register(Parameter( name = "rot",
                        description = "controls the amount of rotation.  " + 
                        "0=none, 0.1=slightly right, -0.1=slightly clockwise, 0.1=CCW" ))
+
+pe.register(Parameter( name = "rot_rate",
+                       description = "The rate of rotation",
+                       default_value = 0.0 ))
 
 pe.register(Parameter( name = "cx",
                        description = "0..1   controls where the center of rotation and " + 
@@ -659,24 +667,23 @@ pe.register(Parameter( name = "vg_stroke_a",
            description = "Stroke color.",
            default_value = 0.0))
 
-
-pe.register(Parameter( name = "vg_stroke_r",
-           description = "Stroke color.",
+pe.register(Parameter( name = "vg_fill_r",
+           description = "Fill color.",
            default_value = 0.0))
 
-pe.register(Parameter( name = "vg_stroke_g",
-           description = "Stroke color.",
+pe.register(Parameter( name = "vg_fill_g",
+           description = "Fill color.",
            default_value = 0.0))
 
-pe.register(Parameter( name = "vg_stroke_b",
-           description = "Stroke color.",
+pe.register(Parameter( name = "vg_fill_b",
+           description = "Fill color.",
            default_value = 0.0))
 
-pe.register(Parameter( name = "vg_stroke_a",
-           description = "Stroke color.",
+pe.register(Parameter( name = "vg_fill_a",
+           description = "Fill color.",
            default_value = 0.0))
 
 pe.register(Parameter( name = "vg_stroke_thickness",
            description = "Thickness of stroke.",
-           default_value = 0.0))
+           default_value = 0.01))
 

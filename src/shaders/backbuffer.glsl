@@ -1,5 +1,6 @@
 // Top level uniform variables
-uniform sampler2D feedback_texture;                             
+uniform sampler2D feedback_texture;
+uniform sampler2D framebuffer_texture;
 uniform float framebuffer_radius;
 uniform float decay;
 uniform float ifs_mode;
@@ -259,45 +260,7 @@ void main() {
     unnormalized_coords.x = clamp(unnormalized_coords.x,0.0,1.0);
     unnormalized_coords.y = clamp(unnormalized_coords.y,0.0,1.0);
   } 
-  
-  vec4 src = texture2D(feedback_texture, unnormalized_coords);
-
-  // <testing reaction diffusion>  
-  // vec4 l4 = laplace_4(unnormalized_coords, q7);
-  // vec4 rd = src;
-  // float rbb = src.r * src.b * src.b;
-  // rd.r = src.r + q8 * ( q1 * l4.r - rbb + q3 * (1.0 - src.r) );
-  // rd.b = src.b + q8 * ( q2 * l4.b + rbb - (q3 + q4) * src.b );
-  // rd.g = 0.0;
-  // rd.a = 1.0;
-    
-  // src = rd;
-  // </testing>
-
-
-
-
-  if (invert == 1.0) {
-    src.r = 1.0 - src.r;
-    src.g = 1.0 - src.g;
-    src.b = 1.0 - src.b;
-  }
-  
-  // Apply gain.  This is done in the HSV color space so that the hue
-  // can cycle when the image becomes saturated.
-  vec4 g;
-  if (decay >= 1.0) 
-    // When gain is greater than 1.0, we fade up all channels
-    g = vec4(decay, decay, decay, 1.0);
-  else
-    // But when less than 1.0, we only fade out the luminance channel
-    g = vec4(1.0, 1.0, decay, 1.0); // XXX
-
-  vec4 hsv_texel = g * rgb_to_hsv(src);
-  hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
-  hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance
-  vec4 final_texel = hsv_to_rgb(hsv_texel);
-  final_texel.a = 1.0;
+  vec4 new_texel = texture2D(feedback_texture, unnormalized_coords);
 
   // Video echo
   vec2 prev_coords = gl_TexCoord[0].st;
@@ -309,8 +272,32 @@ void main() {
     echo_coords.y *= -1.0;
   vec4 prev_texel = texture2D(feedback_texture, echo_coords);
 
+  // Mix the two together.
+  vec4 mixed_texel = mix(new_texel, prev_texel, echo_alpha);  
+  if (invert == 1.0) {
+    mixed_texel.r = 1.0 - mixed_texel.r;
+    mixed_texel.g = 1.0 - mixed_texel.g;
+    mixed_texel.b = 1.0 - mixed_texel.b;
+  }
+
+  // Apply gain.  This is done in the HSV color space so that the hue
+  // can cycle when the image becomes saturated.
+  vec4 g;
+  if (decay >= 1.0) 
+    // When gain is greater than 1.0, we fade up all channels
+    g = vec4(decay, decay, decay, 1.0);
+  else
+    // But when less than 1.0, we only fade out the luminance channel
+    g = vec4(1.0, 1.0, decay, 1.0); // XXX
+
+  vec4 hsv_texel = g * rgb_to_hsv(mixed_texel);
+  hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
+  hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance
+  vec4 final_texel = hsv_to_rgb(hsv_texel);
+  final_texel.a = 1.0;
+
   // Return the final value
-  gl_FragColor = mix(final_texel, prev_texel, echo_alpha);
+  gl_FragColor = final_texel;
 
   // NaNs are the bane of our existence here!  We replace them with
   // null values.

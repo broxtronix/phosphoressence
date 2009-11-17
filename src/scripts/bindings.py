@@ -15,8 +15,6 @@ class Binding(object):
         else:
 	    self.mode = "linear"
 
-
-
 class PeBindings(object):
     def __init__(self, debug = False):
         self._bindings = {}
@@ -71,4 +69,3 @@ class PeBindings(object):
             # self._bindings[b].controller.send(_bindings[b].path, 
 	    # 				  _bindings[b].default_value)
 
-pe_bindings = PeBindings()

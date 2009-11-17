@@ -36,7 +36,7 @@ class QMouseEvent;
 class QWheelEvent;
 class QPoint;
 
-#define HORIZ_MESH_SIZE 64
+#define HORIZ_MESH_SIZE 128
 #define VERT_MESH_SIZE HORIZ_MESH_SIZE
 #define FLUID_DIMENSION HORIZ_MESH_SIZE
 #define FLUID_SIZE (FLUID_DIMENSION+2)*(FLUID_DIMENSION+2)
