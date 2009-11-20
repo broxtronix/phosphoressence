@@ -41,10 +41,22 @@ static PyObject* pe_py_time(PyObject *self, PyObject *args) {
   return Py_BuildValue("f", pe_time());
 }
 
+static PyObject* pe_py_orientation(PyObject *self, PyObject *args) {
+  return Py_BuildValue("f", pe_parameters().get_value("orientation"));
+}
+
+static PyObject* pe_py_aspect(PyObject *self, PyObject *args) {
+  return Py_BuildValue("f", pe_parameters().get_value("aspect"));
+}
+
 
 static PyMethodDef PeMethods[] = {
   {"pe_time",  pe_py_time, METH_VARARGS, 
    "(readonly) retrieves the current time, in seconds, since PhosphorEssence started running"},
+  {"pe_orientation",  pe_py_orientation, METH_VARARGS, 
+   "(readonly) retrieves the orientation of the screen"},
+  {"pe_aspect",  pe_py_aspect, METH_VARARGS, 
+   "Aspect ratio of the screen.  The screen coordinates vary horizontally from [-aspect +aspect] and vertically from [-1 +1]"},
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

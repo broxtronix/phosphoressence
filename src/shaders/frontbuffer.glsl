@@ -97,8 +97,10 @@ void main() {
     vec4 src2 = texture2D(backbuffer_texture, gl_TexCoord[0].st + vec2(0.0/framebuffer_radius,
                                                                        1.0/framebuffer_radius));
     vec4 x_deriv = src - src1;
-    vec4 y_deriv = src2 - src;
-    src = sqrt(x_deriv * x_deriv + y_deriv * y_deriv);
+    vec4 y_deriv = src - src2;
+    vec4 mag = sqrt(x_deriv * x_deriv + y_deriv * y_deriv);
+    vec4 orientation = atan(x_deriv, y_deriv);
+    src = mag;// * orientation;
     src.a = 1.0;
   }
 

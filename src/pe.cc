@@ -62,6 +62,10 @@ void setup_parameters() {
                                 "Causes the program to exit.");
   pe_parameters().add_parameter("window_startup", true, 0.0,
                                 "Causes the program to start up in windowed mode.");
+  pe_parameters().add_parameter("orientation", true, 0.0,
+                                "Set the orientation (0 = horizontal, 1 = vertical)");
+  pe_parameters().add_parameter("aspect", true, 1.0,
+                                "Aspect ratio of the screen.");
 }
 
 int main(int argc, char *argv[]) {
@@ -75,7 +79,8 @@ int main(int argc, char *argv[]) {
   po::options_description desc("Phosphoressence: the video feedback framework.");
   desc.add_options()
     ("help", "Display this help message")
-    ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.");
+    ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.")
+    ("vertical,v", "Rotate the canvas by 90 degrees for vertical projection.");
   po::variables_map vm;
   try {
     po::store( po::command_line_parser( argc, argv ).options(desc).run(), vm );
@@ -93,7 +98,8 @@ int main(int argc, char *argv[]) {
   if( vm.count("window") )
     pe_parameters().set_readonly("window_startup", 1.0);
 
-
+  if( vm.count("vertical") )
+    pe_parameters().set_readonly("orientation", 1.0);
 
   // Start up the Qt GUI
   QApplication app(argc, argv);

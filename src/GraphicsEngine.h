@@ -179,8 +179,7 @@ private:
   boost::shared_array<float> m_fluid_u, m_fluid_v;
   boost::shared_array<float> m_fluid_u_prev, m_fluid_v_prev; 
   boost::shared_array<float> m_fluid_density, m_fluid_density_prev;
-  float m_fluid_previous_time;
-  
+  float m_fluid_previous_time;  
   
   // Image Parameters
   vw::BBox2 m_current_viewport;

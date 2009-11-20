@@ -34,7 +34,7 @@ class BezierSprite(object):
         
     
     def render(self):
-        if (pe.vg_mode == 4):
+        if (pe.square_a != 0.0 and pe.vg_mode == 1):
             speed = 0.3
             start_point = [ math.cos(2*math.pi*0.42*speed*pe.time),  
                             math.cos(2*math.pi*0.17*speed*pe.time),  

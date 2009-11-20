@@ -26,7 +26,7 @@ class TestSprite(object):
 
     
     def render(self):
-        if (pe.vg_mode == 3):
+        if (pe.square_a != 0.0 and pe.vg_mode == 3):
             VG.set(VG_STROKE_LINE_WIDTH, 15.0)
 
             fill_paint = VG.ColorPaint((pe.square_r, pe.square_g, pe.square_b, pe.square_a))

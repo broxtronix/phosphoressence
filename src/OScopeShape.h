@@ -74,12 +74,13 @@ public:
     float left_cache[int(AUDIO_SAMPLE_RATE)];
     float right_cache[int(AUDIO_SAMPLE_RATE)];
     int idx = 0;
+
+    // Fetch the wave frequency
+    float f = pe_script_engine().get_parameter("wave_frequency");    
+    float aspect = pe_script_engine().get_parameter("aspect");    
     {
       vw::Mutex::Lock lock(m_mutex);
 
-      // Fetch the wave frequency
-      float f = pe_script_engine().get_parameter("wave_frequency");    
-      float aspect = pe_script_engine().get_parameter("aspect");    
 
       float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
       while (m_data.read_index != m_data.write_index) {
@@ -124,8 +125,16 @@ public:
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)
       if (x_cache[i-1] < x_cache[i]) {
-        glVertex2d(x_cache[i-1],  (left_cache[i-1]+right_cache[i-1])/2);
-        glVertex2d(x_cache[i], (left_cache[i]+right_cache[i])/2);
+
+        // Here we choose between drawing the scope vertically
+        // (orientation = 1.0) or horizonatally (orientation = 0.0).
+        if (pe_parameters().get_value("orientation") == 1.0) {
+          glVertex2d((left_cache[i-1]+right_cache[i-1])/2, x_cache[i-1]/aspect);
+          glVertex2d((left_cache[i]+right_cache[i])/2, x_cache[i]/aspect);
+        } else {
+          glVertex2d(x_cache[i-1],  (left_cache[i-1]+right_cache[i-1])/2);
+          glVertex2d(x_cache[i], (left_cache[i]+right_cache[i])/2);
+        }
 
 
         // Uncomment to draw two separate traces (one for each channel)

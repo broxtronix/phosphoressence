@@ -97,7 +97,7 @@ AX_PKG(VW_FILEIO,         [BOOST], [-lvwFileIO],      [vw/FileIO/DiskImageResour
 
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
-AX_PKG(RTAUDIO,           [],      [-lrtaudio], [RtAudio.h])
+AX_PKG(RTAUDIO,           [APPLE_COREAUDIO],      [-lrtaudio], [RtAudio.h])
 AX_PKG(LO,                [],      [-llo], [lo/lo.h])
 AX_PKG(SDL,               [],      [-lSDL], [SDL.h])
 

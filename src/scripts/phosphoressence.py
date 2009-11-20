@@ -18,7 +18,7 @@ ENABLE_PRESETS = 0
 ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
-JOY_DEBUG = 0;
+JOY_DEBUG = 1;
 OSC_DEBUG = 0;
 pe.show_fps = 1;
 
@@ -102,6 +102,15 @@ def pe_animate():
         pe.mv_r += 0.5 * math.sin(15/10.0*pe.time)
         pe.mv_g += 0.5 * math.sin(19/10.0*pe.time)
         pe.mv_b += 0.5 * math.sin(14/10.0*pe.time)
+
+        if pe.wave_move:
+            pe.kaleidoscope_x = (0.14*math.cos(1.421*pe.time*0.1) +
+                                 0.27*math.cos(1.421*pe.time*0.1))
+            pe.kaleidoscope_y = (0.27*math.cos(1.222*pe.time*0.1) +
+                                 0.15*math.cos(2.2322*pe.time*0.1))
+        else:
+            pe.kaleidoscope_x = 0
+            pe.kaleidoscope_y = 0
 
         # wave_x = wave_x + 0.200*( 0.60*sin(1.321*time) + 0.40*sin(1.621*time) );
         # wave_y = wave_y + 0.200*( 0.60*sin(1.742*time) + 0.40*sin(1.422*time) );

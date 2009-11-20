@@ -282,6 +282,8 @@ void main() {
 
   // Mix the two together.
   vec4 mixed_texel = mix(new_texel, prev_texel, echo_alpha);  
+
+  // Invert
   if (invert == 1.0) {
     mixed_texel.r = 1.0 - mixed_texel.r;
     mixed_texel.g = 1.0 - mixed_texel.g;

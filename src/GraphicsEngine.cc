@@ -150,6 +150,8 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
 
   // Other variables
   m_fps_avg = 30.0;
+  m_record = false;
+  m_record_frame_number = 0;
 
   // Set mouse tracking
   this->setMouseTracking(true);
@@ -190,8 +192,12 @@ void GraphicsEngine::drawImage() {
   // Call out to any PhosphorScripts that are running on the
   // JavaScript VM, allowing them to update parameters if they would
   // like.
-  pe_script_engine().set_parameter("aspect", m_aspect);
   pe_script_engine().execute("pe_animate()");
+  if (pe_parameters().get_value("orientation") == 1)  // vertical 
+    pe_parameters().set_readonly("aspect", 1.0/m_aspect);
+  else                                                // horizontal
+    pe_parameters().set_readonly("aspect", m_aspect);
+    
 
   // Make this context current, and store the current OpenGL state
   // before we start to modify it.
@@ -518,6 +524,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
 
   m_aspect = float(m_viewport_width) / m_viewport_height;
   m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
+  pe_parameters().set_value("aspect", m_aspect);
 
   // Set the framebuffer dimensions.  
   m_framebuffer_width = FRAMEBUFFER_SIZE;

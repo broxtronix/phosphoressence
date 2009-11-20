@@ -72,11 +72,9 @@ class SquareSprite(object):
             glColor4f(norm_color[0], norm_color[1], norm_color[2], pe.square_a)
 
             if pe.wave_move:
-                glTranslate(( 0.60*math.sin(2.121*pe.time*0.1) +
-                              0.40*math.sin(1.621*pe.time*0.1) ),
-                            ( 0.60*math.sin(1.742*pe.time*0.1) +
-                              0.40*math.sin(2.322*pe.time*0.1) ),
-                            0.0)
+                x = 0.60*math.sin(2.121*pe.time*0.1) + 0.40*math.sin(1.621*pe.time*0.1)
+                y = 0.60*math.sin(1.742*pe.time*0.1) + 0.40*math.sin(2.322*pe.time*0.1)
+                glTranslate(x,y,0.0)
             else:
                 glTranslate(pe.wave_x * 2.0 - 1.0,
                             pe.wave_y * 2.0 - 1.0,
@@ -145,8 +143,8 @@ class BorderSprite(object):
 pe_graphics = PeGraphics()
 pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
-pe_graphics.register(WheelSprite())
-pe_graphics.register(EarthquakeSprite())
+#pe_graphics.register(WheelSprite())
+#pe_graphics.register(EarthquakeSprite())
 pe_graphics.register(BezierSprite())
 pe_graphics.register(PolyBouncerSprite(5))
 pe_graphics.register(TestSprite())

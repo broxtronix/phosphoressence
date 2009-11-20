@@ -120,6 +120,8 @@ class PhosphorEssence(object):
 
     # The time parameter is special, so we bind it by hand.
     time = property(pe_cpp_bridge.pe_time, set_read_only)    
+    orientation = property(pe_cpp_bridge.pe_orientation, set_read_only)    
+    aspect = property(pe_cpp_bridge.pe_aspect, set_read_only)    
 
     # ------------------------- --------- ---------------------------
 
@@ -209,10 +211,6 @@ pe.register(Parameter( name = "fps",
 pe.register(Parameter( name = "frame",
                        description = "(readonly) retrieves the number of frames of animation " +
                        "elapsed since the program started",
-                       read_only = True))
-pe.register(Parameter( name = "aspect",
-                       description = "Aspect ratio of the screen.  The screen coordinates " +
-                       "vary horizontally from [-aspect +aspect] and vertically from [-1 +1]",
                        read_only = True))
 pe.register(Parameter( name = "meshx",
                        description = "(readonly)  tells you the user's mesh size in the " +
@@ -317,7 +315,7 @@ pe.register(Parameter( name = "warp_scale",
 
 pe.register(Parameter( name = "fluid_viscosity",
                        description = "controls the viscosity of the fluid dynamics effect.",
-                       default_value = 0.00001 ))
+                       default_value = 0.0005 ))
 pe.register(Parameter( name = "fluid_diffusion",
                        description = "controls the diffusion rate of pressure in the fluid effect.",
                        default_value = 1.0 ))
@@ -634,7 +632,7 @@ pe.register(Parameter( name = "kaleidoscope",
 
 pe.register(Parameter( name = "kaleidoscope_radius",
            description = "Set the radius for the kaleidoscope effect.",
-           default_value = 0.15))
+           default_value = 0.25))
 
 pe.register(Parameter( name = "kaleidoscope_x",
            description = "Set the x position for the kaleidoscope effect.",

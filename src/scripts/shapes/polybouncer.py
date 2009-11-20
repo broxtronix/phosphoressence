@@ -22,7 +22,7 @@ class PolyBouncerSprite(object):
             self.directions[1,i] = round(random()) * 2.0 - 1.0
     
     def render(self):
-        if (pe.vg_mode == 2):
+        if (pe.square_a != 0.0 and pe.vg_mode == 2):
             num_points = self.points.shape[1]
 
             for i in range(num_points):

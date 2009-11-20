@@ -302,7 +302,8 @@ void GraphicsEngine::drawFeedback() {
       m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3]));
 
       // Apply the fluid rotation effect
-      if (radius != 0) {
+      //      if (radius != 0) {
+      if (radius > 0.8 && radius < 1.2) {
         float direction_u = (v/radius);
         float direction_v = (-u/radius);
         m_fluid_u_prev[IX(i+1,j+1)] += rot_rate * direction_u;
