@@ -31,6 +31,7 @@ public:
   }
 
   virtual void draw(float time, float gain) {
+
     glLoadIdentity();
     float wave_x = pe_script_engine().get_parameter("wave_x")*2-1;
     float wave_y = pe_script_engine().get_parameter("wave_y")*2-1;

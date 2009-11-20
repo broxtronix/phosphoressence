@@ -30,10 +30,6 @@
 #include <string>
 #include <list>
 
-// ShivaVG
-#include <vg/openvg.h>
-#include <vg/vgu.h>
-
 // PhosphorEssence
 #include <ScriptEngine.h>
 
@@ -151,6 +147,7 @@ private:
   void drawLegend(QPainter *painter);
   void updateCurrentMousePosition();
   void saveFeedback();
+  void recordFrame();
 
   // Graphic Elements (see GraphicElements.cc for imlementations)
   void drawFeedback();
@@ -174,6 +171,8 @@ private:
   QTimer *m_timer;
   double m_fps_last_time;
   double m_fps_avg;
+  bool m_record;
+  int m_record_frame_number;
 
   // Mouse positions and legend information
   QPoint lastPos;
@@ -195,13 +194,6 @@ private:
   
   // Image Parameters
   vw::BBox2 m_current_viewport;
-
-  // Testing ShivaVG
-  VGPath m_iApple;
-  VGPath m_iPear;
-  VGPath m_iMorph;
-  VGPaint m_fill;
-
 };
 
 #endif  // __GRAPHICS_ENGINE_H__

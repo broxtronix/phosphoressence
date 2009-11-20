@@ -8,6 +8,7 @@
 #include <pe_config.h>
 #include <MainWindow.h>
 #include <GraphicsEngine.h>
+#include <PeParameters.h>
 
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Image/Statistics.h>
@@ -39,8 +40,12 @@ MainWindow::MainWindow() {
   // create_menus();
 
   // Maximize the main window
-  this->showMaximized();
-  //this->showFullScreen();
+  if (pe_parameters().get_value("window_startup")) {
+    this->resize(640,480);
+    this->show();
+  } else {
+    this->showFullScreen();
+  }
 }
 
 //********************************************************************
