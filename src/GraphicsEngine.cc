@@ -341,7 +341,11 @@ void GraphicsEngine::drawImage() {
 
   // Swap the buffer and render to the screen.
   this->recordFrame();
+
+  // Note: this seems to be necessary on QT4.6 preview on OSX 10.6
+#ifdef __APPLE__
   this->swapBuffers();
+#endif
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -401,29 +405,6 @@ void GraphicsEngine::updateCurrentMousePosition() {
 // --------------------------------------------------------------
 //             GraphicsEngine Setup Methods
 // --------------------------------------------------------------
-void GraphicsEngine::setup() {
-  if (!QGLFormat::hasOpenGL()) {
-    vw::vw_out(0) << "This system has no OpenGL support.\nExiting\n\n";
-    exit(1);
-  }
-
-  // Feedback
-  m_feedback_texcoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
-  m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
-  m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
-
-  m_fps_avg = 30.0;
-  m_record = false;
-  m_record_frame_number = 0;
-
-  // Set mouse tracking
-  this->setMouseTracking(true);
-
-  // Set the size policy that the widget can grow or shrink and still
-  // be useful.
-  this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-}
-
 void GraphicsEngine::saveFeedback() {
 
   // Activate the framebuffer.  All of the following steps pull data

@@ -11,8 +11,8 @@ from shapes.polybouncer import *
 from shapes.wheelsprite import *
 from shapes.earthquakesprite import *
 from shapes.vu_spirals import *
-from shapes.bezierchaos import *
-from shapes.vectorbrush import *
+#from shapes.bezierchaos import *
+#from shapes.vectorbrush import *
 
 class PeGraphics(object):
 
@@ -147,6 +147,6 @@ pe_graphics.register(EarthquakeSprite())
 pe_graphics.register(BezierSprite())
 pe_graphics.register(PolyBouncerSprite(5))
 pe_graphics.register(TestSprite())
-pe_graphics.register(VectorBrush())
+#pe_graphics.register(VectorBrush())
 #pe_graphics.register(BezierChaos())
 #pe_graphics.register(VuSpiralSprite(1))
