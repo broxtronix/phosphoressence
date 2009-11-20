@@ -256,6 +256,7 @@ void GraphicsEngine::drawImage() {
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
+  glDisable(GL_BLEND);
   if (pe_script_engine().get_parameter("wave_enabled") ) {
     std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
     for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
@@ -340,7 +341,12 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
+  this->recordFrame();
+
+  // Note: this seems to be necessary on QT4.6 preview on OSX 10.6
+#ifdef __APPLE__
   this->swapBuffers();
+#endif
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
@@ -411,6 +417,33 @@ void GraphicsEngine::saveFeedback() {
   glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, 
                    m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void GraphicsEngine::recordFrame() {
+  if (m_record) {
+    std::ostringstream ostr;    
+    ostr << "/tmp/pe_frame_";
+    for (int i = 1; i < 5; ++i) {
+      if (int(m_record_frame_number / pow(10,i)) == 0) {
+        ostr << "0";
+      }
+    }
+    ostr << m_record_frame_number << ".jpg";
+    std::cout << "Recording frame: " << ostr.str() << "\n";
+    
+    // Deactivate the framebuffer.  Make sure we are reading pixels from
+    // the screen.
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+    ImageView<PixelRGB<uint8> > image(m_viewport_width, m_viewport_height);
+    glReadPixels(0,0,m_viewport_width,m_viewport_height,
+                 GL_RGB, GL_UNSIGNED_BYTE,&(image(0,0)));
+    write_image(ostr.str(), image);
+
+
+    m_record_frame_number++;
+  }
+  
 }
 
 void GraphicsEngine::initializeGL() {  
@@ -652,7 +685,11 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
     break;
 
   case Qt::Key_R:  
-    pe_script_engine().execute("PePreset.random_preset();");
+    m_record = !m_record;
+    if (m_record) 
+      std::cout << "Starting screen capture.\n";
+    else
+      std::cout << "Stopping screen capture.  Results can be found in /tmp\n";
     break;
 
   case Qt::Key_Up:  

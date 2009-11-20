@@ -30,6 +30,10 @@
 #include <QApplication>
 #include <QWidget>
 
+// Boost
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 // VW
 #include <vw/Core.h>
 #include <vw/Image.h>
@@ -56,14 +60,40 @@ using namespace vw;
 void setup_parameters() {
   pe_parameters().add_parameter("exit", true, 0.0,
                                 "Causes the program to exit.");
+  pe_parameters().add_parameter("window_startup", true, 0.0,
+                                "Causes the program to start up in windowed mode.");
 }
 
 int main(int argc, char *argv[]) {
 
-  std::cout << "\nStarting PhosphorEssence v0.3\n\n";
+  std::cout << "\nStarting PhosphorEssence v0.4\n\n";
 
-  // Set up bindings for the OSC Controller
+  // Setup the pe parameters object
   setup_parameters();
+
+  // Parse command line options
+  po::options_description desc("Phosphoressence: the video feedback framework.");
+  desc.add_options()
+    ("help", "Display this help message")
+    ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.");
+  po::variables_map vm;
+  try {
+    po::store( po::command_line_parser( argc, argv ).options(desc).run(), vm );
+    po::notify( vm );
+  } catch (boost::program_options::unknown_option &e) {
+    std::cout << "An error occured when parsing command line options: " << e.what() << "\n";
+    exit(0);
+  }
+
+  if( vm.count("help") ) {
+    std::cout << desc << std::endl;
+    exit(0);
+  }
+
+  if( vm.count("window") )
+    pe_parameters().set_readonly("window_startup", 1.0);
+
+
 
   // Start up the Qt GUI
   QApplication app(argc, argv);

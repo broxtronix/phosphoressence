@@ -190,9 +190,6 @@ class JoystickController(object):
             else: pe.set_control_value('ib_a', 1.0)
 
         # Vector Field
-#        if (path == "/joystick0/button1" and value == 1): 
-#            if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
-#            else: pe.set_control_value('mv_a', 1.0);    
         if (path == "/joystick0/button1" and value == 1):
             pe.vg_mode = pe.vg_mode + 1;
             if (pe.vg_mode > 4):
@@ -333,16 +330,9 @@ class JoystickController(object):
 
 
         # Reset center of rotation, scaling, and zoom exponent
-        if (path == "/joystick0/button5" and value == 1.0): 
+        if (path == "/joystick0/button5" and value == 1.0):
             if (pe.invert): pe.set_control_value('invert', 0.0)
             else: pe.set_control_value('invert', 1.0)
-#            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
-#            else: pe.set_control_value('wave_usedots', 1.0)
-
-#        if (path == "/joystick0/button5" and value == 1.0): 
-#            if (pe.invert): pe.set_control_value('invert', 0.0)
-#            else: pe.set_control_value('invert', 1.0)
-
 
         # Warp
         # if (path == "/joystick0/button0" and value == 1.0):

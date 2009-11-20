@@ -130,6 +130,7 @@ private:
   void drawLegend(QPainter *painter);
   void updateCurrentMousePosition();
   void saveFeedback();
+  void recordFrame();
 
   // Graphic Elements (see GraphicElements.cc for imlementations)
   void drawFeedback();
@@ -153,6 +154,8 @@ private:
   QTimer *m_timer;
   double m_fps_last_time;
   double m_fps_avg;
+  bool m_record;
+  int m_record_frame_number;
 
   // Mouse positions and legend information
   QPoint lastPos;
