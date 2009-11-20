@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <vector>
 
 #include <vw/Core/Thread.h>
 #include <boost/shared_ptr.hpp>
@@ -55,7 +56,8 @@ public:
   Controller(std::string name) : m_name(name) {}
   virtual ~Controller() {}
   void receive_callback(std::string path, float value);
- 
+  void receive_callback(std::string path, std::vector<float> value);
+
   virtual void send(std::string path, float value) = 0;
 };
 

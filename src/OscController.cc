@@ -24,10 +24,11 @@ void error(int num, const char *msg, const char *path) {
 
 int generic_handler(const char *path, const char *types, lo_arg **argv,
 		    int argc, void *data, void *user_data) {
+  std::vector<float> vec;
   for (int i = 0; i < argc; ++i) {
-    float value = argv[i]->f32;
-    ((OscController*)user_data)->member_callback(path, value, i);
+    vec.push_back(argv[i]->f32);
   }
+  ((OscController*)user_data)->member_callback(path, vec);
   return 1;
 }
 
@@ -58,13 +59,7 @@ void OscController::send(std::string path, float value) {
 //   lo_send(m_send_addr, path.c_str(), "ff", value1, value2);
 // }
 
-void OscController::member_callback(std::string path, float value, int index) {
-  if (path == "/1/xy1" && index == 0) {
-    this->receive_callback("/1/xy1/0", value);
-  } else if (path == "/1/xy1" && index == 1) {
-    this->receive_callback("/1/xy1/1", value);
-  } else {
-    this->receive_callback(path, value);
-  }
+void OscController::member_callback(std::string path, std::vector<float> args) {
+  this->receive_callback(path, args);
 }
 

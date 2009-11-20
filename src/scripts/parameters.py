@@ -284,6 +284,10 @@ pe.register(Parameter( name = "gamma",
                        "1=normal, 2=double, 3=triple, etc.",
                        default_value = 1.0))
 
+pe.register(Parameter( name = "edge_filter",
+                       description = "0/1    turns on an edge filter in the frontbuffer",
+                       default_value = 0.0))
+
 # ZOOM PARAMETERS
 pe.register(Parameter( name = "zoom",
                        description = "controls inward/outward motion.  " + 
@@ -631,6 +635,14 @@ pe.register(Parameter( name = "kaleidoscope",
 pe.register(Parameter( name = "kaleidoscope_radius",
            description = "Set the radius for the kaleidoscope effect.",
            default_value = 0.15))
+
+pe.register(Parameter( name = "kaleidoscope_x",
+           description = "Set the x position for the kaleidoscope effect.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "kaleidoscope_y",
+           description = "Set the y position for the kaleidoscope effect.",
+           default_value = 0.0))
 
 pe.register(Parameter( name = "wave_move",
            description = "Cause the wave shapes to move.",

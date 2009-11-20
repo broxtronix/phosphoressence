@@ -9,6 +9,8 @@ from parameters import pe
 from presets import PePreset
 from graphics import pe_graphics
 from controllers import OscController, JoystickController
+from shapes.videoshape import VideoShapes
+
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
@@ -17,12 +19,15 @@ ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 JOY_DEBUG = 0;
-OSC_DEBUG = 1;
+OSC_DEBUG = 0;
 pe.show_fps = 1;
 
 # Instantiate hardware controllers
 osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
+
+# Create a video shape
+vshape = VideoShapes()
 
 # Default initialization handler
 #
@@ -31,7 +36,8 @@ joystick = JoystickController(JOY_DEBUG)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pass
+    pe_graphics.register(vshape)
+    osc.register_shape(vshape)
 
     # Load Milkdrop Presets & Bookmarks
     # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
@@ -43,7 +49,6 @@ def pe_initialize():
 # or augmenting this method, programmers can animate PhosphorEssence
 # parameters.
 def pe_animate():
-
     if ( ENABLE_PRESETS ) :
         preset = PePreset.current_preset()
         if (preset):
@@ -57,7 +62,7 @@ def pe_animate():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
-        # joystick.render_callback()
+        joystick.render_callback()
 
         # Update osc parameters
         osc.render_callback()
@@ -116,6 +121,8 @@ def pe_animate():
 # This method is called by the GraphicsEngine as it renders each frame.
 def pe_render():
     pe_graphics.render()
+    pe.set_control_value('rot_rate',0)
+    pe.set_control_value('zoom_rate',0)
 
 def pe_render_back():
     pe_graphics.render_back()

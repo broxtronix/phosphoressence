@@ -211,6 +211,8 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("edge_extend", pe_script_engine().get_parameter("wrap"));
   m_gpu_backbuffer_program->set_input_float("kaleidoscope", pe_script_engine().get_parameter("kaleidoscope"));
   m_gpu_backbuffer_program->set_input_float("kaleidoscope_radius", pe_script_engine().get_parameter("kaleidoscope_radius"));
+  m_gpu_backbuffer_program->set_input_float("kaleidoscope_x", pe_script_engine().get_parameter("kaleidoscope_x"));
+  m_gpu_backbuffer_program->set_input_float("kaleidoscope_y", pe_script_engine().get_parameter("kaleidoscope_y"));
   m_gpu_backbuffer_program->set_input_float("echo_zoom", pe_script_engine().get_parameter("echo_zoom"));
   m_gpu_backbuffer_program->set_input_float("echo_alpha", pe_script_engine().get_parameter("echo_alpha"));
   m_gpu_backbuffer_program->set_input_float("echo_orient", pe_script_engine().get_parameter("echo_orient"));

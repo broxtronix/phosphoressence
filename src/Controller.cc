@@ -13,5 +13,10 @@ void Controller::receive_callback(std::string path, float value) {
 }
 
 
+void Controller::receive_callback(std::string path, std::vector<float> values) {
+  pe_script_engine().controller_receive_callback(m_name.c_str(), path.c_str(), values);
+}
+
+
 
 

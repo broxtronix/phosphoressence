@@ -307,6 +307,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_frontbuffer_program->set_input_float("brighten", pe_script_engine().get_parameter("brighten"));
   m_gpu_frontbuffer_program->set_input_float("darken", pe_script_engine().get_parameter("darken"));
   m_gpu_frontbuffer_program->set_input_float("solarize", pe_script_engine().get_parameter("solarize"));
+  m_gpu_frontbuffer_program->set_input_float("edge_filter", pe_script_engine().get_parameter("edge_filter"));
     
   // Determine the dimensions of the sub-window for drawing from the
   // framebuffer texture.

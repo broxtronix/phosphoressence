@@ -21,6 +21,7 @@ class VectorBrush(object):
         VG.create_context((2048,2048))
 
     def render(self):
+        return
         smack = 1/2048.0
         glScale(smack,smack,1.0)
 
@@ -31,7 +32,7 @@ class VectorBrush(object):
         # Create the path (a simple circle for now...)
         p = VG.Path()
         r = 0.1
-        VGU.ellipse(p, (pe.vg_x,pe.vg_y), (r,r))
+        VGU.ellipse(p, (pe.kaleidoscope_x,pe.kaleidoscope_y), (r,r))
 
         # Set up the drawing and painting parameters
         pe.vg_stroke_r = 0.5 + 0.35 * math.sin(7/10.0*pe.time)

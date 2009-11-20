@@ -16,11 +16,12 @@ C++ Prerequisites:
 
 Python
   - pyrex (needed to install pyopenvg)
+  - freetype (needed by pyopenvg)
   - pyopengl
 
 You will also need to install these for vector graphics support:
   - shivavg 
-  - pyopenvg
+  - pyopenvg (<-- edit setup.cfg to configure for your environment, and comment out the 'compiler=' line...)
 
 Note that shivavg does not build natively on OSX.  You may need to do
 some very minor tweaking to the shivavg build system to get it to

@@ -19,6 +19,8 @@ uniform float zoomexp;
 uniform float rot;
 uniform float dx;
 uniform float dy;
+uniform float kaleidoscope_x;
+uniform float kaleidoscope_y;
 
 uniform float q1;
 uniform float q2;
@@ -214,6 +216,9 @@ void main() {
 
   if (kaleidoscope == 1.0) {
 
+    remapped_coords.x -= kaleidoscope_x;
+    remapped_coords.y -= kaleidoscope_y;
+
     vec2 p = vec2(remapped_coords.x, remapped_coords.y-kaleidoscope_radius);
     float bottom = -kaleidoscope_radius / 2.0;
 
@@ -234,6 +239,9 @@ void main() {
     // Bottom mirror
     else if (remapped_coords.y < bottom)
       remapped_coords.y = -(remapped_coords.y-bottom)+bottom;
+
+    remapped_coords.x += kaleidoscope_x;
+    remapped_coords.y += kaleidoscope_y;
   }
 
   // Remap the coordinates back into texture coordinate space: [0.0,1.0]

@@ -8,6 +8,7 @@
 
 #include <Python.h>
 #include <iostream>
+#include <vector>
 #include <vw/Core/Stopwatch.h>
 #include <vw/Core/Thread.h>
 
@@ -47,6 +48,7 @@ public:
   virtual void execute(std::string const& cmd);
 
   void controller_receive_callback(const char* controller_name, const char* path, double value);
+  void controller_receive_callback(const char* controller_name, const char* path, std::vector<float> value);
 
 };
 

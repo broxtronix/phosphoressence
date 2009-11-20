@@ -21,5 +21,5 @@ public:
   virtual ~OscController() {}
 
   virtual void send(std::string path, float value);
-  void member_callback(std::string path, float value, int index);
+  void member_callback(std::string path, std::vector<float> args);
 };

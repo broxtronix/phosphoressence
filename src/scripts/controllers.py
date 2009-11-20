@@ -8,7 +8,11 @@ import math
 
 class OscController(object):
 
+    def register_shape(self, shape):
+        self._shapes.append(shape)
+
     def __init__(self, osc_debug = False):
+        self._shapes = []
         self.OSC_DEBUG = osc_debug
         self.bindings = PeBindings()
 
@@ -50,8 +54,16 @@ class OscController(object):
 #        self.bindings.add(self, "/wii/1/accel/pry/1", "rot", 0.785, -0.785, 1.0)
 #        self.bindings.add(self, "/wii/1/accel/pry/2", "decay", 0.9, 1.1, 1.0)
 
+    def receive_callback(self, path, values):
 
-    def receive_callback(self, path, value):
+        if (path == "/xyxyM"):
+            for s in self._shapes:
+                s.add_video_shape(values)
+
+        if (path == "/xy"):
+            pe.set_control_value('kaleidoscope_x', values[0])
+            pe.set_control_value('kaleidoscope_y', values[1])
+            
 
         # Capture the rotation rate
         rot_rate_gain = 0.05
@@ -72,8 +84,8 @@ class OscController(object):
             pe.set_control_value('rot_rate', 0.0);
 
         if (self.OSC_DEBUG and (path.find("pry") == -1)):
-            print("[OSC]    Path: " + path + "   Value: " + str(value))
-        self.bindings.controller_to_parameter(self, path, value)
+            print("[OSC]    Path: " + path + "   Value: " + str(values))
+        self.bindings.controller_to_parameter(self, path, values[0])
     
     def render_callback(self): 
         pass
@@ -92,7 +104,7 @@ class JoystickController(object):
         # Priceless
         self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
         self.bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
-        self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
+        self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 1.0, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -127,7 +139,8 @@ class JoystickController(object):
         pe.kaleidoscope_radius=0.15
         
 
-    def receive_callback(self, path, value): 
+    def receive_callback(self, path, value):
+
 
         # Darken the center when gain is high!  This helps to keep
         # things "under control."
@@ -214,6 +227,21 @@ class JoystickController(object):
                 pe.set_control_value('wave_y',0.5)
             else: pe.set_control_value('wave_move', 1.0)
 
+
+        # Capture the rotation rate
+        rot_rate_gain = -0.05
+        if (path == "/joystick0/axis0"):
+            delta = (value-0.5) * rot_rate_gain
+            if (math.fabs(value-0.5) > 0.05):
+                pe.set_control_value('rot_rate', delta)
+                print "Setting rot-rat: " + str(pe.rot_rate)
+
+        # Capture the zoom rate
+        zoom_rate_gain = 0.02
+        if (path == "/joystick0/axis1"): 
+            delta = (value-0.5) * zoom_rate_gain
+            if (math.fabs(value-0.5) > 0.05): 
+                pe.set_control_value('zoom_rate', delta)
 
         # Rotation
         rot_gain = 0.01

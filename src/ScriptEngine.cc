@@ -118,7 +118,9 @@ void ScriptEngine::set_parameter(const char* name, double value) {
   PyGILState_Release(gstate);
 }
 
-void ScriptEngine::controller_receive_callback(const char* controller_name, const char* path, double value) {
+void ScriptEngine::controller_receive_callback(const char* controller_name, 
+                                               const char* path, 
+                                               double value) {
   if (!m_command_prompt_task->active())
     return;
 
@@ -141,6 +143,92 @@ void ScriptEngine::controller_receive_callback(const char* controller_name, cons
   // Release the thread. No Python API allowed beyond this point. 
   PyGILState_Release(gstate);
 }
+
+void ScriptEngine::controller_receive_callback(const char* controller_name, 
+                                               const char* path, 
+                                               std::vector<float> values) {
+
+  if (!m_command_prompt_task->active())
+    return;
+
+  // Acquire the python Global Interpreter Lock (GIL)
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  
+  // Create the Python float object and set it's value in the global
+  // dictionary.
+  PyObject* controller = PyObject_GetAttrString(m_command_prompt_task->main_module(), controller_name);  
+  if (controller == NULL) { PyErr_Print(); return; }
+  PyObject* receive_callback = PyObject_GetAttrString(controller, "receive_callback");  
+  if (receive_callback == NULL) { PyErr_Print(); return; }
+
+  PyObject* mylist = PyList_New(values.size());
+  
+  float test = 4.0;
+
+  if (values.size() == 1) {
+    PyObject* arglist = Py_BuildValue("s[f]", path, values[0]);
+    PyEval_CallObject(receive_callback, arglist);
+  }
+  else if (values.size() == 2) {
+    PyObject* arglist = Py_BuildValue("s[ff]", path, values[0], values[1]);
+    PyEval_CallObject(receive_callback, arglist);
+  }
+  else if (values.size() == 3) {
+    PyObject* arglist = Py_BuildValue("s[fff]", path, values[0], values[1], values[2]);
+    PyEval_CallObject(receive_callback, arglist);
+  }
+  else if (values.size() == 4) {
+    PyObject* arglist = Py_BuildValue("s[ffff]", path, values[0], values[1], 
+                                      values[2], values[3]);
+    PyEval_CallObject(receive_callback, arglist);
+  }
+  else if (values.size() == 5) {
+    PyObject* arglist = Py_BuildValue("s[fffff]", path, values[0], values[1], 
+                                      values[2], values[3], values[4]);
+
+    PyEval_CallObject(receive_callback, arglist);
+  }
+  Py_DECREF(controller);
+  Py_DECREF(receive_callback);
+
+  // Release the thread. No Python API allowed beyond this point. 
+  PyGILState_Release(gstate);
+}
+
+// void ScriptEngine::controller_receive_callback(const char* controller_name, const char* path, 
+//                                                std::vector<float> values) {
+
+
+//   if (!m_command_prompt_task->active())
+//     return;
+
+//   // Acquire the python Global Interpreter Lock (GIL)
+//   PyGILState_STATE gstate = PyGILState_Ensure();
+
+//   // Create the Python float object and set it's value in the global
+//   // dictionary.
+//   PyObject* controller = PyObject_GetAttrString(m_command_prompt_task->main_module(), 
+//                                                 controller_name);  
+//   if (controller == NULL) { PyErr_Print(); return; }
+//   PyObject* receive_callback = PyObject_GetAttrString(controller, "receive_callback");  
+//   if (receive_callback == NULL) { PyErr_Print(); return; }
+
+//   PyObject* mytuple = PyTuple_New(values.size());
+
+//   float test = 4.0;
+//   PyEval_CallFunction(receive_callback, "sf", path, test);
+
+//   std::cout << "OSC #3 " << controller_name << "!!! > " << path << " : ";
+//   for (int i=0; i< values.size(); ++i)
+//     std::cout << values[i] << " ";
+//   std::cout << "\n";
+
+//   Py_DECREF(controller);
+//   Py_DECREF(receive_callback);
+
+//   // Release the thread. No Python API allowed beyond this point. 
+//   PyGILState_Release(gstate);
+// }
 
 void ScriptEngine::execute(std::string const& cmd) {
   if (!m_command_prompt_task->active()) {

@@ -18,7 +18,7 @@ class Binding(object):
 class PeBindings(object):
     def __init__(self, debug = False):
         self._bindings = {}
-        self.DEBUG = True
+        self.DEBUG = False
 
         # Send updates from the controller to the parameters
     def controller_to_parameter(self, controller, path, value):
@@ -61,7 +61,7 @@ class PeBindings(object):
 
     def add(self, controller, path, parameter, lo, hi, default_value = 0.0, mode = "linear"):
 	self._bindings[parameter] = Binding(controller, path, parameter, lo, hi, default_value, mode)
-	#        this.parameter_to_controller(parameter, default_value)
+        # this.parameter_to_controller(parameter, default_value)
 
     def reset(self):
         for b in self._bindings:
