@@ -59,10 +59,10 @@ void OscController::send(std::string path, float value) {
 // }
 
 void OscController::member_callback(std::string path, float value, int index) {
-  if (path == "/1/xy" && index == 0) {
-    this->receive_callback("/1/xy/0", value);
-  } else if (path == "/1/xy" && index == 1) {
-    this->receive_callback("/1/xy/1", value);
+  if (path == "/1/xy1" && index == 0) {
+    this->receive_callback("/1/xy1/0", value);
+  } else if (path == "/1/xy1" && index == 1) {
+    this->receive_callback("/1/xy1/1", value);
   } else {
     this->receive_callback(path, value);
   }

@@ -40,7 +40,6 @@ using namespace vw::GPU;
 #include <vg/openvg.h>
 #include <vg/vgu.h>
 
-
 // Switch from uin8 to floating point textures
 #define PE_GL_FORMAT GL_RGBA16F_ARB
 //#define PE_GL_FORMAT GL_RGBA
@@ -101,6 +100,65 @@ void check_gl_errors( void )
 //               GraphicsEngine Public Methods
 // --------------------------------------------------------------
 
+GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) : 
+  QGLWidget(frmt, parent) {
+
+  if (!QGLFormat::hasOpenGL()) {
+    vw::vw_out(0) << "This system has no OpenGL support.\nExiting\n\n";
+    exit(1);
+  }
+
+  if (!format().sampleBuffers())
+    std::cout << "\n\nCould not activate FSAA; results will be suboptimal\n\n";
+  if (!format().doubleBuffer())
+    std::cout << "\n\nCould not set double buffering; results will be suboptimal\n\n";
+
+  // Feedback
+  m_feedback_texcoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
+  m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
+  m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
+
+  // Fluid simulation
+  //
+  // First we check to make sure the mesh size and fluid size are the
+  // same (and are both square).  If they aren't then wacky things
+  // could happen, including a seg fault.  Someday I'll go through the
+  // fluid code and add support for non-square meshes, but for now
+  // this prevents future Michael from suffering if he forgets this
+  // constraint.
+  VW_ASSERT(HORIZ_MESH_SIZE == FLUID_DIMENSION, 
+            NoImplErr() << "Mesh size and FLUID_DIMENSION are not equal!");
+  VW_ASSERT(VERT_MESH_SIZE == FLUID_DIMENSION, 
+            NoImplErr() << "Mesh size and FLUID_DIMENSION are not equal!");
+
+  m_fluid_previous_time = pe_time();
+  m_fluid_u.reset(new float[FLUID_SIZE]);
+  m_fluid_v.reset(new float[FLUID_SIZE]);
+  m_fluid_u_prev.reset(new float[FLUID_SIZE]);
+  m_fluid_v_prev.reset(new float[FLUID_SIZE]);
+  m_fluid_density.reset(new float[FLUID_SIZE]);
+  m_fluid_density_prev.reset(new float[FLUID_SIZE]);
+
+  for (int i=0; i < FLUID_SIZE; ++i) {
+    m_fluid_u[i] = 0.0;
+    m_fluid_v[i] = 0.0;
+    m_fluid_u_prev[i] = 0.0;
+    m_fluid_v_prev[i] = 0.0;
+    m_fluid_density[i] = 0.0;
+    m_fluid_density_prev[i] = 0.0;
+  }
+
+  // Other variables
+  m_fps_avg = 30.0;
+
+  // Set mouse tracking
+  this->setMouseTracking(true);
+
+  // Set the size policy that the widget can grow or shrink and still
+  // be useful.
+  this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+}
+
 GraphicsEngine::~GraphicsEngine() {
 
   // De-allocate feedback texture and PBO
@@ -124,6 +182,9 @@ void GraphicsEngine::drawImage() {
   if (pe_parameters().get_value("exit")) 
     emit pe_quit();
 
+  if (!pe_script_engine().get_parameter("initialized")) 
+    return;
+
   // ------------------------ <Scripts> -------------------------
 
   // Call out to any PhosphorScripts that are running on the
@@ -146,9 +207,9 @@ void GraphicsEngine::drawImage() {
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
   // Set the background color and viewport.
-  qglClearColor(QColor(0, 0, 0)); // Black Background
-  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  qglClearColor(QColor(0, 0, 0, 1.0)); // Black Background
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  //  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
 
   // Set up the orthographic view of the scene.  The exact extent of
@@ -279,8 +340,8 @@ void GraphicsEngine::drawImage() {
   }
 
   // Swap the buffer and render to the screen.
-  //  this->swapBuffers();
   this->recordFrame();
+  this->swapBuffers();
 
   // Recompute FPS
   double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;

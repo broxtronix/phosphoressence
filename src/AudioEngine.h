@@ -8,7 +8,8 @@
 
 #include <vw/Core.h>
 #include <vw/Math/Vector.h>
-#include <portaudio.h>
+
+#include <RtAudio.h>
 
 #include <PeParameters.h>
 #include <FFT.h>
@@ -91,29 +92,24 @@ public:
 class AudioThread {
   vw::Mutex m_mutex;
 
-  // Port Audio Input Stream
-  PaStream *m_stream;
+  // RtAudio device
+  RtAudio m_adc;
 
   // List of Audio Listeners
   std::list<boost::shared_ptr<AudioListener> > m_listeners;
 
 public:
-  int member_callback(const void *input, void *output,
-                      unsigned long frameCount,
-                      const PaStreamCallbackTimeInfo* timeInfo,
-                      PaStreamCallbackFlags statusFlags);
+  int member_callback( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+                       double streamTime, RtAudioStreamStatus status );
 
-  // This static class helps to bridge the gap between PortAudio's C
+  // This static class helps to bridge the gap between RtAudio's C
   // API and the world of C++.  It simply forwards the callback to
   // this instance's member_callback() method.
-  static int pa_callback(const void *input, void *output,
-                         unsigned long frameCount,
-                         const PaStreamCallbackTimeInfo* timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData ) {
-    return ((AudioThread*)userData)->member_callback(input, output, 
-                                                     frameCount, timeInfo, 
-                                                     statusFlags);
+  static int static_callback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+                             double streamTime, RtAudioStreamStatus status, void *userData ) {
+    return ((AudioThread*)userData)->member_callback(outputBuffer, inputBuffer, nBufferFrames,
+                                                     streamTime, status);
+
   }
   
   AudioThread(int sample_rate = AUDIO_SAMPLE_RATE);

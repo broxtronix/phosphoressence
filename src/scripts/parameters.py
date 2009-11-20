@@ -180,6 +180,10 @@ pe = PhosphorEssence()
 # Someday when I have more time these might get properly moved to the
 # python/c bridge where thery can be locked down properly.
 
+pe.register(Parameter( name = "initialized",
+                       description = "This special parameter is set to true once the scripting engine has be activated",
+                       default_value = 1.0,
+                       read_only = True))
 pe.register(Parameter( name = "x",
                        description = "Retrieves the x-position of the current pixel" +
                        "(for per-pixel equations)",
@@ -286,6 +290,10 @@ pe.register(Parameter( name = "zoom",
                        "0.9=zoom out 10% per frame, 1.0=no zoom, 1.1=zoom in 10%",
                        default_value = 1.0 ))
 
+pe.register(Parameter( name = "zoom_rate",
+                       description = "Rate of inward/outward zoom",
+                       default_value = 0.0 ))
+
 pe.register(Parameter( name = "zoomexp",
                        description = ">0     controls the curvature of the zoom; 1=normal",
                        default_value = 1.0 ))
@@ -303,10 +311,23 @@ pe.register(Parameter( name = "warp_scale",
                        description = "controls the size of the warp effects.",
                        default_value = 1.0 ))
 
+pe.register(Parameter( name = "fluid_viscosity",
+                       description = "controls the viscosity of the fluid dynamics effect.",
+                       default_value = 0.00001 ))
+pe.register(Parameter( name = "fluid_diffusion",
+                       description = "controls the diffusion rate of pressure in the fluid effect.",
+                       default_value = 1.0 ))
+
+
+
 # AFFINE PARAMETERS
 pe.register(Parameter( name = "rot",
                        description = "controls the amount of rotation.  " + 
                        "0=none, 0.1=slightly right, -0.1=slightly clockwise, 0.1=CCW" ))
+
+pe.register(Parameter( name = "rot_rate",
+                       description = "The rate of rotation",
+                       default_value = 0.0 ))
 
 pe.register(Parameter( name = "cx",
                        description = "0..1   controls where the center of rotation and " + 
@@ -616,7 +637,53 @@ pe.register(Parameter( name = "wave_move",
            default_value = 0.0))
 
 
-
+# Vector graphics parameters
 pe.register(Parameter( name = "vg_mode",
                        description = "",
                        default_value = 0))
+
+pe.register(Parameter( name = "vg_x",
+           description = "Position of cursor in X.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_y",
+           description = "Position of cursor in Y.",
+           default_value = 0.0))
+
+
+pe.register(Parameter( name = "vg_stroke_r",
+           description = "Stroke color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_stroke_g",
+           description = "Stroke color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_stroke_b",
+           description = "Stroke color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_stroke_a",
+           description = "Stroke color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_fill_r",
+           description = "Fill color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_fill_g",
+           description = "Fill color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_fill_b",
+           description = "Fill color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_fill_a",
+           description = "Fill color.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_stroke_thickness",
+           description = "Thickness of stroke.",
+           default_value = 0.01))
+

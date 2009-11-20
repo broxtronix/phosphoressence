@@ -6,19 +6,37 @@
 Installation, short version
 ===========================
 
-Prerequisites:
+C++ Prerequisites:
   - boost
   - sdl
   - Vision Workbench
   - liblo
-  - portaudio
+  - rtaudio  
   - qt4
 
+Python
+  - pyrex (needed to install pyopenvg)
+  - pyopengl
+
+You will also need to install these for vector graphics support:
+  - shivavg 
+  - pyopenvg
+
+Note that shivavg does not build natively on OSX.  You may need to do
+some very minor tweaking to the shivavg build system to get it to
+work.
+
+A quick note about Snow Leopard compatibility: Both Qt and SDL have
+serious issues with snow leopard.  You will need SDL 1.3 or greater
+and Qt 4.6 or greater.
+
+
+Once you have prerequisites installed, you should run:
+
+./autogen.sh
 ./configure
 make
 make install
 
 Optionally, copy over one of the cofigure.options.something to
 configure.options and edit for your particular environment.
-
-

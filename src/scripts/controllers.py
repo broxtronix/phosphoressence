@@ -1,5 +1,5 @@
 from parameters import pe
-from bindings import pe_bindings
+from bindings import PeBindings
 import math
 
 # ----------------------------------------------------
@@ -8,75 +8,72 @@ import math
 
 class OscController(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, osc_debug = False):
+        self.OSC_DEBUG = osc_debug
+        self.bindings = PeBindings()
+
         # Set up some basic control bindings
-#        pe_bindings.add(self, "/1/fader1", "decay", 0.9, 1.1, 0.99, "log10")
-#        pe_bindings.add(self, "/1/xy/0", "zoom", 1.25, 0.75, 1.0)
-#        pe_bindings.add(self, "/1/xy/1", "rot", 0.785, -0.785, 0.0)
-##        pe_bindings.add(self, "/1/fader2", "warp", 0.0, 2.0, 0.0)
-##        pe_bindings.add(self, "/1/fader3", "wave_frequency", 0.01, 300, 100, "log10")
-#        pe_bindings.add(self, "/2/fader1", "q1", 0.0, 0.5, 1.0)
-#        pe_bindings.add(self, "/2/fader2", "q2", 0.0, 0.5, 0.5)
-#        pe_bindings.add(self, "/2/fader3", "q3", 0.0, 1.0, 0.0260)
-#        pe_bindings.add(self, "/2/fader4", "q4", 0.0, 1.0, 0.0530)
-#        pe_bindings.add(self, "/2/fader5", "q5", 0.0, 1.0, 0.0)
-#        pe_bindings.add(self, "/2/fader6", "q6", 0.0, 1.0, 0.0)
-#        pe_bindings.add(self, "/2/fader7", "q7", 0.0001, 0.01, 0.0004)
-#        pe_bindings.add(self, "/2/fader8", "q8", 0.0, 100.0, 0.0)
+        self.bindings.add(self, "/1/decay", "decay", 0.9, 1.1, 0.99, "log10")
+        self.bindings.add(self, "/1/xy1/0", "zoom", 1.1, 0.9, 1.0)
+        self.bindings.add(self, "/1/xy1/1", "rot", 0.785, -0.785, 0.0)
 
+        # Warp Effect
+        self.bindings.add(self, "/1/warp", "warp", 0.0, 3.0, 0.0)
+        self.bindings.add(self, "/1/warp_speed", "warp_speed", 0.1, 10.0, 1.0, "log10")
+        self.bindings.add(self, "/1/warp_scale", "warp_scale", 0.2, 2.0, 1.0)
 
-        # pe_bindings.add(self, "/1/toggle3", "wave_enabled", 0.0, 1.0, 0.0)
-        # pe_bindings.add(self, "/1/fader4", "zoomexp", 0.25, 5.0, 1.0, "log10")  
-        # pe_bindings.add(self, "/1/push1", "ib_size", 0, 0, 0)  
-        # pe_bindings.add(self, "/1/push2", "ib_size", 1, 1, 0)  
-        # pe_bindings.add(self, "/1/push3", "ib_size", 10, 10, 0)  
+        # Video Echo Effect
+        self.bindings.add(self, "/1/echo_alpha", "echo_alpha", 0.0, 1.0, 0.33)
+        self.bindings.add(self, "/1/echo_zoom", "echo_zoom", 0.9, 1.1, 1.0)
 
+        # Kaleidoscope
+        self.bindings.add(self, "/1/kaleidoscope", "kaleidoscope", 0.0, 1.0, 0.0)
+        self.bindings.add(self, "/1/kaleidoscope_radius", "kaleidoscope_radius", 0.1, 0.8, 0.3)
 
-    # bindings.add(osc, "/2/fader1", "sx", 0.5, 1.5, 1.0)
-    # bindings.add(osc, "/2/fader2", "sy", 0.5, 1.5, 1.0)
-    # bindings.add(osc, "/2/fader3", "dx", -0.5, 0.5, 0.0)
-    # bindings.add(osc, "/2/fader4", "dy", -0.5, 0.5, 0.0)
-    # bindings.add(osc, "/2/fader5", "cx", -1.5, 1.5, 0.0)
-    # bindings.add(osc, "/2/fader6", "cy", -1.5, 1.5, 0.0)
-    # bindings.add(osc, "/2/toggle8", "square_a", 0.0, 1.0, 1.0)
-    # bindings.add(osc, "/2/fader8", "square_frequency", 0.001, 1.0, 0.03)
+        # Fluid Effects
+        self.bindings.add(self, "/1/fluid_viscosity", "fluid_viscosity", 1e-5, 0.008, 1e-4, "log10")
+        self.bindings.add(self, "/1/fluid_diffusion", "fluid_diffusion", 1e-10, 1e10, 1.0, "log10")
 
-    # bindings.add(osc, "/3/fader2", "warp_speed", 0.0, 1.0, 0.5)
-    # #    bindings.add(osc, "/3/fader3", "warp_scale", 0.01, 1.0, 0.5)
-    # bindings.add(osc, "/3/fader4", "mv_x", 0, 64.0, 64.0)
-    # bindings.add(osc, "/3/fader5", "mv_y", 0, 48.0, 48.0)
-    # bindings.add(osc, "/3/fader6", "mv_dx", 0.0, 0.1, 0.0)
-    # bindings.add(osc, "/3/fader7", "mv_dy", 0.0, 0.1, 0.0)
-    # bindings.add(osc, "/3/fader8", "mv_l", 0.01, 0.2, 0.01)
+        # Other
+        self.bindings.add(self, "/1/invert", "invert", 0.0, 1.0, 0.0)
+        self.bindings.add(self, "/1/q1", "q1", 0.0, 1.0, 0.0)
+        self.bindings.add(self, "/1/q2", "q2", 0.0, 1.0, 0.0)
 
-    # bindings.add(osc, "/2/fader1", "lj_A", 0, 1.0, 1.0) 
-    # bindings.add(osc, "/2/fader2", "lj_B", 0, 1.0, 1.0) 
-    # bindings.add(osc, "/2/fader3", "lj_omega", 0.01, 10000.0, 1.0, "log10") 
-    # bindings.add(osc, "/2/fader4", "lj_ratio_a", 1.0, 10.0, "log10") 
-    # bindings.add(osc, "/2/fader5", "lj_ratio_b", 1.0, 10.0, "log10") 
-    # bindings.add(osc, "/2/fader6", "lj_phase", 0.9, 1.1, 1.0)     
+        # Bindings for the wiimote
+        self.bindings.add(self, "/wii/1/ir/0", "vg_x", -1.6, 1.6, 0.0)
+        self.bindings.add(self, "/wii/1/ir/1", "vg_y", -1.0, 1.0, 0.0)
+        self.bindings.add(self, "/wii/1/button/A", "vg_stroke_a", 0.0, 1.0, 0.0)
+        self.bindings.add(self, "/wii/1/button/B", "vg_fill_a", 0.0, 1.0, 0.0)
+        
 
-    # bindings.add(osc, "/3/fader1", "q1", 0, 2, 1.0) # a
-    # bindings.add(osc, "/3/fader2", "q2", 0, 6.28, 0.0)
-    # bindings.add(osc, "/3/fader3", "q3", -2, 2, 0.0) # b
-    # bindings.add(osc, "/3/fader4", "q4", 0, 6.28, 0.0)
-    # bindings.add(osc, "/3/fader5", "q5", 0, 2, 0.0) # c
-    # bindings.add(osc, "/3/fader6", "q6", 0, 6.28, 0.0)
-    # bindings.add(osc, "/3/fader7", "q7", -2, 2, 1.0) # d
-    # bindings.add(osc, "/3/fader8", "q8", 0, 6.28, 0.0)
+#        self.bindings.add(self, "/wii/1/accel/pry/0", "zoom", 0.9, 1.1, 1.0)
+#        self.bindings.add(self, "/wii/1/accel/pry/1", "rot", 0.785, -0.785, 1.0)
+#        self.bindings.add(self, "/wii/1/accel/pry/2", "decay", 0.9, 1.1, 1.0)
 
-    # pe_parameters().add_parameter("rd_width", "/3/fader1", 0.0, 50.0, 1.0)
-    # pe_parameters().add_parameter("rd_D_g", "/3/fader2", 0.0, 0.5, 0.25)
-    # pe_parameters().add_parameter("rd_D_b", "/3/fader3", 0.0, 0.5, 0.0625)
-    # pe_parameters().add_parameter("rd_s", "/3/fader4", 0.0, 0.05, 0.03125)
-    # pe_parameters().add_parameter("rd_beta", "/3/fader5", 0.0, 24.0, 12)
-    # pe_parameters().add_parameter("rd_blur", "/3/fader8", 0.0, 4.0, 0.0)
 
     def receive_callback(self, path, value):
-        #        if (DEBUG):
-        print("[OSC]    Path: " + path + "   Value: " + str(value))
-        pe_bindings.controller_to_parameter(self, path, value)
+
+        # Capture the rotation rate
+        rot_rate_gain = 0.05
+        if (path == "/1/xy1/1"):
+            delta = (value-0.5) * rot_rate_gain
+            if (math.fabs(value-0.5) > 0.05):
+                pe.set_control_value('rot_rate', delta)
+
+        # Capture the zoom rate
+        zoom_rate_gain = 0.02
+        if (path == "/1/xy1/0"): 
+            delta = (value-0.5) * zoom_rate_gain
+            if (math.fabs(value-0.5) > 0.05): 
+                pe.set_control_value('zoom_rate', delta)
+
+        if (path == "/1/xy1/z" and value == 0):
+            pe.set_control_value('zoom_rate', 0.0);
+            pe.set_control_value('rot_rate', 0.0);
+
+        if (self.OSC_DEBUG and (path.find("pry") == -1)):
+            print("[OSC]    Path: " + path + "   Value: " + str(value))
+        self.bindings.controller_to_parameter(self, path, value)
     
     def render_callback(self): 
         pass
@@ -90,13 +87,12 @@ class JoystickController(object):
     def __init__(self, joystick_debug = False):
 
         self.JOY_DEBUG = joystick_debug
+        self.bindings = PeBindings()
 
         # Priceless
-        pe_bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
-        pe_bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
-        pe_bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
-#        pe_bindings.add(self, "/joystick0/axis2", "q1", 0, 1.0, .5)
- #       pe_bindings.add(self, "/joystick0/axis5", "q2", 0, 1.0, .5)
+        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.05, 0.98, "log10")
+        self.bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
+        self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -124,6 +120,8 @@ class JoystickController(object):
         pe.mv_x = 36
         pe.mv_y = 36
         pe.mv_l = 0
+        pe.rot = 0
+        pe.sx=1.0
 #        pe.rot = -0.001
 #        pe.sx=0.999
         pe.kaleidoscope_radius=0.15
@@ -151,8 +149,10 @@ class JoystickController(object):
             pe.set_control_value('mv_x', 36)
             pe.set_control_value('mv_y', 36)
             pe.set_control_value('mv_l', 0)
-            pe.set_control_value('rot', -0.001)
-            pe.set_control_value('sx',0.999)
+            pe.set_control_value('rot', 0)
+            pe.set_control_value('sx',1.0)
+#            pe.set_control_value('rot', -0.001)
+#            pe.set_control_value('sx',0.999)
             pe.set_control_value('wave_mode', 2)
             pe.set_control_value('wave_enabled',1.0)
             pe.set_control_value('square_a',1.0)
@@ -345,7 +345,8 @@ class JoystickController(object):
             print("[JOYSTICK]    Path: " + path + "   Value: " + str(value))
 
         # Otherwise, delegate to the bindings.
-        pe_bindings.controller_to_parameter(self, path, value)
+        self.bindings.controller_to_parameter(self, path, value)
+
 
 
     def render_callback(self):
@@ -421,5 +422,10 @@ class JoystickController(object):
         pe.zoomexp = 1
 
 
+        # Tweak decay
+        if (pe.decay < 0.87):
+            pe.decay = 0.01
 
+        if (pe.decay > 0.99 and pe.decay <1.01):
+            pe.decay = 1.0
 

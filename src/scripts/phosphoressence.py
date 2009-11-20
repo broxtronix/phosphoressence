@@ -16,12 +16,12 @@ ENABLE_PRESETS = 0
 ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
-DEBUG = 0;
-JOY_DEBUG = 1;
-pe.show_fps = 0;
+JOY_DEBUG = 0;
+OSC_DEBUG = 1;
+pe.show_fps = 1;
 
 # Instantiate hardware controllers
-osc = OscController()
+osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
 
 # Default initialization handler
@@ -32,7 +32,6 @@ joystick = JoystickController(JOY_DEBUG)
 # has not yet started.
 def pe_initialize():
     pass
-
 
     # Load Milkdrop Presets & Bookmarks
     # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')
@@ -58,11 +57,10 @@ def pe_animate():
     if ( ENABLE_CONTROLLERS ):
 
         # Update joystick parameters
-        #osc.render_callback()
-        joystick.render_callback()
+        # joystick.render_callback()
 
         # Update osc parameters
-        #	 osc.render_callback()
+        osc.render_callback()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

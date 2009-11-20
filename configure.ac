@@ -98,8 +98,10 @@ AX_PKG(VW_FILEIO,         [BOOST], [-lvwFileIO],      [vw/FileIO/DiskImageResour
 AX_PKG(CUDA,              [],      [-lcuda -lcudart], [cuda.h])
 AX_PKG(PORTAUDIO,         [],      [-lportaudio], [portaudio.h])
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
-AX_PKG(LO,         [],      [-llo], [lo/lo.h])
-AX_PKG(SDL,        [],      [-lSDL], [SDL.h])
+AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
+AX_PKG(RTAUDIO,           [APPLE_COREAUDIO],      [-lrtaudio], [RtAudio.h])
+AX_PKG(LO,                [],      [-llo], [lo/lo.h])
+AX_PKG(SDL,               [],      [-lSDL], [SDL.h])
 
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
