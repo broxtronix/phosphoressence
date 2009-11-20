@@ -9,7 +9,7 @@ from parameters import pe
 from presets import PePreset
 from graphics import pe_graphics
 from controllers import OscController, JoystickController
-from shapes.videoshape import VideoShapes
+#from shapes.videoshape import VideoShapes
 
 
 # Use these controls to effect whether phosphoressence behaves as a
@@ -27,7 +27,7 @@ osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
 
 # Create a video shape
-vshape = VideoShapes()
+#vshape = VideoShapes()
 
 # Default initialization handler
 #
@@ -36,8 +36,9 @@ vshape = VideoShapes()
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
-    pe_graphics.register(vshape)
-    osc.register_shape(vshape)
+    pass
+#    pe_graphics.register(vshape)
+#    osc.register_shape(vshape)
 
     # Load Milkdrop Presets & Bookmarks
     # PePreset.load_directory(PE_RESOURCES + '/presets/milkdrop')

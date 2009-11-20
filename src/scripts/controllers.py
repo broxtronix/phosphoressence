@@ -103,7 +103,7 @@ class JoystickController(object):
 
         # Priceless
         self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 0.98, "log10")
-        self.bindings.add(self, "/joystick0/axis5", "warp", 2.0, 0.0, 0.0)
+        self.bindings.add(self, "/joystick0/axis5", "warp", 4.0, 0.0, 0.0)
         self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
@@ -357,9 +357,11 @@ class JoystickController(object):
             if (pe.edge_filter):
                 pe.set_control_value('edge_filter', 0.0)
                 pe.set_control_value('brighten', 0.0)
+                pe.set_control_value('gamma', 1.0)
             else:
                 pe.set_control_value('edge_filter', 1.0)
                 pe.set_control_value('brighten', 1.0)
+                pe.set_control_value('gamma', 1.8)
 
         # Warp
         # if (path == "/joystick0/button0" and value == 1.0):
@@ -481,6 +483,7 @@ class JoystickController(object):
         pe.zoomexp = 1
         pe.edge_filter = 0
         pe.brighten = 0
+        pe.gamma = 1.0
         pe.ifs_mode = 0
 
         # Tweak decay

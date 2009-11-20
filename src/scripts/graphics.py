@@ -13,7 +13,7 @@ from shapes.earthquakesprite import *
 from shapes.vu_spirals import *
 from shapes.bezierchaos import *
 from shapes.vectorbrush import *
-from shapes.videoshape import *
+#from shapes.videoshape import *
 #from shapes.bezierchaos import *
 #from shapes.vectorbrush import *
 
@@ -114,6 +114,9 @@ class BorderSprite(object):
 
             vertices = array([[-pe.aspect, pe.aspect, pe.aspect, -pe.aspect],
                               [1.0, 1.0, -1.0, -1.0]])
+            if (pe.orientation == 1):
+                vertices = array([[-1/pe.aspect, 1/pe.aspect, 1/pe.aspect, -1/pe.aspect],
+                                  [1.0, 1.0, -1.0, -1.0]])
 
             glColor4f(pe.ib_r, pe.ib_g, pe.ib_b, pe.ib_a)
 
