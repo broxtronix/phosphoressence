@@ -19,7 +19,7 @@ ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 JOY_DEBUG = 1;
-OSC_DEBUG = 0;
+OSC_DEBUG = 1;
 pe.show_fps = 1;
 
 # Instantiate hardware controllers

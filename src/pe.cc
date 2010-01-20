@@ -123,8 +123,8 @@ int main(int argc, char *argv[]) {
   // that keeps up-to-date sound statistics (moving averages, etc).
   std::cout << "\t--> Opening audio stream\n";
   AudioThread audio_thread;
-  boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
-  audio_thread.register_listener(stats_listener);
+  //  boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
+  //  audio_thread.register_listener(stats_listener);
 
   // Create some Waveshapes
   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
   main_window.gl_widget()->register_drawable(phasescope);
   main_window.gl_widget()->register_drawable(spectrograph);
   main_window.gl_widget()->register_drawable(oscope);
-  main_window.gl_widget()->register_drawable(lissajous);
+  //  main_window.gl_widget()->register_drawable(lissajous);
 
   // Start the script engine & start the command interpreter
   pe_script_engine().start();

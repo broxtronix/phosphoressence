@@ -36,7 +36,7 @@ if MAKE_APP_PHOSPHORESSENCE
 endif
 
 AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/opt/local/include/SDL -I/usr/include/SDL
-AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation
+AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation -framework CoreAudio
 
 ##############################################################################
 #                             Tests					     #

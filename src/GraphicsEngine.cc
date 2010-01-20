@@ -267,8 +267,7 @@ void GraphicsEngine::drawImage() {
     std::list<boost::shared_ptr<Drawable> >::iterator iter = m_drawables.begin();
     for (int i = 0; iter != m_drawables.end(); ++i, ++iter) {
       if ( i == pe_script_engine().get_parameter("wave_mode") ) {
-        (*iter)->draw(pe_time(),
-                      pe_script_engine().get_parameter("decay"));
+        (*iter)->draw(pe_time(), pe_script_engine().get_parameter("decay"));
          break;
       }
     }

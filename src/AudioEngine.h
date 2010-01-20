@@ -6,34 +6,22 @@
 #ifndef __AUDIO_ENGINE_H__
 #define __AUDIO_ENGINE_H__
 
-#include <vw/Core.h>
-#include <vw/Math/Vector.h>
-
+#include <vw/Core/Thread.h>
 #include <RtAudio.h>
+#include <boost/circular_buffer.hpp>
 
-#include <PeParameters.h>
-#include <FFT.h>
-
-// Basic audio settings
-#define NUM_CHANNELS    (2)
-#define FFT_SAMPLES     512
-#define AUDIO_SAMPLE_RATE 96000.0
+// ---------------------------------------------------------------------------
+//                              Audio Listener
+// ---------------------------------------------------------------------------
 
 class AudioListener {
-
+  
+  bool m_mono;
   float m_buffer_length; // seconds
   int m_sample_rate;     // hz
 
 protected:
-
-  // An Audio Ring Buffer
-  struct AudioBuffer {
-    int          read_index;  
-    int          write_index;  
-    int          max_frame_index;
-    float        *samples;
-  };
-  AudioBuffer m_data;
+  boost::circular_buffer<float> m_circular_buffer;
 
   // This mutex must be locked by child classes when they access the
   // AudioBuffer.  Perhaps this should be abstracted away behind some
@@ -41,56 +29,39 @@ protected:
   vw::Mutex m_mutex;
 
 public:
-  AudioListener(float buffer_length = 5.0) : 
-    m_buffer_length(buffer_length), 
-    m_sample_rate(AUDIO_SAMPLE_RATE) {
-  
-    // Set up the ring buffer for storing the audio
-    m_data.read_index = 0;
-    m_data.write_index = 0;
-    m_data.max_frame_index = m_buffer_length * m_sample_rate; 
 
-    int num_samples = m_data.max_frame_index * NUM_CHANNELS;
-    m_data.samples = (float *) malloc( num_samples * sizeof(float) );
-    if( !(m_data.samples) ) 
-      vw::vw_throw(vw::LogicErr() << "Could not allocate audio recording buffer.\n");
-  }
+  AudioListener(bool mono, float buffer_length = 5.0, int sample_rate = 96000);
 
-  float sample_rate() const { return m_sample_rate; }
+  /// This is called by the AudioThread to set the proper sampling
+  /// rate when this listener is registered.
+  void set_sample_rate( int sample_rate );
 
-  void audio_callback(float* input, unsigned long frame_count, int num_channels) {
-    const float *rptr = (const float*)input;
-    float *data_ptr = &(m_data.samples[m_data.write_index * NUM_CHANNELS]);
-    
-    for( int i=0; i<frame_count; ++i) {
-      
-      if( input == NULL ) {
-        *data_ptr++ = 0.0f;                                   // Left
-        if( NUM_CHANNELS == 2 ) *data_ptr++ = 0.0f          ; // Right
-      } else {
-        *data_ptr++ = *rptr++;                                // Left
-        if( NUM_CHANNELS == 2 ) *data_ptr++ = *rptr++;        // Right
-      }
+  float buffer_length() const { return m_buffer_length; }
+  int sample_rate() const { return m_sample_rate; }
+  bool mono() const { return m_mono; }
 
-      // Reset the data pointer if we have reached the end of the
-      // buffer.
-      (m_data.write_index)++;
-      if ( m_data.write_index >= m_data.max_frame_index ) {
-        m_data.write_index = 0;
-        data_ptr = &(m_data.samples[0]);
-      }
-    }
-  }
-
+  /// This audio callback is called whenever there is new data
+  /// available on the audio input device.
+  void audio_callback(float* input, unsigned long frame_count, int num_channels);
 };
+
+// ---------------------------------------------------------------------------
+//                              Audio Thread
+// ---------------------------------------------------------------------------
 
 /// AudioThread
 ///
-/// This thread capture audio input using PortAudio.  Classes can
+/// This thread capture audio input using RtAudio.  Classes can
 /// register as "AudioListeners" to have their callback called when
-/// new audio samples become available.
+/// new audio samples become available.  
+/// 
+/// Note: once QT 4.6 is released, we will switch to using their audio
+/// API so as to remove this dependency.
+///
 class AudioThread {
   vw::Mutex m_mutex;
+  int m_sample_rate;
+  int m_num_channels;
 
   // RtAudio device
   RtAudio m_adc;
@@ -99,6 +70,7 @@ class AudioThread {
   std::list<boost::shared_ptr<AudioListener> > m_listeners;
 
 public:
+
   int member_callback( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
                        double streamTime, RtAudioStreamStatus status );
 
@@ -112,12 +84,13 @@ public:
 
   }
   
-  AudioThread(int sample_rate = AUDIO_SAMPLE_RATE);
+  AudioThread(int num_channels = 2, int sample_rate = 96000);
   ~AudioThread();
 
   void register_listener(boost::shared_ptr<AudioListener> listener) {
     vw::Mutex::Lock lock(m_mutex);
     m_listeners.push_back(listener);
+    listener->set_sample_rate(m_sample_rate);
   }
 
   void clear_listeners() {

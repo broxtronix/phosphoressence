@@ -24,41 +24,40 @@ class PhasescopeShape : public AudioListener, public Drawable {
   float m_ending_x;
   float m_ending_y;
   
+  boost::shared_array<float> m_left_cache;
+  boost::shared_array<float> m_right_cache;
+
 public:
-  PhasescopeShape() : AudioListener(5.0), m_time(0) {
+  PhasescopeShape() : AudioListener(false, 5.0), m_time(0) {
     m_time_slice = 1.0f / this->sample_rate();
     m_ending_x = 0;
     m_ending_y = 0;
+
+    m_left_cache.reset(new float[this->sample_rate()]);
+    m_right_cache.reset(new float[this->sample_rate()]);
   }
 
   virtual void draw(float time, float gain) {
 
-    float dt_draw = 1/AUDIO_SAMPLE_RATE; // TODO : Replace with call to sample_rate()
+    float dt_draw = 1.0/float(this->sample_rate());
     float tau_excite = 3e-5;   // TODO : Move to parameters
     float tau_decay = -(1/30.0)/log(pe_script_engine().get_parameter("decay")); // TODO: Avoid using fixed frame rate!
     float beta = (1-exp(-dt_draw/tau_decay)); // TODO: Move tau_decay to pe_parameters()
 
     // Read the values into a local audio cache
-    float left_cache[int(AUDIO_SAMPLE_RATE)];
-    float right_cache[int(AUDIO_SAMPLE_RATE)];
     int idx = 0;
     {
       vw::Mutex::Lock lock(m_mutex);
 
-      float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
-      while (m_data.read_index != m_data.write_index) {
-        if (idx < AUDIO_SAMPLE_RATE) {
-          left_cache[idx] = *data_ptr++*1.5;
-          right_cache[idx] = *data_ptr++*1.5;
-          ++idx;
-        } 
+      while ( m_circular_buffer.size() >= 2 && idx < this->sample_rate() ) {
+        m_left_cache[idx] = m_circular_buffer[0] * 1.5;
+        m_circular_buffer.pop_front();
+        m_right_cache[idx] = m_circular_buffer[0] * 1.5;
+        m_circular_buffer.pop_front();
 
         // Go to next frame
+        ++idx;
         m_time += m_time_slice;
-        if ( (m_data.read_index)++ >= m_data.max_frame_index ) {
-          m_data.read_index = 0;
-          data_ptr = &(m_data.samples[0]);
-        }
       }
     }
 
@@ -104,10 +103,10 @@ public:
     glColor4f(r, g, b, wave_a );
       
     glVertex2d(m_ending_x,  m_ending_y);
-    glVertex2d(left_cache[0], right_cache[0]);
+    glVertex2d(m_left_cache[0], m_right_cache[0]);
 
-    m_ending_x = left_cache[idx-1];
-    m_ending_y = right_cache[idx-1];
+    m_ending_x = m_left_cache[idx-1];
+    m_ending_y = m_right_cache[idx-1];
 
     // Now draw the wave by traversing the buffer in reverse
     // order.
@@ -115,8 +114,8 @@ public:
     for (int i = 1; i < idx; ++i) {
 
       // Compute the phosphor color
-      float d = sqrt(pow(left_cache[i]-left_cache[i-1],2) + 
-                     pow(right_cache[i]-right_cache[i-1],2));
+      float d = sqrt(pow(m_left_cache[i]-m_left_cache[i-1],2) + 
+                     pow(m_right_cache[i]-m_right_cache[i-1],2));
       float dt_phosphor = dt_draw/d;
       float alpha = 1-exp(-dt_phosphor/tau_excite);
       float beta_factor = pow(1-beta,idx-1-i);
@@ -125,12 +124,10 @@ public:
       float b = norm_color[2] * alpha * beta_factor;
       glColor4f(r, g, b, wave_a );
 
-      //      one_minus_beta_accum *= (1-beta);
-      
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)
-      glVertex2d(left_cache[i-1],  right_cache[i-1]);
-      glVertex2d(left_cache[i], right_cache[i]);
+      glVertex2d(m_left_cache[i-1],  m_right_cache[i-1]);
+      glVertex2d(m_left_cache[i], m_right_cache[i]);
     }
     glEnd();
     glDisable(GL_BLEND);

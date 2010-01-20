@@ -34,10 +34,10 @@ class SpectrographShape : public AudioListener, public Drawable {
   float right_spectrum[NUM_FFT_SAMPLES];
   int m_sample_index;
 public:
-  SpectrographShape() : AudioListener(5.0), m_sample_index(0) {
+  SpectrographShape() : AudioListener(false, 5.0), m_sample_index(0) {
     m_fft.Init(NUM_FFT_SAMPLES, NUM_FFT_SAMPLES, 
-               1,     // Equalize to de-emphasize low frequencies
-               1.0);  // Use a small amount of envelope (smoothing)
+               0,     // Do not equalize to de-emphasize low frequencies
+               0.0);  // Use a small amount of envelope (smoothing)
   }
 
 
@@ -46,10 +46,13 @@ public:
     // Compute the FFT
     {
       vw::Mutex::Lock lock(m_mutex);
-      float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
-      while (m_data.read_index != m_data.write_index) {
-        left_samples[m_sample_index] = *data_ptr++;    // left
-        right_samples[m_sample_index++] = *data_ptr++; // right
+      while ( m_circular_buffer.size() >= 2 ) {
+
+        left_samples[m_sample_index] = m_circular_buffer[0];
+        m_circular_buffer.pop_front();
+        right_samples[m_sample_index] = m_circular_buffer[0];
+        m_circular_buffer.pop_front();
+        ++m_sample_index;
         
         // Draw the waveshape
         if (m_sample_index == NUM_FFT_SAMPLES) {
@@ -92,7 +95,7 @@ public:
             glBegin(GL_LINES);
           
           float horiz_pos = 0.0;
-          float T = float(NUM_FFT_SAMPLES)/AUDIO_SAMPLE_RATE; // FFT length
+          float T = float(NUM_FFT_SAMPLES)/this->sample_rate(); // FFT length
           float log_lo = log10f(1/T);
           float log_hi = log10f(float(NUM_FFT_SAMPLES/2)/T);
           float aspect = pe_script_engine().get_parameter("aspect");
@@ -107,14 +110,20 @@ public:
             //            std::cout << spectrum[i] << "\n";
             glColor4f(norm_color[0], norm_color[1], norm_color[2], wave_a );
 
+            // Taking the square root of the averaged spectrum values
+            // seems to be a good way to attenuate large spectrum
+            // values relative to smaller ones, making for a more
+            // aesthetically pleasing spectrum.
+            float spectrum_value = sqrt((left_spectrum[i]+right_spectrum[i])/2);
+
             // Here we choose between drawing the scope vertically
             // (orientation = 1.0) or horizonatally (orientation = 0.0).
             if (pe_parameters().get_value("orientation") == 1.0) {
               glVertex2d(1.0, horiz_pos/aspect);
-              glVertex2d(1.0-(left_spectrum[i]+right_spectrum[i])*3, horiz_pos/aspect);
+              glVertex2d(1.0-spectrum_value*0.06, horiz_pos/aspect);
             } else {
               glVertex2d(horiz_pos, -1.0);
-              glVertex2d(horiz_pos, (left_spectrum[i]+right_spectrum[i])*10-1.0);
+              glVertex2d(horiz_pos, spectrum_value*0.1-1.0);
             }
 
             // // Right
@@ -126,13 +135,6 @@ public:
           
         }
         
-        // Go to next frame, wrapping around in the ring buffer if
-        // necessary.
-        (m_data.read_index)++;
-        if ( m_data.read_index >= m_data.max_frame_index ) {
-          m_data.read_index = 0;
-          data_ptr = &(m_data.samples[0]);
-        }
       }
     }
   }
@@ -141,6 +143,8 @@ public:
 // AveragingListener
 //
 // Listens to the audio stream and computes aggregate statistics.
+#define FFT_SAMPLES 512
+
 class SoundStatsListener : public QObject, public AudioListener {
   Q_OBJECT
 
@@ -166,8 +170,10 @@ class SoundStatsListener : public QObject, public AudioListener {
   float	right_long_avg[3];	        // bass, mids, treble (absolute)
 
 public:
-  SoundStatsListener() : AudioListener(5.0), m_sample_index(0) {
-    m_fft.Init(FFT_SAMPLES, FFT_SAMPLES);
+  SoundStatsListener() : AudioListener(false, 5.0), m_sample_index(0) {
+    m_fft.Init(FFT_SAMPLES, FFT_SAMPLES,
+               0,      // Do not equalize to de-emphasize low frequencies
+               10.0);  // Use a small amount of envelope (smoothing)
     m_nFrames		= 0;
     
     memset(left_imm      , 0, sizeof(float)*3);
@@ -192,10 +198,17 @@ public slots:
   void update() {
     vw::Mutex::Lock lock(m_mutex);
 
-    float *data_ptr = &(m_data.samples[m_data.read_index * NUM_CHANNELS]);
-    while (m_data.read_index != m_data.write_index) {
-      left_samples[m_sample_index] = *data_ptr++; // left
-      right_samples[m_sample_index++] = *data_ptr++; // right
+    while ( m_circular_buffer.size() >= 2 ) {
+      
+      left_samples[m_sample_index] = m_circular_buffer[0];
+      m_circular_buffer.pop_front();
+      if ( this->mono() ) {
+        right_samples[m_sample_index] = left_samples[m_sample_index];
+      } else {
+        right_samples[m_sample_index] = m_circular_buffer[1];
+        m_circular_buffer.pop_front();
+      }
+      ++m_sample_index;
 
       // If we have collected a full window of data, we process it!
       if (m_sample_index == FFT_SAMPLES) {
@@ -264,15 +277,8 @@ public slots:
 
         
       }
-
-      // Go to next frame, wrapping around in the ring buffer if
-      // necessary.
-      (m_data.read_index)++;
-      if ( m_data.read_index >= m_data.max_frame_index ) {
-        m_data.read_index = 0;
-        data_ptr = &(m_data.samples[0]);
-      }
     }
+
     
     // Update the various PE Parameters
     pe_script_engine().set_parameter("bass", left_avg[0]);

@@ -23,31 +23,37 @@ class OscController(object):
 
         # Warp Effect
         self.bindings.add(self, "/1/warp", "warp", 0.0, 3.0, 0.0)
-        self.bindings.add(self, "/1/warp_speed", "warp_speed", 0.1, 10.0, 1.0, "log10")
-        self.bindings.add(self, "/1/warp_scale", "warp_scale", 0.2, 2.0, 1.0)
+#        self.bindings.add(self, "/1/warp_speed", "warp_speed", 0.1, 10.0, 1.0, "log10")
+#        self.bindings.add(self, "/1/warp_scale", "warp_scale", 0.2, 2.0, 1.0)
+        self.bindings.add(self, "/1/warp_speed", "square_a", 0.0, 1.0, 1.0)
+        self.bindings.add(self, "/1/warp_scale", "ib_a", 0.0, 1.0, 0.0)
 
         # Video Echo Effect
         self.bindings.add(self, "/1/echo_alpha", "echo_alpha", 0.0, 1.0, 0.33)
         self.bindings.add(self, "/1/echo_zoom", "echo_zoom", 0.9, 1.1, 1.0)
 
         # Kaleidoscope
-#        self.bindings.add(self, "/1/kaleidoscope", "kaleidoscope", 0.0, 1.0, 0.0)
-#        self.bindings.add(self, "/1/kaleidoscope_radius", "kaleidoscope_radius", 0.1, 0.8, 0.3)
+        self.bindings.add(self, "/1/kaleidoscope", "kaleidoscope", 0.0, 1.0, 0.0)
+        self.bindings.add(self, "/1/kaleidoscope_radius", "kaleidoscope_radius", 0.1, 0.8, 0.3)
 
         # Fluid Effects
+        self.bindings.add(self, "/1/fluid_viscosity", "wave_frequency", 1e-2, 500, 0.01, "log10")
 #        self.bindings.add(self, "/1/fluid_viscosity", "fluid_viscosity", 1e-5, 0.008, 1e-4, "log10")
 #        self.bindings.add(self, "/1/fluid_diffusion", "fluid_diffusion", 1e-10, 1e10, 1.0, "log10")
 
+        self.bindings.add(self, "/2/fader30", "sx", 0.9, 1.1, 1.0)
+        self.bindings.add(self, "/2/fader5", "sy", 0.9, 1.1, 1.0)
+
         # Other
-        self.bindings.add(self, "/1/invert", "invert", 0.0, 1.0, 0.0)
+#        self.bindings.add(self, "/1/invert", "invert", 0.0, 1.0, 0.0)
         self.bindings.add(self, "/1/q1", "q1", 0.0, 1.0, 0.0)
         self.bindings.add(self, "/1/q2", "q2", 0.0, 1.0, 0.0)
 
         # Bindings for the wiimote
-        self.bindings.add(self, "/wii/1/ir/0", "vg_x", -1.6, 1.6, 0.0)
-        self.bindings.add(self, "/wii/1/ir/1", "vg_y", -1.0, 1.0, 0.0)
-        self.bindings.add(self, "/wii/1/button/A", "vg_stroke_a", 0.0, 1.0, 0.0)
-        self.bindings.add(self, "/wii/1/button/B", "vg_fill_a", 0.0, 1.0, 0.0)
+#        self.bindings.add(self, "/wii/1/ir/0", "vg_x", -1.6, 1.6, 0.0)
+#        self.bindings.add(self, "/wii/1/ir/1", "vg_y", -1.0, 1.0, 0.0)
+#        self.bindings.add(self, "/wii/1/button/A", "vg_stroke_a", 0.0, 1.0, 0.0)
+#        self.bindings.add(self, "/wii/1/button/B", "vg_fill_a", 0.0, 1.0, 0.0)
         
 
 #        self.bindings.add(self, "/wii/1/accel/pry/0", "zoom", 0.9, 1.1, 1.0)
@@ -55,6 +61,14 @@ class OscController(object):
 #        self.bindings.add(self, "/wii/1/accel/pry/2", "decay", 0.9, 1.1, 1.0)
 
     def receive_callback(self, path, values):
+
+        if (path == "/1/invert"):
+            pe.set_control_value('vg_mode', pe.vg_mode + 1);
+            if pe.vg_mode > 4:
+                pe.set_control_value("vg_mode", 0)
+
+        if (path == "/2/toggle6"):
+            pe.reset_all()
 
         if (path == "/xyxyM"):
             for s in self._shapes:
@@ -66,17 +80,19 @@ class OscController(object):
             
 
         # Capture the rotation rate
-        rot_rate_gain = 0.05
-        if (path == "/1/xy1/1"):
-            delta = (value-0.5) * rot_rate_gain
-            if (math.fabs(value-0.5) > 0.05):
+        rot_rate_gain = 0.25
+        zoom_rate_gain = 0.22
+        if (path == "/1/xy1"):
+
+            pe.rot = -1*(values[1]-0.5)*0.707
+            pe.zoom = -(values[0]-0.5)*0.1+1.0
+            
+            delta = (values[1]-0.5) * rot_rate_gain
+            if (math.fabs(values[1]-0.5) > 0.05):
                 pe.set_control_value('rot_rate', delta)
 
-        # Capture the zoom rate
-        zoom_rate_gain = 0.02
-        if (path == "/1/xy1/0"): 
-            delta = (value-0.5) * zoom_rate_gain
-            if (math.fabs(value-0.5) > 0.05): 
+            delta = (values[0]-0.5) * zoom_rate_gain
+            if (math.fabs(values[0]-0.5) > 0.05): 
                 pe.set_control_value('zoom_rate', delta)
 
         if (path == "/1/xy1/z" and value == 0):
@@ -124,7 +140,7 @@ class JoystickController(object):
 
         # Default parameters for PhosphorEssence
         pe.wave_enabled = 1
-        pe.wave_mode = 2
+        pe.wave_mode = 1.0
         pe.square_a = 1.0
         pe.ib_size=10.0
         pe.ib_a = 0.0
