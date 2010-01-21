@@ -20,7 +20,6 @@ Python
   - pyopengl
 
 You will also need to install these for vector graphics support:
-  - shivavg 
   - pyopenvg (<-- edit setup.cfg to configure for your environment, and comment out the 'compiler=' line...)
 
 Note that shivavg does not build natively on OSX.  You may need to do
@@ -34,7 +33,7 @@ and Qt 4.6 or greater.
 
 Once you have prerequisites installed, you should run:
 
-./autogen.sh
+sh ./autogen.sh
 ./configure
 make
 make install
