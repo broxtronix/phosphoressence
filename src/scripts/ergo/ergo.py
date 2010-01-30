@@ -512,12 +512,12 @@ class Ergo(object):
 
 	def do_global_action(self,act):
 		print "DO_GLOBAL_ACTION = ",act
-		if act == "clearsprites":
+		if act == "clearsprites" or act == "clear":
 			self.removeall()
 
 	def do_chan_action(self,ch,act):
 		print "DO_CHAN_ACTION, ch=",ch," act=",act
-		if act == "clearsprites":
+		if act == "clearsprites" or act == "clear":
 			self.removeall_chan(ch)
 
 	def got_finger(self, t, f):
@@ -580,7 +580,8 @@ class Ergo(object):
 
 	def coloradjust(self,param,nm,rand1):
 		v = param[nm]
-		r = rand1 * randint(-500,500)/1000.0
+		# r = rand1 * randint(-500,500)/1000.0
+		r = rand1
 		v += r
 		while v < 0:
 			v += 360.0
@@ -623,7 +624,8 @@ class Ergo(object):
 		# Throttle
 		now = time.time()
 		dt = now - self.lastspritetime
-		if dt < s.param("SPRITEFREQ"):
+		limit = s.param("NSPRITES")
+		if dt < s.param("SPRITEFREQ") or limit == 0:
 			s.kill()
 			return
 		self.lastspritetime = now
@@ -634,7 +636,6 @@ class Ergo(object):
 		self.sprites.append(s)
 
 		nspr = self.numberofspriteslike(s)
-		limit = s.param("NSPRITES")
 
 		nremoved = 0
 		orignspr = nspr
@@ -748,13 +749,14 @@ class action:
 
 		self.createstringparam("SPRITE","fillbox")
 		self.createparam("NSPRITES",32.0,1.0,100.0)
+		self.createparam("LIFETIME",2.0,0.1,10.0)
 		self.createstringparam("POSALG","random")
 		self.createparam("LINEWIDTH",1.0,1.0,24.0)
 		self.createparam("ALPHA",0.5,0.01,1.0)
 		self.createparam("HUE1",0.0,0.0,360.0)
 		self.createparam("HUE2",0.0,0.0,360.0)
 		self.createparam("SIZE",0.1,0.01,4.0)
-		self.createparam("ASPECT",0.5,0.01,1.0)
+		self.createparam("ASPECT",1.0,0.1,10.0)
 		self.createparam("SPEED",0.5,0.0,1.0)
 
 		self.createparam("MOVEDIR",0.5,0.0,1.0)
@@ -762,6 +764,7 @@ class action:
 		self.createstringparam("DIRINIT","random")
 		self.createparam("DIRINITANG",0.0,0.0,1.0)
 		self.createparam("ROTSPEED",0.0,0.0,1.0)
+		self.createtoggleparam("ROTDIRRAND","False")
 		self.createparam("INITANG",0.0,0.0,360.0)
 		self.createparam("CYCLES1",1.5,0.0,5.0)
 		self.createparam("CYCLES2",2.0,0.0,5.0)
@@ -771,6 +774,7 @@ class action:
 		self.createtoggleparam("COLORCHANGING",False)
 		self.createtoggleparam("MIRRORED",False)
 		self.createtoggleparam("MOVING",True)
+		self.createparam("COLORSPEED",10.0,0.0,30.0)
 
 		################ End of parameters that have been added to Nth Control
 
@@ -942,6 +946,8 @@ class action:
 
 		movespeed = s.param("SPEED")
 		rotatespeed = s.param("ROTSPEED")
+		if s.param("ROTDIRRAND") and randint(0,1) == 0:
+			rotatespeed = - rotatespeed
 
 		if s.param("ANGDIR1"):
 			rotatespeed = -rotatespeed
@@ -988,7 +994,7 @@ class action:
 # 		self.nclasses = len(self.spriteclasses)
 
 	def setparam(self,source,nm,v):
-		print "In Action setparam source=",source," nm=",nm," v=",v
+		# print "In Action setparam source=",source," nm=",nm," v=",v
 		import copy
 		self.setcurrpad(source)
 		self.padparamvals[source] = copy.copy(self.padparamvals[source])
@@ -999,10 +1005,10 @@ class action:
 				v = True
 			else:
 				v = False
-			print "Setting toggle parameter nm=",nm," to ",v
+			# print "Setting toggle parameter nm=",nm," to ",v
 			self.param[nm] = v
 		else:
-			print "Setting normal parameter nm=",nm," to ",v
+			# print "Setting normal parameter nm=",nm," to ",v
 			self.param[nm] = v
 
 	def got_pulse(self):
@@ -1043,10 +1049,8 @@ class action:
 		param = self.padparamvals[ch]
 		# print("set_finger_color, f.source=",f.source," changing=",param["COLORCHANGING"])
 		if param["COLORCHANGING"]:
-			if param["COLORFAST"]:
-				self.ergo.colorshiftit(param,30.0)
-			else:
-				self.ergo.colorshiftit(param,10.0)
+			print "finger_color speed = ",param["COLORSPEED"]
+			self.ergo.colorshiftit(param,param["COLORSPEED"])
 		f.hue1 = param["HUE1"]
 
 	def got_trigger(self, nm):
@@ -1252,8 +1256,7 @@ class action_0(action):
 		s.size = sizeinit
 		s.alpha = padparamvals["ALPHA"]
 		s.aspect = padparamvals["ASPECT"]
-		# print "creating sprite, alpha=",s.alpha
-		s.aspect = 0.25
+		# print "CREATING sprite, aspect=",s.aspect
 
 		# Set all of the envvals of things that can be
 		# controlled by envelopes to -1.0 (i.e not controlled by the envelope)
@@ -1268,12 +1271,12 @@ class action_0(action):
 		s.setpadi(padi)
 
 		if padparamvals["COLORCHANGING"]:
-			if padparamvals["COLORFAST"]:
-				self.ergo.colorshiftit(padparamvals,30.0)
-			else:
-				self.ergo.colorshiftit(padparamvals,10.0)
+			# print "s color speed = ",padparamvals["COLORSPEED"]," hue1 was ",padparamvals["HUE1"]
+			self.ergo.colorshiftit(padparamvals,padparamvals["COLORSPEED"])
+			# print "   after shiftit, hue1 is ",padparamvals["HUE1"]
 			if fing != None:
 				fing.hue1 = padparamvals["HUE1"]
+				# print "fing! setting hue1 to ",fing.hue1
 
 		if fing != None:
 			s.setcolor1(fing.hue1)
@@ -1370,7 +1373,7 @@ class action_0(action):
 			maxp = minp + 1
 		pv = -0.9 + 1.8 * ((m.pitch - minp) / float(maxp-minp))
 
-		print "GOT NOTE chan=",m.channel," pitch=",m.pitch," range=",minp,maxp," pv=",pv
+		# print "GOT NOTE chan=",m.channel," pitch=",m.pitch," range=",minp,maxp," pv=",pv
 
 		lastx0 = self.lastx0[m.channel]
 		lasty0 = self.lasty0[m.channel]

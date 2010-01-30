@@ -28,7 +28,7 @@ pe.show_fps = 1;
 # Instantiate hardware controllers
 osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
-tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
+tuio = TuioController(TUIO_DEBUG,host="169.254.81.125",port=3333)
 tuio.set_finger_callback(ergo.got_finger)
 
 # Create a video shape

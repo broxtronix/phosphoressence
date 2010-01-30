@@ -413,9 +413,9 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 0.98, "log10")
-        self.bindings.add(self, "/joystick0/axis5", "warp", 4.0, 0.0, 0.0)
-        self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
+        self.bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.03, 0.98, "log10")
+        self.bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
+        self.bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -478,8 +478,8 @@ class JoystickController(object):
 #            pe.set_control_value('rot', -0.001)
 #            pe.set_control_value('sx',0.999)
             pe.set_control_value('wave_mode', 2)
-            pe.set_control_value('wave_enabled',1.0)
-            pe.set_control_value('square_a',1.0)
+            pe.set_control_value('wave_enabled',0.0)
+            pe.set_control_value('square_a', 0.0)
             pe.set_control_value('ib_size',10.0)
     
         # Waveshape Enable
@@ -502,9 +502,11 @@ class JoystickController(object):
 
         # Vector Field
         if (path == "/joystick0/button1" and value == 1):
-            pe.vg_mode = pe.vg_mode + 1;
-            if (pe.vg_mode > 3):
-                pe.vg_mode = 0
+            if (pe.invert): pe.set_control_value('invert', 0.0)
+            else: pe.set_control_value('invert', 1.0)
+#            pe.vg_mode = pe.vg_mode + 1;
+#            if (pe.vg_mode > 3):
+#                pe.vg_mode = 0
 
         # Kaleidoscope
         if (path == "/joystick0/button4" and value == 1): 
