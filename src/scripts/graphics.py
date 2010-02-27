@@ -142,11 +142,50 @@ class BorderSprite(object):
 
             glDisable( GL_BLEND );
 
+class InvertSprite(object):
+    def render(self):
+
+        if (pe.invert):
+            glLoadIdentity()
+            glEnable(GL_LINE_SMOOTH)
+            glEnable(GL_BLEND);
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glLineWidth(100)
+            glPointSize(20)
+
+            true_edge = math.sqrt(pe.aspect*pe.aspect + 1.0);
+            vertices = array([[-true_edge, true_edge, true_edge, -true_edge],
+                              [true_edge, true_edge, -true_edge, -true_edge]])
+            glColor4f(0.0, 0.0, 0.0, 1.0)
+
+            # Draw the border
+            glBegin(GL_LINES)
+            glVertex( vertices[:,0] )
+            glVertex( vertices[:,1] )
+            glVertex( vertices[:,1] )
+            glVertex( vertices[:,2] )
+            glVertex( vertices[:,2] )
+            glVertex( vertices[:,3] )
+            glVertex( vertices[:,3] )
+            glVertex( vertices[:,0] )
+            glEnd()
+
+            glBegin(GL_POINTS)
+            glVertex( vertices[:,0] )
+            glVertex( vertices[:,1] )
+            glVertex( vertices[:,2] )
+            glVertex( vertices[:,3] )
+            glEnd();
+
+            glDisable( GL_BLEND );
+
 
 # Instantiate the graphics object
 pe_graphics = PeGraphics()
 pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
+pe_graphics.register(InvertSprite())
 ergo = Ergo()
 pe_graphics.register(ergo)
 #pe_graphics.register(WheelSprite())

@@ -21,13 +21,14 @@ ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 JOY_DEBUG = 1;
-OSC_DEBUG = 1;
-TUIO_DEBUG = 1;
-pe.show_fps = 1;
+OSC_DEBUG = 0;
+TUIO_DEBUG = 0;
+pe.show_fps = 0;
 
 # Instantiate hardware controllers
 osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
+#tuio = TuioController(TUIO_DEBUG,host="169.254.81.125",port=3333)
 tuio = TuioController(TUIO_DEBUG,host="169.254.81.125",port=3333)
 tuio.set_finger_callback(ergo.got_finger)
 
