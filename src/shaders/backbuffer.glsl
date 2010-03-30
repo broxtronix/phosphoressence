@@ -210,7 +210,7 @@ void main() {
   remapped_coords = mobius_transform(vec2(rr,theta2), 
                                      vec2(zoom,-rot), // polar      : zoom & rotation
                                      vec2(dx,dy),    // cartesian  : x & y translation 
-                                     vec2(0,0));     // polar      : rotation & orientation of 3D sphere
+                                     vec2(q1,q2));     // polar      : rotation & orientation of 3D sphere
 
   // --------------------------  Kaleidoscope  --------------------------------
 

@@ -31,10 +31,11 @@ def SpriteGen():
 class sprite:
 
 	def __init__(self,e,x0,y0,size,fing,params):
+		# print "HI from sprite __init__!"
 		self.ergo = e
 		self.padi = None
 		self.mass = 1.0
-		self.too_old = time.time() + 10.0
+		self.too_old = 0.0
 		self.params = params
 		self.note = None
 		self.printed = False
@@ -77,6 +78,7 @@ class sprite:
 		self.enabled = 0
 		self.notrendered = 0
 
+		self.too_old = time.time() + self.param("LIFETIME")
 		self.last_allang = self.param("ALLANG")
 		self.set_ang(self.last_allang)
 
@@ -123,7 +125,7 @@ class sprite:
 		glLineWidth(self.param("LINEWIDTH"))
 
 	def randomcolor(self):
-		print "SPRITE RANDOMCOLOR"
+		# print "SPRITE RANDOMCOLOR"
 		mx = 500
 		self.r1 = random.randint(0,mx)/1000.0
 		self.g1 = random.randint(0,mx)/1000.0
@@ -246,7 +248,7 @@ class sprite:
 	
 	def setcolor1(self,h):
 		(self.r1,self.g1,self.b1) = HLS(h,0.5,1.0).rgb()
-		# print("setcolor1 h=",h," rgb=",self.r1,self.g1,self.b1)
+		# print "setcolor1 h=",h
 
 	# def setcolor2(self,h):
 	# 	(self.r2,self.g2,self.b2) = HLS(h,0.5,1.0).rgb()
@@ -376,7 +378,7 @@ class sprite:
 			return
 
 		if time.time() > self.too_old:
-			print "Sprite too old, killing"
+			# print "Sprite too old, killing"
 			self.kill()
 			return
 
@@ -448,10 +450,11 @@ class sprite:
 		if self.aspect_envval >= 0.0:
 			e = self.aspect_envval * self.aspect
 		else:
-			# as envval goes to -1, e goes to 1
 			e = self.aspect
-		a = 0.25 + e * 3.75
-		# print "get_aspect = ",a
+		# print "get_aspect self.aspect = ",self.aspect
+		a = e
+		if a <= 0.1:
+			a = 0.1
 		return a
 
 	def get_alpha(self):
@@ -665,7 +668,7 @@ class sprite:
 			self.set_ang(self.ang + 360.0)
 
 		if self.centerx < -2.0 or self.centerx > 2.0 or self.centery < -2.0 or self.centery > 2.0:
-			print "Sprite out of range, killing it"
+			# print "Sprite out of range, killing it"
 			self.kill()
 
 	def get_pos_relative_to(self,x0,y0):
@@ -699,6 +702,7 @@ class sprite:
 	def getxysize_aspect(self):
 		(x,y) = self.getxysize_noaspect()
 		a = self.get_aspect()
+		# print "getxysize, aspect=",a
 		x = x * a
 		y = y / a
 		xy = (x,y)
@@ -933,6 +937,10 @@ class sprite_sine(sprite):
 			sizey = 0.08 + sizey
 			# print "sizey=",sizey
 
+		# if self.size_envval >= 0.0:
+		# 	sizex = sizex * self.size_envval
+		# 	sizey = sizey * self.size_envval
+
 		xoff = -sizex/2.0
 
 		yoff = 0.0
@@ -965,6 +973,7 @@ class sprite_sine(sprite):
 		glColor4f(self.r1,self.g1,self.b1,self.get_alpha())
 		# print("sine render rgb=",self.r1,self.g1,self.b1)
 
+		self.changed = True
 		if self.changed:
 			self.changeit()
 			self.changed = False
@@ -1329,6 +1338,7 @@ class sprite_fillbox(sprite):
 	def __init__(self, e, x0, y0, size, fing, param):
 		sprite.__init__(self,e, x0,y0,size,fing,param)
 		self.init_noise()
+		# print "SPRITE_FILLBOX! ASPECT = ",self.param("ASPECT")
 
 	def getDimensions(self):
 		return (self.size, self.size)

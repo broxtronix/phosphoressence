@@ -163,7 +163,7 @@ class TuioController(object):
     def nth_callback(self, source, msg):
 	addr = msg[0]
 	f = msg[1]
-	print "NTH OSC control addr=",addr," f=",f
+#	print "NTH OSC control addr=",addr," f=",f
 	try:
 		if msg[0] == "/nth/noteon" or msg[0] == "/midi/noteon":
 		    m = NoteOn(channel=msg[2],pitch=msg[3],velocity=msg[4])
@@ -413,12 +413,13 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 0.98, "log10")
-        self.bindings.add(self, "/joystick0/axis5", "warp", 4.0, 0.0, 0.0)
-        self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
+        self.bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.03, 0.98, "log10")
+        self.bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
+        self.bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
+        self.chord = 0.0
         self.sx_coefficient = 0.0
         self.sy_coefficient = 0.0
         self.cx_coefficient = 0.0
@@ -436,7 +437,7 @@ class JoystickController(object):
         # Default parameters for PhosphorEssence
         pe.wave_enabled = 1
         pe.wave_mode = 1.0
-        pe.square_a = 1.0
+        pe.square_a = 0.0
         pe.ib_size=10.0
         pe.ib_a = 0.0
         pe.mv_a = 0.0
@@ -475,22 +476,24 @@ class JoystickController(object):
             pe.set_control_value('mv_l', 0)
             pe.set_control_value('rot', 0)
             pe.set_control_value('sx',1.0)
+            pe.set_control_value('q1',0.0)
+            pe.set_control_value('q2',0.0)
 #            pe.set_control_value('rot', -0.001)
 #            pe.set_control_value('sx',0.999)
             pe.set_control_value('wave_mode', 2)
-            pe.set_control_value('wave_enabled',1.0)
-            pe.set_control_value('square_a',1.0)
+            pe.set_control_value('wave_enabled',0.0)
+            pe.set_control_value('square_a', 0.0)
             pe.set_control_value('ib_size',10.0)
     
         # Waveshape Enable
-        if (path == "/joystick0/button0" and value == 1):
+        if (path == "/joystick0/button1" and value == 1):
             if (pe.wave_enabled): pe.set_control_value('wave_enabled', 0.0)
             else: pe.set_control_value('wave_enabled', 1.0)
 
         # Squareshape Enable
-        if (path == "/joystick0/button6" and value == 1):
-            if (pe.square_a): pe.set_control_value('square_a', 0.0)
-            else: pe.set_control_value('square_a', 1.0)
+#        if (path == "/joystick0/button6" and value == 1):
+#            if (pe.square_a): pe.set_control_value('square_a', 0.0)
+#            else: pe.set_control_value('square_a', 1.0)
 #            if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
 #            else: pe.set_control_value('mv_a', 1.0);    
 
@@ -501,39 +504,51 @@ class JoystickController(object):
             else: pe.set_control_value('ib_a', 1.0)
 
         # Vector Field
-        if (path == "/joystick0/button1" and value == 1):
-            pe.vg_mode = pe.vg_mode + 1;
-            if (pe.vg_mode > 3):
-                pe.vg_mode = 0
+        if (path == "/joystick0/button7" and value == 1):
+            if (pe.invert): pe.set_control_value('invert', 0.0)
+            else: pe.set_control_value('invert', 1.0)
+#            pe.vg_mode = pe.vg_mode + 1;
+#            if (pe.vg_mode > 3):
+#                pe.vg_mode = 0
 
         # Kaleidoscope
-        if (path == "/joystick0/button4" and value == 1): 
-            if (pe.kaleidoscope): pe.set_control_value('kaleidoscope', 0.0)
-            else: pe.set_control_value('kaleidoscope', 1.0)
+        if (path == "/joystick0/button0" and value == 1): 
+            if (pe.wrap): pe.set_control_value('wrap', 0.0)
+            else: pe.set_control_value('wrap', 1.0)
 
 
         # Translation
-        if (path == "/joystick0/hat0" and value == 2): 
-            self.square_thick_coeff = 1.0
-        if (path == "/joystick0/hat0" and value == 8): 
-            self.square_thick_coeff = -1.0
+        if (path == "/joystick0/hat0" and value == 2):
+            pe.set_control_value('brighten', 1.0);
+            pe.set_control_value('darken', 0.0);
+            #            self.square_athick_coeff = 1.0
+        if (path == "/joystick0/hat0" and value == 8):
+            pe.set_control_value('darken', 1.0);
+            pe.set_control_value('brighten', 0.0);
+            #            self.square_thick_coeff = -1.0
         if (path == "/joystick0/hat0" and value == 1): 
-            self.square_scale_coeff = 1.0
+            pe.set_control_value('darken', 0.0);
+            pe.set_control_value('solarize', 0.0);
+            pe.set_control_value('brighten', 0.0);
+            #            self.square_scale_coeff = 1.0
         if (path == "/joystick0/hat0" and value == 4): 
-            self.square_scale_coeff = -1.0
-        if (path == "/joystick0/hat0" and value == 0.0): 
-            self.square_thick_coeff = 0.0
-            self.square_scale_coeff = 0.0
-            self.wave_frequency_coeff = 0.0
+            pe.set_control_value('solarize', 1.0);
+            #            self.square_scale_coeff = -1.0
+        if (path == "/joystick0/hat0" and value == 0.0):
+            pass
+#            self.square_thick_coeff = 0.0
+#            self.square_scale_coeff = 0.0
+#            self.wave_frequency_coeff = 0.0
 
 
         # Wave Movement
-        if (path == "/joystick0/button7" and value == 1.0): 
-            if (pe.wave_move == 1.0):
-                pe.set_control_value('wave_move', 0.0)
-                pe.set_control_value('wave_x',0.5)
-                pe.set_control_value('wave_y',0.5)
-            else: pe.set_control_value('wave_move', 1.0)
+        if (path == "/joystick0/button6"):
+            self.chord = value
+#            if (pe.wave_move == 1.0):
+#                pe.set_control_value('wave_move', 0.0)
+#                pe.set_control_value('wave_x',0.5)
+#                pe.set_control_value('wave_y',0.5)
+#            else: pe.set_control_value('wave_move', 1.0)
 
 
         # Capture the rotation rate
@@ -555,18 +570,23 @@ class JoystickController(object):
         if (path == "/joystick0/axis0"):
             delta = -(value-0.5) * rot_gain
             if (math.fabs(value-0.5) > 0.05): 
-                pe.set_control_value('rot', pe.rot - delta)
-                # if (pe.rot > 0.785): pe.rot = 0.785   # Turn off rotation 
-                # if (pe.rot < -0.785): pe.rot = -0.785 # limits for now.
+                if (self.chord):
+                    pe.set_control_value('q2', pe.q2 + 2.0*delta)
+                else:
+                    pe.set_control_value('rot', pe.rot - delta)
 
         # Zoom
         zoom_gain = 0.002
         if (path == "/joystick0/axis1"): 
-            delta = (value-0.5) * zoom_gain
-            if (math.fabs(value-0.5) > 0.05): 
-                pe.set_control_value('zoom', pe.zoom - delta)
-                if (pe.zoom > 1.16): pe.set_control_value('zoom', 1.16)
-                if (pe.zoom < 0.5): pe.set_control_value('zoom', 0.5)
+            if (math.fabs(value-0.5) > 0.05):
+                if (self.chord):
+                    delta = -(value-0.5) * rot_gain
+                    pe.set_control_value('q1', pe.q1 - delta)
+                else:
+                    delta = (value-0.5) * zoom_gain
+                    pe.set_control_value('zoom', pe.zoom - delta)
+                    if (pe.zoom > 1.16): pe.set_control_value('zoom', 1.16)
+                    if (pe.zoom < 0.5): pe.set_control_value('zoom', 0.5)
 
 
         # Zoomexp & Kaliedoscope_raidus share this control
@@ -684,6 +704,12 @@ class JoystickController(object):
         # if (path == "/joystick0/button6" and value == 0.0): 
         #     self.warp_coefficient = 0.0
 
+        # echo orient
+        if (path == "/joystick0/button4" and value == 1.0):
+            if (pe.kaleidoscope):
+                pe.set_control_value('kaleidoscope', 0.0)
+            else:
+                pe.set_control_value('kaleidoscope', 1.0)
 
         # Wave mode
         if (path == "/joystick0/button8" and value == 1): 
@@ -798,8 +824,8 @@ class JoystickController(object):
         pe.ifs_mode = 0
 
         # Tweak decay
-        #        if (pe.decay < 0.851):
-        #            pe.set_control_value("decay", 0.01);
+        if (pe.decay < 0.851):
+            pe.set_control_value("decay", 0.1);
 
         if (pe.decay > 0.99 and pe.decay <1.01):
             pe.set_control_value("decay", pe.decay+0.01)            
@@ -807,4 +833,3 @@ class JoystickController(object):
             pe.set_control_value("decay", 1.0)
         elif (pe.decay >= 1.01):
             pe.set_control_value("decay", pe.decay-0.01)
-
