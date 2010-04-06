@@ -1,5 +1,5 @@
 dnl __BEGIN_LICENSE__
-dnl Copyright (C) 2006, 2007 United States Government as represented by
+dnl Copyright (C) 2006-2010 United States Government as represented by
 dnl the Administrator of the National Aeronautics and Space Administration.
 dnl All Rights Reserved.
 dnl __END_LICENSE__
@@ -9,15 +9,16 @@ dnl usage: AX_MODULE_PYTHON(<directory>, <default>)
 AC_DEFUN([AX_MODULE_PYTHON],
 [
   # Silently ignore modules that don't exist in this distribution
-  if test -d $1 ; then
+  if test -d "$srcdir/$1" ; then
 
     HAVE_PKG_PYTHON_SRC=yes
 
+    m4_divert_once([INIT_PREPARE], [dnl
     AC_ARG_ENABLE([module-python],
-      AC_HELP_STRING([--enable-module-python], [enable the python bindings @<:@$2@:>@]),
+      AS_HELP_STRING([--enable-module-python], [enable the python bindings @<:@$2@:>@]),
       [ ENABLE_MODULE_PYTHON=$enableval ],
       [ if test x"$ENABLE_MODULE_PYTHON" = x""; then ENABLE_MODULE_PYTHON=`/bin/echo -n $2 | tr [A-Z] [a-z]` ; fi ]
-    )
+    )])
 
     AC_MSG_CHECKING([whether to build module Python])
     ax_module_enable=$ENABLE_MODULE_PYTHON

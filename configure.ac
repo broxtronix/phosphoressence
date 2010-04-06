@@ -3,17 +3,39 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+m4_pattern_forbid([^AX_])
+m4_pattern_allow([^AX_CFLAGS$])
+m4_pattern_allow([^AX_INCLUDE_DIR$])
+m4_pattern_allow([^AX_LIBDIR$])
+m4_pattern_allow([^AX_OTHER_LIBDIR$])
+m4_pattern_allow([^PKG_[A-Z_]+_CPPFLAGS$])
+m4_pattern_allow([^PKG_[A-Z_]+_LDFLAGS$])
+m4_pattern_allow([^PKG_[A-Z_]+_LIBS$])
+m4_pattern_allow([^PKG_PATHS$])
+m4_pattern_allow([^PKG_PATHS_[A-Z_]+$])
+m4_pattern_allow([^PKG_BOOST_INCDIR$])
+m4_pattern_allow([^PKG_BOOST_LIBDIR$])
+m4_pattern_allow([^PKG_VW_LIBS_TEMP$])
+m4_pattern_allow([^PKG_ARBITRARY_QT_NEEDED_HEADERS$])
+
 ##################################################
 # A few starting bits
 ##################################################
 
+AC_PREREQ([2.59])
 dnl TODO BEFORE RELEASE: update package version
 AC_INIT([PhosphorEssence], [0.2], [], [PhosphorEssence])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
-AM_INIT_AUTOMAKE([nostdinc])
+AM_INIT_AUTOMAKE([nostdinc 1.8.5])
 AX_CONFIG_HEADER_PREFIX([src/pe_config.h], [PE_])
+
+dnl Fix for early autoconf that doesn't export these
+AC_SUBST([abs_top_srcdir])
+AC_SUBST([abs_top_builddir])
+
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 dnl TODO BEFORE RELEASE: update libtool version
 dnl if abi changes in any way:
@@ -34,15 +56,15 @@ AC_SUBST(LIBTOOL_VERSION)
 # This should be first, so everything else can use it
 AX_ARG_ENABLE(verbose, no, [none], [verbose configuration output])
 
+m4_divert_text([INIT_PREPARE], [dnl
 # load the config.options
-if test -f config.options; then
-  if test "yes" = "$ENABLE_VERBOSE" ; then
-    AC_MSG_NOTICE([sourcing config.options])
-    cat config.options
-  fi
-  source config.options
+if test -f ./config.options; then
+  AX_LOG([using config.options << EOF])
+  AX_LOG([`cat ./config.options`])
+  AX_LOG([EOF])
+  . ./config.options
 fi
-
+])
 
 
 ##################################################
@@ -68,10 +90,19 @@ AC_PROG_MAKE_SET
 AC_LANG(C++)
 AX_COMMON_OPTIONS
 
+# Looking for posix headers
+AC_CHECK_HEADERS([unistd.h pwd.h])
+AC_CHECK_FUNCS([getpwuid getpid])
+
 # Look for the python stuff
 AM_PATH_PYTHON([2.4], [HAVE_PYTHON=yes], [HAVE_PYTHON=no])
 AC_PYTHON_DEVEL([HAVE_PYTHON=yes], [HAVE_PYTHON=no])
 AC_SUBST(HAVE_PYTHON)
+
+# For the moment this is just a manual switch, defaulting to off.
+# Someday this should be sensibly autodetected.
+AX_ARG_ENABLE(sse,           no,  [am-yes cpp-bool], [enable SSE optimizations in some places (development)])
+AX_ARG_ENABLE(qt-qmake,      yes, [none],            [Allow qmake detection of QT])
 
 ##################################################
 # package checks
@@ -79,25 +110,40 @@ AC_SUBST(HAVE_PYTHON)
 
 AX_PKG_PTHREADS
 
-AX_PKG_BOOST
-if test x"$HAVE_PKG_BOOST" == "xyes"; then
-  AX_PKG_BOOST_CHECK_VERSION([PE_])
-  AC_MSG_NOTICE([PE will be built using Boost version $BOOST_VERSION])
+AX_PKG_BOOST([BOOST_PROGRAM_OPTIONS BOOST_FILESYSTEM BOOST_THREAD BOOST_GRAPH],
+  BOOST_PROGRAM_OPTIONS,
+    [AX_PKG_BOOST_LIB(PROGRAM_OPTIONS, [-lboost_program_options], [boost/program_options.hpp], [boost::program_options::options_description("Rawr");])],
+  BOOST_SYSTEM,
+    [AX_PKG_BOOST_LIB(SYSTEM,          [-lboost_system],          [boost/system/error_code.hpp], [boost::system::error_code();])],
+  BOOST_FILESYSTEM,
+    [AX_PKG_BOOST_LIB(FILESYSTEM,      [-lboost_filesystem],      [boost/filesystem/path.hpp], [boost::filesystem::path();], [$PKG_BOOST_SYSTEM_LIBS])],
+  BOOST_REGEX,
+    [AX_PKG_BOOST_LIB(REGEX,           [-lboost_regex],           [boost/regex.hpp], [boost::regex(".*");])],
+  BOOST_DATETIME,
+    [AX_PKG_BOOST_LIB(DATETIME,        [-lboost_date_time],       [boost/date_time/gregorian/gregorian_types.hpp])],
+  BOOST_THREAD,
+    [AX_PKG_BOOST_LIB(THREAD,          [-lboost_thread],          [boost/thread/thread.hpp], [boost::mutex();], [$PKG_BOOST_DATETIME_LIBS], [boost/thread/condition.hpp])],
+  BOOST_IOSTREAMS,
+    [AX_PKG_BOOST_LIB(IOSTREAMS,       [-lboost_iostreams],       [boost/iostreams/device/mapped_file.hpp], [boost::iostreams::mapped_file_source();])],
+  BOOST_GRAPH,
+    [AX_PKG_BOOST_LIB(GRAPH,           [],                        [boost/graph/adjacency_list.hpp])]
+)
 
-  AX_PKG_BOOST_LIB(PROGRAM_OPTIONS, [-lboost_program_options], [boost/program_options.hpp])
-  AX_PKG_BOOST_LIB(SYSTEM,          [-lboost_system],          [boost/system/error_code.hpp])
-  AX_PKG_BOOST_LIB(FILESYSTEM,      [-lboost_filesystem],      [boost/filesystem/path.hpp], [$PKG_BOOST_SYSTEM_LIBS])
-  AX_PKG_BOOST_LIB(THREAD,          [-lboost_thread],          [boost/thread/thread.hpp])
-  AX_PKG_BOOST_LIB(IOSTREAMS,       [-lboost_iostreams],       [boost/iostreams/stream_buffer.hpp])
+if test x"$HAVE_PKG_BOOST" = "xyes"; then
+  AX_PKG_BOOST_CHECK_VERSION([PE_])
+  AC_MSG_NOTICE([Using Boost header version $BOOST_VERSION, library suffix $PKG_BOOST_SAME_SUFFIX])
 fi
 
 # This provides an easy way for users to override the threads options
 # if they are replacing Boost threads with something else for their platform.
 AX_PKG(THREADS,           [BOOST_THREAD], [], [])
+
+# Vision Workbench
 AX_PKG(VW_CORE,           [BOOST], [-lvwCore],        [vw/Core/Thread.h])
 AX_PKG(VW_IMAGE,          [BOOST], [-lvwImage],       [vw/Image/ImageView.h])
 AX_PKG(VW_FILEIO,         [BOOST], [-lvwFileIO],      [vw/FileIO/DiskImageResource.h])
 
+# Assorted other dependencies
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
 AX_PKG(RTAUDIO,           [],      [-lrtaudio], [RtAudio.h])
@@ -114,29 +160,55 @@ AX_PKG_ONE_OF(GL,
     [AX_PKG_APPLE([GL], [], [-framework OpenGL -framework GLUT -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib])],
   LINUX_GL,
     [AX_PKG(X11, [], [-lXext -lX11 -lXmu -lXi -lXt], [])
-     AX_PKG(LINUX_GL, [X11], [-lGL -lGLU -lglut], [GL/gl.h GL/glu.h GL/glut.h], [])])
+     AX_PKG(LINUX_GL, [X11], [-lglut -lGLU -lGL], [GL/gl.h GL/glu.h GL/glut.h], [], [], [glCreateShader])])
 
 AX_PKG(OPENVG,        [GL],      [-lOpenVG], [vg/openvg.h])
 AX_PKG(OPENCV,        [],        [-lcv -lcvaux -lhighgui], [cv.h], [opencv])
 
-# Qt with AutoTroll.
-AT_WITH_QT([+gui +sql +opengl], [], [], [HAVE_PKG_QT_BASE="no:missing QT"], [])
+if test "$ENABLE_QT_QMAKE" = no; then
+  AX_GROUP_PKG([QT_QMAKE])
+else
+  # Qt with AutoTroll.
+  AT_WITH_QT([+gui +sql +opengl +network], [], [], [HAVE_PKG_QT_QMAKE="no:missing QT"], [])
 
-if test x"$HAVE_PKG_QT_BASE" != x"no:missing QT"; then
-    AT_REQUIRE_QT_VERSION([4.0], [HAVE_PKG_QT_BASE="no:wrong QT version"], [])
+  if test x"$HAVE_PKG_QT_QMAKE" != x"no:missing QT"; then
+      AT_REQUIRE_QT_VERSION([4.0], [HAVE_PKG_QT_QMAKE="no:wrong QT version"], [])
+  fi
+
+  # We seed QT_QMAKE's cppflags and libs with the ones qmake figured out
+  PKG_QT_QMAKE_CPPFLAGS="$PKG_QT_QMAKE_CPPFLAGS $QT_CPPFLAGS"
+  AX_PKG(QT_QMAKE, [], [$QT_LIBS], [QVector])
 fi
 
-# We seed QT_BASE's cppflags and libs with the ones qmake figured out
-PKG_QT_BASE_CPPFLAGS="$PKG_QT_BASE_CPPFLAGS $QT_CPPFLAGS"
-AX_PKG(QT_BASE, [], [$QT_LIBS], [QVector])
-
 AX_PKG_ONE_OF(QT,
-    APPLE_QT, [AX_PKG_APPLE(QT, [GL QT_BASE], [])],
-    LINUX_QT,
-     [AX_PKG(QT_OPENGL,  [QT_BASE], [], [QtOpenGL])
-      AX_PKG(QT_GUI,     [QT_BASE], [], [QLabel])
-      AX_PKG(QT_SQL,     [QT_BASE], [], [QtSql])
-      AX_GROUP_PKG(LINUX_QT, [QT_BASE QT_GUI QT_OPENGL QT_SQL])])
+    ARBITRARY_QT,
+     [if test -z "$QT_ARBITRARY_MODULES" -a -z "$HAVE_PKG_ARBITRARY_MODULES"; then
+        HAVE_PKG_ARBITRARY_QT="no:Set \$QT_ARBITRARY_MODULES"
+      else
+        for module in $QT_ARBITRARY_MODULES; do
+          PKG_ARBITRARY_QT_NEEDED_HEADERS="$PKG_ARBITRARY_QT_NEEDED_HEADERS Qt${module}"
+          PKG_ARBITRARY_QT_LIBS="-lQt${module} $PKG_ARBITRARY_QT_LIBS"
+        done
+      fi
+      PKG_ARBITRARY_QT_CPPFLAGS="$PKG_ARBITRARY_QT_CPPFLAGS -DQT_SHARED"
+      AX_PKG(ARBITRARY_QT, [], [-lQtCore], [$PKG_ARBITRARY_QT_NEEDED_HEADERS])],
+    APPLE_QMAKE_QT, [AX_PKG_APPLE(QMAKE_QT, [GL QT_QMAKE], [])],
+    LINUX_QMAKE_QT,
+     [AX_PKG(QT_QMAKE_OPENGL, [QT_QMAKE], [], [QtOpenGL])
+      AX_PKG(QT_QMAKE_GUI,    [QT_QMAKE], [], [QLabel])
+      AX_PKG(QT_QMAKE_SQL,    [QT_QMAKE], [], [QtSql])
+      AX_PKG(QT_QMAKE_NETWORK,    [QT_QMAKE], [], [QtNetwork])
+      AX_GROUP_PKG(LINUX_QMAKE_QT, [QT_QMAKE QT_QMAKE_GUI QT_QMAKE_OPENGL QT_QMAKE_SQL QT_QMAKE_NETWORK])],
+    GUESS_QT,
+     [PKG_QT_GUESS_BASE_CPPFLAGS="$PKG_QT_GUESS_BASE_CPPFLAGS -DQT_SHARED"
+      AX_PKG(QT_GUESS_BASE,   [],                           [],           [QtCore/qstring.h])
+      AX_PKG(QT_GUESS_CORE,   [QT_GUESS_BASE],              [-lQtCore],   [QtCore],   [QtCore])
+      AX_PKG(QT_GUESS_GUI,    [QT_GUESS_CORE],              [-lQtGui],    [QtGui],    [QtGui])
+      AX_PKG(QT_GUESS_SQL,    [QT_GUESS_CORE],              [-lQtSql],    [QtSql],    [QtSql])
+      AX_PKG(QT_GUESS_NETWORK,[QT_GUESS_CORE],              [-lQtNetwork],[QtNetwork],[QtNetwork])
+      AX_PKG(QT_GUESS_OPENGL, [QT_GUESS_CORE QT_GUESS_GUI], [-lQtOpenGL], [QtOpenGL], [QtOpenGL])
+      AX_GROUP_PKG(GUESS_QT,  [QT_GUESS_BASE QT_GUESS_CORE QT_GUESS_GUI QT_GUESS_SQL QT_GUESS_NETWORK QT_GUESS_OPENGL])])
+
 
 ##################################################
 # module definitions
