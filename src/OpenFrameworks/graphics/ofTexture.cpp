@@ -455,11 +455,10 @@ void ofTexture::draw(float x, float y, float w, float h){
 
 		// -------------------------------------------------
 		// complete hack to remove border artifacts.
-		// slightly, slightly alters an image, scaling...
-		// to remove the border.
-		// we need a better solution for this, but
-		// to constantly add a 2 pixel border on all uploaded images
-		// is insane..
+		// slightly, slightly alters an image, scaling...  to
+		// remove the border.  we need a better solution for
+		// this, but to constantly add a 2 pixel border on all
+		// uploaded images is insane..
 
 		GLfloat offsetw = 0;
 		GLfloat offseth = 0;

@@ -26,165 +26,165 @@
 /// An audio and video delight.
 ///
 
-// #include <iostream>
-// #include "cv.h"
-// #include "highgui.h"
+#include <iostream>
+#include "cv.h"
+#include "highgui.h"
 
-// using namespace cv;
+using namespace cv;
 
-// int main(int argc, char** argv)
-// {
-//   VideoCapture cap;
-//   if (argc == 2) {
-//     cap.open(argv[1]); 
-//   } else {
-//     cap.open(0); 
-//   }
+int main(int argc, char** argv)
+{
+  VideoCapture cap;
+  if (argc == 2) {
+    cap.open(argv[1]); 
+  } else {
+    cap.open(0); 
+  }
 
-//   // check if we succeeded  
-//   if(!cap.isOpened()) {
-//     std::cout << "Could not open video camera 0.  Exiting.\n";
-//     exit(1);
-//   }
+  // check if we succeeded  
+  if(!cap.isOpened()) {
+    std::cout << "Could not open video camera 0.  Exiting.\n";
+    exit(1);
+  }
 
-//   Mat edges;
-//   namedWindow("edges",1);
-//   for(;;) {
-//     Mat frame;
-//     cap >> frame; // get a new frame from camera
-//     cvtColor(frame, edges, CV_BGR2GRAY);
-//     GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-//     Canny(edges, edges, 0, 30, 3);
-//     imshow("edges", edges);
-//     if(waitKey(30) >= 0) break;
-//   }
-//   // the camera will be deinitialized automatically in VideoCapture destructor
-//   return 0;
+  Mat edges;
+  namedWindow("edges",1);
+  for(;;) {
+    Mat frame;
+    cap >> frame; // get a new frame from camera
+    cvtColor(frame, edges, CV_BGR2GRAY);
+    GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
+    Canny(edges, edges, 0, 30, 3);
+    imshow("edges", edges);
+    if(waitKey(30) >= 0) break;
+  }
+  // the camera will be deinitialized automatically in VideoCapture destructor
+  return 0;
+}
+
+
+// // Qt
+// #include <QApplication>
+// #include <QWidget>
+
+// // Boost
+// #include <boost/program_options.hpp>
+// namespace po = boost::program_options;
+
+// // VW
+// #include <vw/Core.h>
+// #include <vw/Image.h>
+// #include <vw/Math.h>
+// #include <vw/FileIO.h>
+// #include <vw/Stereo.h>
+
+// // Local files
+// #include <MainWindow.h>
+// #include <AudioEngine.h>
+// #include <GraphicsEngine.h>
+// #include <ScriptEngine.h>
+// #include <PeParameters.h>
+// #include <OscController.h>
+// //#include <MidiController.h>
+// #include <JoystickController.h>
+// #include <OScopeShape.h>
+// #include <VectorShape.h>
+// #include <PhasescopeShape.h>
+// #include <SpectrographShape.h>
+
+// using namespace vw;
+
+// void setup_parameters() {
+//   pe_parameters().add_parameter("exit", true, 0.0,
+//                                 "Causes the program to exit.");
+//   pe_parameters().add_parameter("window_startup", true, 0.0,
+//                                 "Causes the program to start up in windowed mode.");
+//   pe_parameters().add_parameter("orientation", true, 0.0,
+//                                 "Set the orientation (0 = horizontal, 1 = vertical)");
+//   pe_parameters().add_parameter("aspect", true, 1.0,
+//                                 "Aspect ratio of the screen.");
 // }
 
+// int main(int argc, char *argv[]) {
 
-// Qt
-#include <QApplication>
-#include <QWidget>
+//   std::cout << "\nStarting PhosphorEssence v0.4\n\n";
 
-// Boost
-#include <boost/program_options.hpp>
-namespace po = boost::program_options;
+//   // Setup the pe parameters object
+//   setup_parameters();
 
-// VW
-#include <vw/Core.h>
-#include <vw/Image.h>
-#include <vw/Math.h>
-#include <vw/FileIO.h>
-#include <vw/Stereo.h>
+//   // Parse command line options
+//   po::options_description desc("Phosphoressence: the video feedback framework.");
+//   desc.add_options()
+//     ("help", "Display this help message")
+//     ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.")
+//     ("vertical,v", "Rotate the canvas by 90 degrees for vertical projection.");
+//   po::variables_map vm;
+//   try {
+//     po::store( po::command_line_parser( argc, argv ).options(desc).run(), vm );
+//     po::notify( vm );
+//   } catch (boost::program_options::unknown_option &e) {
+//     std::cout << "An error occured when parsing command line options: " << e.what() << "\n";
+//     exit(0);
+//   }
 
-// Local files
-#include <MainWindow.h>
-#include <AudioEngine.h>
-#include <GraphicsEngine.h>
-#include <ScriptEngine.h>
-#include <PeParameters.h>
-#include <OscController.h>
-//#include <MidiController.h>
-#include <JoystickController.h>
-#include <OScopeShape.h>
-#include <VectorShape.h>
-#include <PhasescopeShape.h>
-#include <SpectrographShape.h>
+//   if( vm.count("help") ) {
+//     std::cout << desc << std::endl;
+//     exit(0);
+//   }
 
-using namespace vw;
+//   if( vm.count("window") )
+//     pe_parameters().set_readonly("window_startup", 1.0);
 
-void setup_parameters() {
-  pe_parameters().add_parameter("exit", true, 0.0,
-                                "Causes the program to exit.");
-  pe_parameters().add_parameter("window_startup", true, 0.0,
-                                "Causes the program to start up in windowed mode.");
-  pe_parameters().add_parameter("orientation", true, 0.0,
-                                "Set the orientation (0 = horizontal, 1 = vertical)");
-  pe_parameters().add_parameter("aspect", true, 1.0,
-                                "Aspect ratio of the screen.");
-}
+//   if( vm.count("vertical") )
+//     pe_parameters().set_readonly("orientation", 1.0);
 
-int main(int argc, char *argv[]) {
+//   // Start up the Qt GUI
+//   QApplication app(argc, argv);
+//   MainWindow main_window;
 
-  std::cout << "\nStarting PhosphorEssence v0.4\n\n";
+//   // Start up the OSC control thread.  It listens in the background,
+//   // changing the values in PeParameters as it receives updates.
+//   std::cout << "\t--> Initializing OSC driver\n";
+//   std::string osc_ip = "10.0.1.2";
+//   if (argc == 2) 
+//     osc_ip = argv[1];
+//   OscController osc_controller("60002", osc_ip.c_str() , "60000");
 
-  // Setup the pe parameters object
-  setup_parameters();
+//   //  std::cout << "\t--> Initializing MIDI driver\n";
+//   //  MidiController midi_controller;
 
-  // Parse command line options
-  po::options_description desc("Phosphoressence: the video feedback framework.");
-  desc.add_options()
-    ("help", "Display this help message")
-    ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.")
-    ("vertical,v", "Rotate the canvas by 90 degrees for vertical projection.");
-  po::variables_map vm;
-  try {
-    po::store( po::command_line_parser( argc, argv ).options(desc).run(), vm );
-    po::notify( vm );
-  } catch (boost::program_options::unknown_option &e) {
-    std::cout << "An error occured when parsing command line options: " << e.what() << "\n";
-    exit(0);
-  }
+//   std::cout << "\t--> Initializing Joystick drivers\n";
+//   JoystickController joystick_controller;
 
-  if( vm.count("help") ) {
-    std::cout << desc << std::endl;
-    exit(0);
-  }
+//   // Create the audio thread, and create the sound statistics listener
+//   // that keeps up-to-date sound statistics (moving averages, etc).
+//   std::cout << "\t--> Opening audio stream\n";
+//   AudioThread audio_thread;
+//   //  boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
+//   //  audio_thread.register_listener(stats_listener);
 
-  if( vm.count("window") )
-    pe_parameters().set_readonly("window_startup", 1.0);
+//   // Create some Waveshapes
+//   boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
+//   boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
+//   boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
+//   boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
+//   audio_thread.register_listener(oscope);
+//   audio_thread.register_listener(phasescope);
+//   audio_thread.register_listener(spectrograph);
+//   main_window.gl_widget()->register_drawable(phasescope);
+//   main_window.gl_widget()->register_drawable(spectrograph);
+//   main_window.gl_widget()->register_drawable(oscope);
+//   //  main_window.gl_widget()->register_drawable(lissajous);
 
-  if( vm.count("vertical") )
-    pe_parameters().set_readonly("orientation", 1.0);
+//   // Start the script engine & start the command interpreter
+//   pe_script_engine().start();
 
-  // Start up the Qt GUI
-  QApplication app(argc, argv);
-  MainWindow main_window;
+//   // As a last step, call the javascript initialize_callback() to give
+//   // use a chance to set everything up in the javascript VM.
+//   pe_script_engine().execute("pe_initialize()");
 
-  // Start up the OSC control thread.  It listens in the background,
-  // changing the values in PeParameters as it receives updates.
-  std::cout << "\t--> Initializing OSC driver\n";
-  std::string osc_ip = "10.0.1.2";
-  if (argc == 2) 
-    osc_ip = argv[1];
-  OscController osc_controller("60002", osc_ip.c_str() , "60000");
-
-  //  std::cout << "\t--> Initializing MIDI driver\n";
-  //  MidiController midi_controller;
-
-  std::cout << "\t--> Initializing Joystick drivers\n";
-  JoystickController joystick_controller;
-
-  // Create the audio thread, and create the sound statistics listener
-  // that keeps up-to-date sound statistics (moving averages, etc).
-  std::cout << "\t--> Opening audio stream\n";
-  AudioThread audio_thread;
-  //  boost::shared_ptr<SoundStatsListener> stats_listener( new SoundStatsListener() );
-  //  audio_thread.register_listener(stats_listener);
-
-  // Create some Waveshapes
-  boost::shared_ptr<OScopeShape> oscope( new OScopeShape() );
-  boost::shared_ptr<PhasescopeShape> phasescope( new PhasescopeShape() );
-  boost::shared_ptr<SpectrographShape> spectrograph( new SpectrographShape() );
-  boost::shared_ptr<VectorShape> lissajous( new VectorShape() );
-  audio_thread.register_listener(oscope);
-  audio_thread.register_listener(phasescope);
-  audio_thread.register_listener(spectrograph);
-  main_window.gl_widget()->register_drawable(phasescope);
-  main_window.gl_widget()->register_drawable(spectrograph);
-  main_window.gl_widget()->register_drawable(oscope);
-  //  main_window.gl_widget()->register_drawable(lissajous);
-
-  // Start the script engine & start the command interpreter
-  pe_script_engine().start();
-
-  // As a last step, call the javascript initialize_callback() to give
-  // use a chance to set everything up in the javascript VM.
-  pe_script_engine().execute("pe_initialize()");
-
-  // Enter the run loop
-  //  main_window.show();
-  return app.exec(); 
-}
+//   // Enter the run loop
+//   //  main_window.show();
+//   return app.exec(); 
+// }
 

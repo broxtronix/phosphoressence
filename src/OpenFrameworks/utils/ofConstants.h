@@ -86,7 +86,7 @@
 		#define __MACOSX_CORE__
 	#endif
 	#include <unistd.h>
-//	#include "GLee.h"
+        #include "GL/GLee.h"
 	#include <OpenGL/glu.h>
 	#include <ApplicationServices/ApplicationServices.h>
 

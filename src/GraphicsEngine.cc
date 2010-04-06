@@ -153,6 +153,13 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_record = false;
   m_record_frame_number = 0;
 
+  // Video
+  m_video_stream.open("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"); 
+  if(!m_video_stream.isOpened()) {
+    std::cout << "Could not open video file.  Exiting.\n";
+    exit(1);
+  }
+
   // Set mouse tracking
   this->setMouseTracking(true);
 
@@ -200,7 +207,7 @@ void GraphicsEngine::drawImage() {
     
 
   // Make this context current, and store the current OpenGL state
-  // before we start to modify it.
+  // before we start to modify it. (This is a QT function)
   makeCurrent();
   
   // ------------------------ <FrameBuffer> -------------------------
@@ -257,6 +264,17 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
+  // -----------------------
+  // Draw Video
+  // -----------------------
+  
+  cv::Mat edges, frame;
+  m_video_stream >> frame; // get a new frame from camera
+  cvtColor(frame, edges, CV_BGR2GRAY);
+  cv::GaussianBlur(edges, edges, cv::Size(7,7), 1.5, 1.5);
+  cv::Canny(edges, edges, 0, 30, 3);
+  
+
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
   pe_script_engine().execute("pe_render()");
 
@@ -299,8 +317,8 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Draw the framebuffer to the real screen.
-//   glEnable(GL_BLEND);
-//   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //   glEnable(GL_BLEND);
+  //   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
   glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
 
@@ -551,16 +569,6 @@ void GraphicsEngine::resizeGL(int width, int height) {
                             GL_TEXTURE_2D, m_framebuffer_texture0, 0);
 
   // Bind the stencil buffer to the framebuffer
-  // glBindTexture(GL_TEXTURE_2D, m_framebuffer_stencil0);
-  // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, 
-  //              m_framebuffer_width, m_framebuffer_height, 
-  //              0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
-  // glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-  //                           GL_TEXTURE_2D, m_framebuffer_stencil0, 0);
-  // glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-  //                           GL_TEXTURE_2D, m_framebuffer_stencil0, 0);
-
-
   glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
   glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, 
                            m_framebuffer_width, m_framebuffer_height);

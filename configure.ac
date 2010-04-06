@@ -55,6 +55,9 @@ fi
 CFLAGS="$CFLAGS"
 CXXFLAGS="$CXXFLAGS"
 
+# Disable static libraries by default
+AM_DISABLE_STATIC
+
 # Find the tools
 AC_PROG_CC
 AC_PROG_CXX
@@ -100,6 +103,11 @@ AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
 AX_PKG(RTAUDIO,           [],      [-lrtaudio], [RtAudio.h])
 AX_PKG(LO,                [],      [-llo], [lo/lo.h])
 AX_PKG(SDL,               [],      [-lSDL], [SDL.h], [SDL])
+
+# Dependencies for OpenFrameworks
+AX_PKG(FREEIMAGE,               [],      [-lfreeimage], [Freeimage.h])
+AX_PKG(GLEE,                    [],      [-lGlee], [GL/GLee.h])
+AX_PKG(FREETYPE,                [],      [-lfreetype], [ft2build.h freetype/freetype.h], [freetype2])
 
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
