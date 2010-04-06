@@ -17,7 +17,8 @@ libOpenFrameworks_la_SOURCES += graphics/ofGraphics.cpp		\
 				graphics/ofBitmapFont.cpp
 
 # video
-#libOpenFrameworks_la_SOURCES += video/ofQtUtils.cpp
+#libOpenFrameworks_la_SOURCES += video/ofQtUtils.cpp             \
+				video/ofGstUtils.cpp
 
 
 

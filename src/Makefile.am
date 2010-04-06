@@ -14,10 +14,10 @@ CLEANFILES = StandardShaders.cc
 
 bin_PROGRAMS=
 
-header_sources = MainWindow.h GraphicsEngine.h AudioEngine.h		\
-		 ScriptEngine.h PeParameters.h OScopeShape.h		\
-		 SpectrographShape.h Controller.h OscController.h	\
-		 JoystickController.h FFT.h
+header_sources = MainWindow.h GraphicsEngine.h AudioEngine.h	\
+		 VideoEngine.h ScriptEngine.h PeParameters.h	\
+		 OScopeShape.h SpectrographShape.h Controller.h	\
+		 OscController.h JoystickController.h FFT.h
 
 gpu_module_sources = GpuProgram.h GpuProgram.cc Utilities.cc		\
 		     Utilities.h StandardShaders.h StandardShaders.h	\
@@ -27,10 +27,11 @@ if MAKE_APP_PHOSPHORESSENCE
   bin_PROGRAMS += pe
   pe_SOURCES = pe.cc MainWindow.cc MainWindow.moc.cc GraphicsEngine.cc	\
 	            GraphicsEngine.moc.cc GraphicsElements.cc		\
-	            AudioEngine.cc SpectrographShape.moc.cc		\
-	            ScriptEngine.cc PeParameters.cc Controller.cc	\
-	            OscController.cc JoystickController.cc FFT.cc	\
-	            $(gpu_module_sources) $(header_sources)
+	            AudioEngine.cc VideoEngine.cc			\
+	            SpectrographShape.moc.cc ScriptEngine.cc		\
+	            PeParameters.cc Controller.cc OscController.cc	\
+	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
+	            $(header_sources)
 
   pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif

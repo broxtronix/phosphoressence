@@ -23,16 +23,16 @@
 
 #include <QtGui>
 
+#include <GraphicsEngine.h>
+#include <GpuProgram.h>
+#include <PeParameters.h>
+using namespace vw::GPU;
+
 // Vision Workbench
 #include <vw/Image.h>
 #include <vw/FileIO.h>
 #include <vw/Math.h>
 using namespace vw;
-
-#include <GraphicsEngine.h>
-#include <GpuProgram.h>
-#include <PeParameters.h>
-using namespace vw::GPU;
 
 #include <fstream>
 
@@ -161,6 +161,10 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   // Set mouse tracking
   this->setMouseTracking(true);
 
+  // Set up video playback & start that thread.
+  std::cout << "\t--> Opening video stream\n";
+  m_video.reset(new Video("/home/mbroxton/Desktop/monolith.mp4"));
+
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -168,13 +172,170 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
 
 GraphicsEngine::~GraphicsEngine() {
 
-  // De-allocate feedback texture and PBO
+  // De-allocate feedback texture and video texture
   glDeleteTextures(1, &m_feedback_texture);
+  glDeleteTextures(1, &m_video_texture);
 
   // De-allocate any previously allocated textures or framebuffers
   glDeleteTextures(1, &m_framebuffer_texture0);
   //  glDeleteTextures(1, &m_framebuffer_stencil0);
   glDeleteFramebuffersEXT(1, &m_framebuffer);
+}
+
+void GraphicsEngine::setup_mesh() {
+
+  float aspect = float(m_viewport_width) / m_viewport_height;
+  float framebuffer_radius = sqrt(1+pow(aspect,2));
+
+  double texture_w = 1.0;
+  double texture_h = 1.0;
+  double screen_w = 2.0*framebuffer_radius;  
+  double screen_h = 2.0*framebuffer_radius;
+  
+  for (int i = 0 ; i < HORIZ_MESH_SIZE + 1 ; i++) {
+    for (int j = 0 ; j < VERT_MESH_SIZE + 1 ; j++) {
+      m_feedback_texcoords(i,j)[0] = i * texture_w / HORIZ_MESH_SIZE;
+      m_feedback_texcoords(i,j)[1] = j * texture_h / VERT_MESH_SIZE;
+
+      m_feedback_screencoords(i,j)[0] = -framebuffer_radius + (i * screen_w) / HORIZ_MESH_SIZE;
+      m_feedback_screencoords(i,j)[1] = -framebuffer_radius + (j * screen_h) / VERT_MESH_SIZE;
+    }
+  }
+}
+
+void GraphicsEngine::initializeGL() {  
+
+  // Set up the GLSL fragment shader.
+  std::string resources_dir = pe_resources_directory();
+  m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
+  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
+//                                                 std::vector<int>(),
+//                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
+//                                                 std::vector<int>());
+
+  // Generate the video texture
+  glGenTextures(1, &m_video_texture);
+  glBindTexture(GL_TEXTURE_2D, m_video_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+  // Generate the feedback texture
+  glGenTextures(1, &m_feedback_texture);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+  // glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Crank up the anisotropic filtering.  Not totally sure what this
+  // does, but it might produce crisper images for filters that really
+  // stretch the texture.
+  GLfloat largest_supported_anisotropy;
+  glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
+
+  // Create the framebuffer & framebuffer texture
+  glGenFramebuffersEXT(1, &m_framebuffer);
+
+  // Create the main framebuffer texture
+  glGenTextures(1, &m_framebuffer_texture0);
+  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Create the main stencil texture
+  glGenRenderbuffersEXT(1, &m_framebuffer_stencil0);
+
+  // Uncomment to get rid of the tearing (i.e. tearing)!
+#ifdef __APPLE__
+  // AGLContext aglContext;
+  // aglContext = aglGetCurrentContext();
+  // GLint swapInt = 1;
+  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
+  this->setAutoBufferSwap(false);
+#endif
+
+  // Enable hardware anti-aliasing
+  glEnable(GL_MULTISAMPLE);
+
+  // Set the grid size
+  pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
+  pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
+
+  // Now that GL is setup, we can start the Qt Timer
+  m_timer = new QTimer(this);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
+  m_timer->start(33.0); // Limit frame rate to ~30 fps
+}
+
+void GraphicsEngine::resizeGL(int width, int height) {
+  makeCurrent();
+
+  // Set the current viewport width/height
+  m_viewport_width = width;
+  m_viewport_height = height;
+
+  m_aspect = float(m_viewport_width) / m_viewport_height;
+  m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
+  pe_parameters().set_value("aspect", m_aspect);
+
+  // Set the framebuffer dimensions.  
+  m_framebuffer_width = FRAMEBUFFER_SIZE;
+  m_framebuffer_height = FRAMEBUFFER_SIZE;
+
+  //------------------------------------
+  // Setup the OpenVG rendering engine
+  //------------------------------------
+  vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
+  
+  //------------------------------------
+  // Set up the framebuffer and textures
+  //------------------------------------
+  int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
+
+  // Create the framebuffer texture (for rendering...)
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+
+  // Bind the main texture to the framebuffer
+  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
+               m_framebuffer_width, m_framebuffer_height, 
+               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                            GL_TEXTURE_2D, m_framebuffer_texture0, 0);
+
+  // Bind the stencil buffer to the framebuffer
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, 
+                           m_framebuffer_width, m_framebuffer_height);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_DEPTH_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_STENCIL_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
+
+  // Make sure that the framebuffer is correctly configured.
+  GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
+    vw_throw(vw::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  // Setup the feedback texture buffer
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
+               m_framebuffer_width, m_framebuffer_height,
+               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  //------------------------------------
+  // Set up the warp mesh
+  //------------------------------------
+  setup_mesh();
 }
 
 // --------------------------------------------------------------
@@ -220,7 +381,6 @@ void GraphicsEngine::drawImage() {
   // Set the background color and viewport.
   qglClearColor(QColor(0, 0, 0, 1.0)); // Black Background
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  //  glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
 
   // Set up the orthographic view of the scene.  The exact extent of
@@ -228,13 +388,9 @@ void GraphicsEngine::drawImage() {
   // in the UI.
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-
   glOrtho(-m_framebuffer_radius, m_framebuffer_radius, 
           -m_framebuffer_radius, m_framebuffer_radius, 
           -1.0, 1.0);
-
-  // Set up the modelview matrix, and bind the image as the texture we
-  // are about to use.
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -245,12 +401,38 @@ void GraphicsEngine::drawImage() {
   glVertex2f( m_framebuffer_radius, -m_framebuffer_radius);
   glVertex2f( m_framebuffer_radius, m_framebuffer_radius);
   glVertex2f( -m_framebuffer_radius, m_framebuffer_radius);
-  glEnd() ;
+  glEnd();
 
   // -----------------------
   // FEEDBACK TEXTURE 
   // ----------------------
   drawFeedback();
+
+  // -----------------------
+  // DRAW VIDEO
+  // ----------------------
+  glEnable( GL_TEXTURE_2D );
+
+  // Grab the frame
+  m_video->copy_to_texture(m_video_texture);
+
+  // ... and render it.
+  glBindTexture( GL_TEXTURE_2D, m_video_texture );
+  qglColor(Qt::white);
+  glBegin(GL_QUADS);
+  glTexCoord2f( 0, 1.0 );
+  glVertex2d( -0.5, -0.5);
+  glTexCoord2f( 1.0, 1.0 );
+  glVertex2d( 0.5, -0.5);
+  glTexCoord2f( 1.0, 0.0 );
+  glVertex2d( 0.5, 0.5);
+  glTexCoord2f( 0.0, 0.0 );
+  glVertex2d( -0.5, 0.5);
+  glEnd() ;
+  glBindTexture( GL_TEXTURE_2D, 0 );
+
+  glDisable( GL_TEXTURE_2D );
+  
 
   // -----------------------
   // Darken Center
@@ -282,10 +464,10 @@ void GraphicsEngine::drawImage() {
     }
   }
 
-  // -------------- <Render to Screen> -----------------
-
   // Make the real screen the OpenGL target
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  // -------------- <Render to Screen> -----------------
 
   qglClearColor(QColor(0, 0, 0)); // Black Background
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -392,24 +574,6 @@ void GraphicsEngine::drawImage() {
   saveFeedback();
 }
 
-void GraphicsEngine::drawLegend(QPainter* painter) {
-  const int Margin = 11;
-  const int Padding = 6;
-  QTextDocument textDocument;
-  textDocument.setDefaultStyleSheet("* { color: #00FF00; font-family: courier, serif; font-size: 12 }");
-  std::ostringstream legend_text;
-  legend_text << "<p align=\"right\">TESTING" << m_legend_status << "<br>" << "</p>";
-  textDocument.setHtml(legend_text.str().c_str());
-  textDocument.setTextWidth(textDocument.size().width());
-  
-  QRect rect(QPoint(0,0), textDocument.size().toSize() + QSize(2 * Padding, 2 * Padding));
-  painter->translate(10,10);//width() - rect.width() - Margin, height() - rect.height() - Margin);
-  //     painter->setPen(QColor(255, 239, 239));
-  //     painter->drawRect(rect);
-  painter->translate(Padding, Padding);
-  textDocument.drawContents(painter);
-}
-
 void GraphicsEngine::updateCurrentMousePosition() {
   float x_loc = m_current_viewport.min().x() + m_current_viewport.width() * float(lastPos.x()) / m_viewport_width;
   float y_loc = m_current_viewport.min().y() + m_current_viewport.height() * float(lastPos.y()) / m_viewport_height;
@@ -460,156 +624,6 @@ void GraphicsEngine::recordFrame() {
   
 }
 
-void GraphicsEngine::initializeGL() {  
-
-  // Set up the GLSL fragment shader.
-  std::string resources_dir = pe_resources_directory();
-  m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
-  m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
-//                                                 std::vector<int>(),
-//                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
-//                                                 std::vector<int>());
-
-  // Generate the feedback texture
-  glGenTextures(1, &m_feedback_texture);
-  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-  // glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  // Crank up the anisotropic filtering.  Not totally sure what this
-  // does, but it might produce crisper images for filters that really
-  // stretch the texture.
-  GLfloat largest_supported_anisotropy;
-  glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
-
-  // Create the framebuffer & framebuffer texture
-  glGenFramebuffersEXT(1, &m_framebuffer);
-
-  // Create the main framebuffer texture
-  glGenTextures(1, &m_framebuffer_texture0);
-  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  // Create the main stencil texture
-  //glGenTextures(1, &m_framebuffer_stencil0);
-  glGenRenderbuffersEXT(1, &m_framebuffer_stencil0);
-
-  // Uncomment to get rid of the tearing (i.e. tearing)!
-#ifdef __APPLE__
-  // AGLContext aglContext;
-  // aglContext = aglGetCurrentContext();
-  // GLint swapInt = 1;
-  // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  this->setAutoBufferSwap(false);
-#endif
-
-  // Enable hardware anti-aliasing
-  glEnable(GL_MULTISAMPLE);
-
-  // Set the grid size
-  pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
-  pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
-
-  // Now that GL is setup, we can start the Qt Timer
-  m_timer = new QTimer(this);
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
-  m_timer->start(33.0); // Limit frame rate to ~30 fps
-}
-
-void GraphicsEngine::resizeGL(int width, int height) {
-  makeCurrent();
-
-  // Set the current viewport width/height
-  m_viewport_width = width;
-  m_viewport_height = height;
-
-  m_aspect = float(m_viewport_width) / m_viewport_height;
-  m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
-  pe_parameters().set_value("aspect", m_aspect);
-
-  // Set the framebuffer dimensions.  
-  m_framebuffer_width = FRAMEBUFFER_SIZE;
-  m_framebuffer_height = FRAMEBUFFER_SIZE;
-
-  //------------------------------------
-  // Setup the OpenVG rendering engine
-  //------------------------------------
-  vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
-  
-  //------------------------------------
-  // Set up the framebuffer and textures
-  //------------------------------------
-  int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
-
-  // Create the framebuffer texture (for rendering...)
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
-
-  // Bind the main texture to the framebuffer
-  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
-  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
-               m_framebuffer_width, m_framebuffer_height, 
-               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                            GL_TEXTURE_2D, m_framebuffer_texture0, 0);
-
-  // Bind the stencil buffer to the framebuffer
-  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
-  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, 
-                           m_framebuffer_width, m_framebuffer_height);
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_DEPTH_ATTACHMENT_EXT,
-                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_STENCIL_ATTACHMENT_EXT,
-                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil0);
-
-  // Make sure that the framebuffer is correctly configured.
-  GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-  if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-    vw_throw(vw::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-  // Setup the feedback texture buffer
-  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
-               m_framebuffer_width, m_framebuffer_height,
-               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  //------------------------------------
-  // Set up the warp mesh
-  //------------------------------------
-  setup_mesh();
-}
-
-void GraphicsEngine::setup_mesh() {
-
-  float aspect = float(m_viewport_width) / m_viewport_height;
-  float framebuffer_radius = sqrt(1+pow(aspect,2));
-
-  double texture_w = 1.0;
-  double texture_h = 1.0;
-  double screen_w = 2.0*framebuffer_radius;  
-  double screen_h = 2.0*framebuffer_radius;
-  
-  for (int i = 0 ; i < HORIZ_MESH_SIZE + 1 ; i++) {
-    for (int j = 0 ; j < VERT_MESH_SIZE + 1 ; j++) {
-      m_feedback_texcoords(i,j)[0] = i * texture_w / HORIZ_MESH_SIZE;
-      m_feedback_texcoords(i,j)[1] = j * texture_h / VERT_MESH_SIZE;
-
-      m_feedback_screencoords(i,j)[0] = -framebuffer_radius + (i * screen_w) / HORIZ_MESH_SIZE;
-      m_feedback_screencoords(i,j)[1] = -framebuffer_radius + (j * screen_h) / VERT_MESH_SIZE;
-    }
-  }
-}
-
-
-
 // --------------------------------------------------------------
 //             GraphicsEngine Event Handlers
 // --------------------------------------------------------------
@@ -617,7 +631,6 @@ void GraphicsEngine::setup_mesh() {
 void GraphicsEngine::paintEvent(QPaintEvent * /* event */) { 
   QPainter painter(this);
   drawImage();
-  //  drawLegend(&painter);
 }
 
 void GraphicsEngine::mousePressEvent(QMouseEvent *event) { 

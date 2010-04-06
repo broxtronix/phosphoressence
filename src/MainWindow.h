@@ -13,8 +13,6 @@
 
 // Boost
 #include <boost/program_options.hpp>
-using namespace boost;
-namespace po = boost::program_options;
 
 class QAction;
 class QLabel;

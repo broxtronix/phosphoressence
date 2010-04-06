@@ -8,6 +8,10 @@
 #ifndef __GRAPHICS_ENGINE_H__
 #define __GRAPHICS_ENGINE_H__
 
+// PhosphorEssence
+#include <VideoEngine.h>
+#include <ScriptEngine.h>
+
 // Qt
 #include <QGLWidget>
 #include <QGLFormat>
@@ -22,9 +26,6 @@
 // STL
 #include <string>
 #include <list>
-
-// PhosphorEssence
-#include <ScriptEngine.h>
 
 // Forward declarations
 namespace vw { 
@@ -127,7 +128,6 @@ private:
   // Drawing is driven by QPaintEvents, which call out to drawImage()
   // and drawLegend()
   void drawImage();
-  void drawLegend(QPainter *painter);
   void updateCurrentMousePosition();
   void saveFeedback();
   void recordFrame();
@@ -144,8 +144,10 @@ private:
   GLuint m_framebuffer_texture0;
   GLuint m_framebuffer_stencil0;
   GLuint m_framebuffer;
+  GLuint m_video_texture;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
+  boost::shared_ptr<Video> m_video;
 
   // Drawables & Script Engines
   std::list<boost::shared_ptr<Drawable> > m_drawables;
