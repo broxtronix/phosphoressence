@@ -23,10 +23,6 @@
 #include <string>
 #include <list>
 
-// OpenCV
-#include "cv.h"
-#include "highgui.h"
-
 // PhosphorEssence
 #include <ScriptEngine.h>
 
@@ -185,9 +181,6 @@ private:
   boost::shared_array<float> m_fluid_density, m_fluid_density_prev;
   float m_fluid_previous_time;  
 
-  // Video
-  cv::VideoCapture m_video_stream;
-  
   // Image Parameters
   vw::BBox2 m_current_viewport;
 };

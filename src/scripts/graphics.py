@@ -13,7 +13,7 @@ from shapes.earthquakesprite import *
 from shapes.vu_spirals import *
 from shapes.bezierchaos import *
 from shapes.vectorbrush import *
-from ergo.ergo import Ergo
+#from ergo.ergo import Ergo
 #from shapes.videoshape import *
 #from shapes.bezierchaos import *
 #from shapes.vectorbrush import *
@@ -186,8 +186,8 @@ pe_graphics = PeGraphics()
 pe_graphics.register(SquareSprite())
 pe_graphics.register(BorderSprite())
 pe_graphics.register(InvertSprite())
-ergo = Ergo()
-pe_graphics.register(ergo)
+#ergo = Ergo()
+#pe_graphics.register(ergo)
 #pe_graphics.register(WheelSprite())
 #pe_graphics.register(EarthquakeSprite())
 pe_graphics.register(BezierSprite())

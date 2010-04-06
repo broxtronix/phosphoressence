@@ -151,10 +151,11 @@ AX_PKG(LO,                [],      [-llo], [lo/lo.h])
 AX_PKG(SDL,               [],      [-lSDL], [SDL.h], [SDL])
 
 # Dependencies for OpenFrameworks
-AX_PKG(FREEIMAGE,               [],      [-lfreeimage], [Freeimage.h])
-AX_PKG(GLEE,                    [],      [-lGlee], [GL/GLee.h])
+AX_PKG(FREEIMAGE,               [],      [-lfreeimage], [FreeImage.h])
+AX_PKG(GLEE,                    [],      [-lGLee], [GL/GLee.h])
 AX_PKG(FREETYPE,                [],      [-lfreetype], [ft2build.h freetype/freetype.h], [freetype2])
 
+# OpenGL
 AX_PKG_ONE_OF(GL,
   APPLE_GL,
     [AX_PKG_APPLE([GL], [], [-framework OpenGL -framework GLUT -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib])],
@@ -217,7 +218,7 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
-AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO OPENVG OPENCV])
+AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.

@@ -97,7 +97,7 @@
 
 #ifdef TARGET_LINUX
         #include <unistd.h>
-        #include "GLee.h"
+        #include "GL/GLee.h"
         #include <GL/glu.h>
 
     // for some reason, this isn't defined at compile time,

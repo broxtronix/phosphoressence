@@ -101,10 +101,15 @@ void check_gl_errors( void )
 // --------------------------------------------------------------
 
 GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) : 
-  QGLWidget(frmt, parent) {
+  QGLWidget(parent) {
+
+  if (!this->isValid()) {
+    vw::vw_out() << "Failed to initialize OpenGL.\nExiting\n\n";
+    exit(1);
+  }
 
   if (!QGLFormat::hasOpenGL()) {
-    vw::vw_out(0) << "This system has no OpenGL support.\nExiting\n\n";
+    vw::vw_out() << "This system has no OpenGL support.\nExiting\n\n";
     exit(1);
   }
 
@@ -152,13 +157,6 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_fps_avg = 30.0;
   m_record = false;
   m_record_frame_number = 0;
-
-  // Video
-  m_video_stream.open("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"); 
-  if(!m_video_stream.isOpened()) {
-    std::cout << "Could not open video file.  Exiting.\n";
-    exit(1);
-  }
 
   // Set mouse tracking
   this->setMouseTracking(true);
@@ -265,16 +263,9 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   // -----------------------
-  // Draw Video
+  // Call out to python environment
   // -----------------------
   
-  cv::Mat edges, frame;
-  m_video_stream >> frame; // get a new frame from camera
-  cvtColor(frame, edges, CV_BGR2GRAY);
-  cv::GaussianBlur(edges, edges, cv::Size(7,7), 1.5, 1.5);
-  cv::Canny(edges, edges, 0, 30, 3);
-  
-
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
   pe_script_engine().execute("pe_render()");
 

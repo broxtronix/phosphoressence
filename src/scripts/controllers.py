@@ -2,8 +2,8 @@ from parameters import pe
 from bindings import PeBindings
 import math, time
 from traceback import format_exc
-from graphics import ergo
-from nosuch.midiutil import *
+#from graphics import ergo
+#from nosuch.midiutil import *
 
 
 # ----------------------------------------------------
@@ -132,274 +132,274 @@ class FingerState:
 	self.path = None
 	self.lastpt = None
 
-import tuio
+#import tuio
 
-class TuioController(object):
+# class TuioController(object):
 
-    def __init__(self, tuio_debug = False, host="antiprism.local", port=3333):
+#     def __init__(self, tuio_debug = False, host="antiprism.local", port=3333):
 
-	print "HI from TUIO Controller!\n"
-	self.tracking = tuio.Tracking(host=host,port=port)
-	self.tracking.manager.add(self.osc_callback,"/msaremote/*")
-	self.tracking.manager.add(self.osc_callback,"/mrmr/*")
-	self.tracking.manager.add(self.pe_callback,"/pe/*")
-	self.tracking.manager.add(self.nth_callback,"/nth/*")
-	self.tracking.manager.add(self.nth_callback,"/midi/*")
-        self.bindings = PeBindings()
-        self.bindings.add(self, "/msaremote/fader/11", "rot", 0.785, -0.785, 0.0)
-        self.bindings.add(self, "/msaremote/fater/12", "decay", 0.9, 1.1, 0.99, "log10")
-	self.fingers = {}
-	self.finger_callback_func = None
-	self.smoothing = False
-	self.thisframe = 0
+# 	print "HI from TUIO Controller!\n"
+# 	self.tracking = tuio.Tracking(host=host,port=port)
+# 	self.tracking.manager.add(self.osc_callback,"/msaremote/*")
+# 	self.tracking.manager.add(self.osc_callback,"/mrmr/*")
+# 	self.tracking.manager.add(self.pe_callback,"/pe/*")
+# 	self.tracking.manager.add(self.nth_callback,"/nth/*")
+# 	self.tracking.manager.add(self.nth_callback,"/midi/*")
+#         self.bindings = PeBindings()
+#         self.bindings.add(self, "/msaremote/fader/11", "rot", 0.785, -0.785, 0.0)
+#         self.bindings.add(self, "/msaremote/fater/12", "decay", 0.9, 1.1, 0.99, "log10")
+# 	self.fingers = {}
+# 	self.finger_callback_func = None
+# 	self.smoothing = False
+# 	self.thisframe = 0
 
-    def pe_callback(self, source, msg):
-	addr = msg[0]
-	f = msg[2]
-	nm = addr[4:]
-	print "PE OSC control nm=",nm," f=",f
-	pe.set_control_value(nm,f)
+#     def pe_callback(self, source, msg):
+# 	addr = msg[0]
+# 	f = msg[2]
+# 	nm = addr[4:]
+# 	print "PE OSC control nm=",nm," f=",f
+# 	pe.set_control_value(nm,f)
 
-    def nth_callback(self, source, msg):
-	addr = msg[0]
-	f = msg[1]
-#	print "NTH OSC control addr=",addr," f=",f
-	try:
-		if msg[0] == "/nth/noteon" or msg[0] == "/midi/noteon":
-		    m = NoteOn(channel=msg[2],pitch=msg[3],velocity=msg[4])
-		    # print "NOTEON = ",m
-		    ergo.got_noteon(m)
-		elif msg[0] == "/nth/noteoff" or msg[0] == "/midi/noteoff":
-		    m = NoteOff(channel=msg[2],pitch=msg[3],velocity=msg[4])
-		    # print "MIDI NOTEOFF = ",m
-		    ergo.got_noteoff(m)
-		elif msg[0] == "/nth/perchan/action":
-		    act=msg[2]
-		    ch=msg[3]
-		    ergo.do_chan_action(ch,act)
-		elif msg[0] == "/nth/global/action":
-		    act=msg[2]
-		    ergo.do_global_action(act)
-		elif msg[0] == "/nth/perchan/set":
-		    name=msg[2]
-		    name = name.upper()
-		    channel=int(msg[3])
-		    value=msg[4]
-		    print "PERCHAN set chan=",channel," name=",name," value=",value
-		    ergo.setparam(channel,name,value)
-	except:
-		print "Error in handling of addr=",addr,": %s"%format_exc()
+#     def nth_callback(self, source, msg):
+# 	addr = msg[0]
+# 	f = msg[1]
+# #	print "NTH OSC control addr=",addr," f=",f
+# 	try:
+# 		if msg[0] == "/nth/noteon" or msg[0] == "/midi/noteon":
+# 		    m = NoteOn(channel=msg[2],pitch=msg[3],velocity=msg[4])
+# 		    # print "NOTEON = ",m
+# 		    ergo.got_noteon(m)
+# 		elif msg[0] == "/nth/noteoff" or msg[0] == "/midi/noteoff":
+# 		    m = NoteOff(channel=msg[2],pitch=msg[3],velocity=msg[4])
+# 		    # print "MIDI NOTEOFF = ",m
+# 		    ergo.got_noteoff(m)
+# 		elif msg[0] == "/nth/perchan/action":
+# 		    act=msg[2]
+# 		    ch=msg[3]
+# 		    ergo.do_chan_action(ch,act)
+# 		elif msg[0] == "/nth/global/action":
+# 		    act=msg[2]
+# 		    ergo.do_global_action(act)
+# 		elif msg[0] == "/nth/perchan/set":
+# 		    name=msg[2]
+# 		    name = name.upper()
+# 		    channel=int(msg[3])
+# 		    value=msg[4]
+# 		    print "PERCHAN set chan=",channel," name=",name," value=",value
+# 		    ergo.setparam(channel,name,value)
+# 	except:
+# 		print "Error in handling of addr=",addr,": %s"%format_exc()
 
-    def osc_callback(self, source, msg):
-	print "OSC CALLBACK!! msg=",msg
-	f = msg[2]
+#     def osc_callback(self, source, msg):
+# 	print "OSC CALLBACK!! msg=",msg
+# 	f = msg[2]
 
-	if msg[0] == "/msaremote/fader/11":
-	    pe.set_control_value('rot',f)
-	elif msg[0] == "/msaremote/fader/12":
-	    pe.set_control_value("decay",f*2.0)
-	elif msg[0] == "/msaremote/fader/13":
-	    pe.set_control_value('zoom',f)
-	elif msg[0] == "/msaremote/fader/14":
-	    pe.set_control_value('sx',f)
-	elif msg[0] == "/msaremote/fader/15":
-	    pe.set_control_value('sy',f)
-	elif msg[0] == "/msaremote/fader/18":
-	    pe.set_control_value('kaleidoscope_radius',f)
-	elif msg[0] == "/msaremote/trigger/18" and f > 0.0:
-	    k = 1.0 - pe.kaleidoscope
-	    pe.set_control_value('kaleidoscope',k)
-	elif msg[0] == "/msaremote/trigger/17" and f > 0.0:
-	    if (pe.wave_move == 1.0):
-		print "Setting wave_move to 0\n"
-		pe.set_control_value('wave_move', 0.0)
-		pe.set_control_value('wave_x',0.5)
-		pe.set_control_value('wave_y',0.5)
-	    else:
-		pe.set_control_value('wave_move', 1.0)
-		print "Setting wave_move to 1\n"
-        elif msg[0] == "/msaremote/trigger/16" and f > 0.0:
-	    if (pe.wave_enabled):
-		pe.set_control_value('wave_enabled', 0.0)
-            else:
-		pe.set_control_value('wave_enabled', 1.0)
-        elif msg[0] == "/msaremote/trigger/15" and f > 0.0:
-	    wm = pe.wave_mode
-	    we = pe.wave_enabled
-	    we = 1
-	    if wm == 0:
-		wm = 1
-	    elif wm == 1:
-		wm = 2
-	    elif wm == 2:
-		wm = 0
-	    print "Set wave_mode to ",wm
-	    pe.set_control_value('wave_mode', wm)
-	    pe.set_control_value('wave_enabled', we)
-            pe.set_control_value('wave_frequency', 0.2)
+# 	if msg[0] == "/msaremote/fader/11":
+# 	    pe.set_control_value('rot',f)
+# 	elif msg[0] == "/msaremote/fader/12":
+# 	    pe.set_control_value("decay",f*2.0)
+# 	elif msg[0] == "/msaremote/fader/13":
+# 	    pe.set_control_value('zoom',f)
+# 	elif msg[0] == "/msaremote/fader/14":
+# 	    pe.set_control_value('sx',f)
+# 	elif msg[0] == "/msaremote/fader/15":
+# 	    pe.set_control_value('sy',f)
+# 	elif msg[0] == "/msaremote/fader/18":
+# 	    pe.set_control_value('kaleidoscope_radius',f)
+# 	elif msg[0] == "/msaremote/trigger/18" and f > 0.0:
+# 	    k = 1.0 - pe.kaleidoscope
+# 	    pe.set_control_value('kaleidoscope',k)
+# 	elif msg[0] == "/msaremote/trigger/17" and f > 0.0:
+# 	    if (pe.wave_move == 1.0):
+# 		print "Setting wave_move to 0\n"
+# 		pe.set_control_value('wave_move', 0.0)
+# 		pe.set_control_value('wave_x',0.5)
+# 		pe.set_control_value('wave_y',0.5)
+# 	    else:
+# 		pe.set_control_value('wave_move', 1.0)
+# 		print "Setting wave_move to 1\n"
+#         elif msg[0] == "/msaremote/trigger/16" and f > 0.0:
+# 	    if (pe.wave_enabled):
+# 		pe.set_control_value('wave_enabled', 0.0)
+#             else:
+# 		pe.set_control_value('wave_enabled', 1.0)
+#         elif msg[0] == "/msaremote/trigger/15" and f > 0.0:
+# 	    wm = pe.wave_mode
+# 	    we = pe.wave_enabled
+# 	    we = 1
+# 	    if wm == 0:
+# 		wm = 1
+# 	    elif wm == 1:
+# 		wm = 2
+# 	    elif wm == 2:
+# 		wm = 0
+# 	    print "Set wave_mode to ",wm
+# 	    pe.set_control_value('wave_mode', wm)
+# 	    pe.set_control_value('wave_enabled', we)
+#             pe.set_control_value('wave_frequency', 0.2)
 
-        elif msg[0] == "/msaremote/trigger/11" and f > 0.0:
-            pe.vg_mode = pe.vg_mode + 1;
-            if (pe.vg_mode > 3):
-                pe.vg_mode = 0
-	    print "vg_mode = ",pe.vg_mode
+#         elif msg[0] == "/msaremote/trigger/11" and f > 0.0:
+#             pe.vg_mode = pe.vg_mode + 1;
+#             if (pe.vg_mode > 3):
+#                 pe.vg_mode = 0
+# 	    print "vg_mode = ",pe.vg_mode
 
-    def receive_callback(self, path, value):
+#     def receive_callback(self, path, value):
 
-	print "TuioController.receive_callback, path=",path," value=",value;
+# 	print "TuioController.receive_callback, path=",path," value=",value;
 
-        # print("[OSC]    Path: " + path + "   Value: " + str(value))
-        # self.bindings.controller_to_parameter(self, path, value)
+#         # print("[OSC]    Path: " + path + "   Value: " + str(value))
+#         # self.bindings.controller_to_parameter(self, path, value)
     
-    def render_callback(self): 
+#     def render_callback(self): 
 	
-        # Do the update a few times because the default buffer size in
-	# tracking.update is too small to handle all the messages that
-	# come in within a frame's time.
-        self.tracking.update()
-        self.tracking.update()
-        self.tracking.update()
-        self.tracking.update()
-        self.tracking.update()
-        self.tracking.update()
-        self.tracking.update()
-	self.thisframe += 1
-        for obj in self.tracking.objects():
-            print "TUIO object=",obj
-        for obj in self.tracking.cursors():
-	    id = obj.sessionid
-	    if not (id in self.fingers):
-		f = FingerState(sid=id,x=obj.xpos,y=obj.ypos,prox=1.0)
-		f.frame = self.thisframe
-		f.source = obj.source
-		self.fingers[id] = f
-		self.processfinger("fingerdown",f)
-	    elif id in self.fingers:
-		f = self.fingers[id]
-		f.frame = self.thisframe
-		f.x = obj.xpos
-		f.y = obj.ypos
-		# print "Dragging of sessionid=",id," xy=",obj.xpos,obj.ypos
-		self.processfinger("fingerdrag",f)
-	todelete = []
-	for id in self.fingers:
-	    if self.fingers[id].frame != self.thisframe:
-		# print "Should be doing FINGER UP of id=",id
-		todelete.append(id)
-	for id in todelete:
-		self.processfinger("fingerup",self.fingers[id])
-		# print "Deleting fingers id=",id
-		del self.fingers[id]
+#         # Do the update a few times because the default buffer size in
+# 	# tracking.update is too small to handle all the messages that
+# 	# come in within a frame's time.
+#         self.tracking.update()
+#         self.tracking.update()
+#         self.tracking.update()
+#         self.tracking.update()
+#         self.tracking.update()
+#         self.tracking.update()
+#         self.tracking.update()
+# 	self.thisframe += 1
+#         for obj in self.tracking.objects():
+#             print "TUIO object=",obj
+#         for obj in self.tracking.cursors():
+# 	    id = obj.sessionid
+# 	    if not (id in self.fingers):
+# 		f = FingerState(sid=id,x=obj.xpos,y=obj.ypos,prox=1.0)
+# 		f.frame = self.thisframe
+# 		f.source = obj.source
+# 		self.fingers[id] = f
+# 		self.processfinger("fingerdown",f)
+# 	    elif id in self.fingers:
+# 		f = self.fingers[id]
+# 		f.frame = self.thisframe
+# 		f.x = obj.xpos
+# 		f.y = obj.ypos
+# 		# print "Dragging of sessionid=",id," xy=",obj.xpos,obj.ypos
+# 		self.processfinger("fingerdrag",f)
+# 	todelete = []
+# 	for id in self.fingers:
+# 	    if self.fingers[id].frame != self.thisframe:
+# 		# print "Should be doing FINGER UP of id=",id
+# 		todelete.append(id)
+# 	for id in todelete:
+# 		self.processfinger("fingerup",self.fingers[id])
+# 		# print "Deleting fingers id=",id
+# 		del self.fingers[id]
 
-    def set_smoothing(self,b):
-	self.smoothing = b
+#     def set_smoothing(self,b):
+# 	self.smoothing = b
 
-    def processfinger(self,t,fing):
+#     def processfinger(self,t,fing):
 
-        # print "processfinger t=",t," sid=",fing.sid," xy=",fing.x,fing.y
-	if fing.x < 0.0 or fing.x > 1.0 or fing.y < 0.0 or fing.y > 1.0:
-		print "IGNORING finger out of bounds (%f,%f)" % (fing.x,fing.y)
-		return
+#         # print "processfinger t=",t," sid=",fing.sid," xy=",fing.x,fing.y
+# 	if fing.x < 0.0 or fing.x > 1.0 or fing.y < 0.0 or fing.y > 1.0:
+# 		print "IGNORING finger out of bounds (%f,%f)" % (fing.x,fing.y)
+# 		return
 
-	fing.time = time.time()
+# 	fing.time = time.time()
 
-	fing.y = 1.0 - fing.y
-	fing.y = 2.0 * fing.y - 1.0
-	fing.x = 2.0 * fing.x - 1.0
+# 	fing.y = 1.0 - fing.y
+# 	fing.y = 2.0 * fing.y - 1.0
+# 	fing.x = 2.0 * fing.x - 1.0
 
-	if t == "fingerdown":
-	    fing.speed = 0.1
-	    fing.lastndx = 0.0
-	    fing.lastndy = 0.0
-	    self.do_finger_callback("fingerdown",fing)
+# 	if t == "fingerdown":
+# 	    fing.speed = 0.1
+# 	    fing.lastndx = 0.0
+# 	    fing.lastndy = 0.0
+# 	    self.do_finger_callback("fingerdown",fing)
 
-	elif t == "fingerdrag":
-	    if self.smoothing:
-		self.dofingerdragsmooth(fing)
-	    else:
-		self.do_finger_callback("fingerdrag",fing)
+# 	elif t == "fingerdrag":
+# 	    if self.smoothing:
+# 		self.dofingerdragsmooth(fing)
+# 	    else:
+# 		self.do_finger_callback("fingerdrag",fing)
 
-	elif t == "fingerup":
-	    self.do_finger_callback("fingerup",fing)
-	    fing = None
+# 	elif t == "fingerup":
+# 	    self.do_finger_callback("fingerup",fing)
+# 	    fing = None
 
-	if fing != None:
-	    fing.prevx = fing.x
-	    fing.prevy = fing.y
-	    fing.prevprox = fing.prox
-	    fing.prevtime = fing.time
+# 	if fing != None:
+# 	    fing.prevx = fing.x
+# 	    fing.prevy = fing.y
+# 	    fing.prevprox = fing.prox
+# 	    fing.prevtime = fing.time
 
-    def set_finger_callback(self,f):
-	self.finger_callback_func = f
+#     def set_finger_callback(self,f):
+# 	self.finger_callback_func = f
 
-    def do_finger_callback(self,t,fing):
-	# print "DOCALLBACK!  t=",t," sid=",fing.sid," xy=",fing.x,fing.y
-	if self.finger_callback_func:
-	    self.finger_callback_func(t,fing)
+#     def do_finger_callback(self,t,fing):
+# 	# print "DOCALLBACK!  t=",t," sid=",fing.sid," xy=",fing.x,fing.y
+# 	if self.finger_callback_func:
+# 	    self.finger_callback_func(t,fing)
 
-    def dofingerdragsmooth(self,fing):
+#     def dofingerdragsmooth(self,fing):
 
-	# This is where smoothing of the finger
-	# values gets done.
-	# Also where the angle/direction of
-	# finger movement gets done.
+# 	# This is where smoothing of the finger
+# 	# values gets done.
+# 	# Also where the angle/direction of
+# 	# finger movement gets done.
 
-	dx = fing.x - fing.prevx
-	dy = fing.y - fing.prevy
-	dprox = fing.prox - fing.prevprox
-	lng = sqrt(dx**2+dy**2)
-	dtime = fing.time - fing.prevtime
+# 	dx = fing.x - fing.prevx
+# 	dy = fing.y - fing.prevy
+# 	dprox = fing.prox - fing.prevprox
+# 	lng = sqrt(dx**2+dy**2)
+# 	dtime = fing.time - fing.prevtime
 	
-	# No change in position or time, do nothing
-	if lng == 0.0 or dtime == 0.0:
-		print "NO finger/time CHANGE, doing nothing"
-		return
+# 	# No change in position or time, do nothing
+# 	if lng == 0.0 or dtime == 0.0:
+# 		print "NO finger/time CHANGE, doing nothing"
+# 		return
 
-	# print "dx=",dx," dy=",dy," lng=",lng," dtime=",dtime
-	thisspeed = lng/dtime
+# 	# print "dx=",dx," dy=",dy," lng=",lng," dtime=",dtime
+# 	thisspeed = lng/dtime
 
-	speedadjust = False
-	if speedadjust:
-	    accellimit = 1.4
-	    speedlimit = fing.speed * accellimit
-	    # print "thisspeed=",thisspeed," lastspeed=",fing.speed
-	    if thisspeed > speedlimit:
-		print "ACC LIMIT!"
-		thisspeed = speedlimit
-	    abslimit = 3.0
-	    if thisspeed > abslimit:
-		print "ABS LIMIT!"
-		thisspeed = abslimit
+# 	speedadjust = False
+# 	if speedadjust:
+# 	    accellimit = 1.4
+# 	    speedlimit = fing.speed * accellimit
+# 	    # print "thisspeed=",thisspeed," lastspeed=",fing.speed
+# 	    if thisspeed > speedlimit:
+# 		print "ACC LIMIT!"
+# 		thisspeed = speedlimit
+# 	    abslimit = 3.0
+# 	    if thisspeed > abslimit:
+# 		print "ABS LIMIT!"
+# 		thisspeed = abslimit
 
-	fing.speed = thisspeed
-	ndx = fing.speed * dtime * (dx/lng)
-	ndy = fing.speed * dtime * (dy/lng)
+# 	fing.speed = thisspeed
+# 	ndx = fing.speed * dtime * (dx/lng)
+# 	ndy = fing.speed * dtime * (dy/lng)
 
-	damp = 3.0
-	ndx = (damp*fing.lastndx + ndx)/(damp+1.0)
-	ndy = (damp*fing.lastndy + ndy)/(damp+1.0)
-	# print "lastndxy=",fing.lastndx,fing.lastndy," ndxy=",ndx,ndy
-	nprox = (damp*fing.prevprox + fing.prox)/(damp+1.0)
+# 	damp = 3.0
+# 	ndx = (damp*fing.lastndx + ndx)/(damp+1.0)
+# 	ndy = (damp*fing.lastndy + ndy)/(damp+1.0)
+# 	# print "lastndxy=",fing.lastndx,fing.lastndy," ndxy=",ndx,ndy
+# 	nprox = (damp*fing.prevprox + fing.prox)/(damp+1.0)
 
-	nx = fing.prevx + ndx
-	ny = fing.prevy + ndy
-	fing.lastndx = ndx
-	fing.lastndy = ndy
-	fing.x = nx
-	fing.y = ny
+# 	nx = fing.prevx + ndx
+# 	ny = fing.prevy + ndy
+# 	fing.lastndx = ndx
+# 	fing.lastndy = ndy
+# 	fing.x = nx
+# 	fing.y = ny
 
-	if fing.x < 0.0:
-	    fing.x = 0.0
-	elif fing.x > 1.0:
-	    fing.x = 1.0
+# 	if fing.x < 0.0:
+# 	    fing.x = 0.0
+# 	elif fing.x > 1.0:
+# 	    fing.x = 1.0
 
-	if fing.y < 0.0:
-	    fing.y = 0.0
-	elif fing.y > 1.0:
-	    fing.y = 1.0
+# 	if fing.y < 0.0:
+# 	    fing.y = 0.0
+# 	elif fing.y > 1.0:
+# 	    fing.y = 1.0
 
-	fing.prox = nprox
-	self.do_finger_callback("fingerdrag",fing)
+# 	fing.prox = nprox
+# 	self.do_finger_callback("fingerdrag",fing)
 
 # ----------------------------------------------------
 #                Joystick Controller
@@ -437,7 +437,7 @@ class JoystickController(object):
         # Default parameters for PhosphorEssence
         pe.wave_enabled = 1
         pe.wave_mode = 1.0
-        pe.square_a = 0.0
+        pe.square_a = 1.0
         pe.ib_size=10.0
         pe.ib_a = 0.0
         pe.mv_a = 0.0
