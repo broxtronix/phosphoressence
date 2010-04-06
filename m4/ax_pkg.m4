@@ -1,17 +1,21 @@
 dnl __BEGIN_LICENSE__
-dnl Copyright (C) 2006, 2007 United States Government as represented by
+dnl Copyright (C) 2006-2010 United States Government as represented by
 dnl the Administrator of the National Aeronautics and Space Administration.
 dnl All Rights Reserved.
 dnl __END_LICENSE__
 
 
-dnl Usage: AX_PKG(<name>, <dependencies>, <libraries>, <headers>[, <relative include path>, <required-functions>])
+m4_ifdef([_AX_FIXUPS], [], [m4_include([m4/fixups.m4])])
+
+dnl Usage: AX_PKG(<name>, <dependencies>, <libraries>, <headers>[, <relative include path>, <relative lib path>, <required-functions>])
 AC_DEFUN([AX_PKG],
 [
-  AC_ARG_WITH(m4_tolower([[$1]]),
-    AC_HELP_STRING([--with-]m4_tolower([[$1]]), [enable searching for the $1 package @<:@auto@:>@]),
+
+  m4_divert_once([INIT_PREPARE], [dnl
+  AC_ARG_WITH(my_tolower([$1]),
+    AS_HELP_STRING([--with-]my_tolower([$1]), [look for the $1 package]),
     [ HAVE_PKG_$1=$withval ]
-  )
+  )])
 
   ADD_$1_CPPFLAGS="$PKG_$1_CPPFLAGS"
   PKG_$1_CPPFLAGS=""
@@ -26,8 +30,8 @@ AC_DEFUN([AX_PKG],
     AX_LOG([APPEND: ADD_]$1[_LDFLAGS=$ADD_]$1[_LDFLAGS])
   fi
 
-  m4_ifval([$6],
-    [AC_MSG_CHECKING([for package $1 with functions ($6)])],
+  m4_ifval([$7],
+    [AC_MSG_CHECKING([for package $1 with functions ($7)])],
     [AC_MSG_CHECKING([for package $1])])
 
   AC_LANG_ASSERT(C++)
@@ -47,27 +51,19 @@ AC_DEFUN([AX_PKG],
         AX_LOG([OVERRIDE: ]$1[ libs (]$3[) with $PKG_]$1[_LIBS])
     fi
 
-    # Test for and inherit from dependencies
-    for x in $2; do
-      ax_pkg_have_dep=HAVE_PKG_${x}
-      if test "${!ax_pkg_have_dep}" = "yes"; then
-        ax_pkg_dep_cxxflags="PKG_${x}_CPPFLAGS"
-        ax_pkg_dep_libs="PKG_${x}_LIBS"
-        PKG_$1_CPPFLAGS="$PKG_$1_CPPFLAGS ${!ax_pkg_dep_cxxflags}"
-        PKG_$1_LIBS="$PKG_$1_LIBS ${!ax_pkg_dep_libs}"
-        unset ax_pkg_dep_cxxflags
-        unset ax_pkg_dep_libs
-      else
-        unset PKG_$1_CPPFLAGS
-        unset PKG_$1_LIBS
-        HAVE_PKG_$1="no"
-        break
-      fi
-    done
+    if test ! -z "${PKG_$1_MORE_LIBS}"; then
+        AX_LOG([APPEND: ]$1[ libs ($PKG_]$1[_LIBS) with $PKG_]$1[_MORE_LIBS])
+        PKG_$1_LIBS="$PKG_$1_LIBS $PKG_$1_MORE_LIBS"
+    fi
+
+    AS_VAR_PUSHDEF([missing], [ax_pkg_]$1[_missing])
+    AX_LOAD_DEPS([$1], [$2], [missing])
+    AS_IF([test -n "$missing"], [AC_MSG_RESULT([no ([missing] $missing)]); HAVE_PKG_$1=no])
+    AS_VAR_POPDEF([missing])
 
     if test "x$HAVE_PKG_$1" = "xno" ; then
-      AC_MSG_RESULT([no (needs $x)])
-
+      # printed the result already
+      :
     # We skip the search if the user has been explicit about "yes"
     elif test "x$HAVE_PKG_$1" = "xyes" ; then
       AC_MSG_RESULT([yes (using user-supplied flags)])
@@ -86,8 +82,6 @@ AC_DEFUN([AX_PKG],
       ax_pkg_old_libs="$LIBS"
       ax_pkg_old_cppflags="$CPPFLAGS"
       ax_pkg_old_ldflags="$LDFLAGS"
-      ax_pkg_old_other_cppflags="$OTHER_CPPFLAGS"
-      ax_pkg_old_other_ldflags="$OTHER_LDFLAGS"
 
       LIBS="$PKG_$1_LIBS $LIBS"
       for path in $PKG_PATHS_$1; do
@@ -95,8 +89,6 @@ AC_DEFUN([AX_PKG],
 
         CPPFLAGS="$PKG_$1_CPPFLAGS $ax_pkg_old_cppflags"
         LDFLAGS="$ax_pkg_old_ldflags"
-        OTHER_CPPFLAGS="$ax_pkg_old_other_cppflags"
-        OTHER_LDFLAGS="$ax_pkg_old_other_ldflags"
 
         echo > conftest.h
         for header in $4 ; do
@@ -122,9 +114,13 @@ AC_DEFUN([AX_PKG],
             [TRY_ADD_CPPFLAGS="$TRY_ADD_CPPFLAGS -I$path/${AX_INCLUDE_DIR}"])
 
           if test -d $path/${AX_LIBDIR}; then
-              TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_LIBDIR}"
+            m4_ifval([$6],
+              [TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_LIBDIR}/]$6["],
+              [TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_LIBDIR}"])
           elif test x"${AX_OTHER_LIBDIR}" != "x"; then
-              TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_OTHER_LIBDIR}"
+            m4_ifval([$6],
+              [TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_OTHER_LIBDIR}/]$6["],
+              [TRY_ADD_LDFLAGS="$TRY_ADD_LDFLAGS -L$path/${AX_OTHER_LIBDIR}"])
           fi
         fi
 
@@ -137,8 +133,8 @@ AC_DEFUN([AX_PKG],
           AC_LANG_PROGRAM([#include "conftest.h"],[]),
           [ HAVE_PKG_$1=yes ], [continue] )
 
-        m4_ifval([$6],
-            AX_CHECK_FUNCTIONS([$6], [$LDFLAGS $LIBS], [], [ HAVE_PKG_$1=no; echo "package $1 did not have function $func" >&AS_MESSAGE_LOG_FD ])
+        m4_ifval([$7],
+            AX_CHECK_FUNCTIONS([$7], [$LDFLAGS $LIBS], [], [ HAVE_PKG_$1=no; echo "package $1 did not have function $func" >&AS_MESSAGE_LOG_FD ])
         )
 
         if test x"$HAVE_PKG_$1" = x"yes"; then
@@ -150,22 +146,23 @@ AC_DEFUN([AX_PKG],
         TRY_ADD_LDFLAGS=""
       done
 
-      # Append to CPPFLAGS, since that's the order we detected in
-      PKG_$1_CPPFLAGS="$PKG_$1_CPPFLAGS $TRY_ADD_CPPFLAGS"
-      # Prepend to LIBS, because dependencies need to be listed after all users
-      PKG_$1_LIBS="$TRY_ADD_LDFLAGS $PKG_$1_LIBS"
+      if test "x$HAVE_PKG_$1" = "xyes" ; then
+          # Append to CPPFLAGS, since that's the order we detected in
+          PKG_$1_CPPFLAGS="$PKG_$1_CPPFLAGS $TRY_ADD_CPPFLAGS"
+          # Prepend to LIBS, because dependencies need to be listed after all users
+          PKG_$1_LIBS="$TRY_ADD_LDFLAGS $PKG_$1_LIBS"
 
-      # But append the LDFLAGS here, so we don't break detection order
-      OTHER_CPPFLAGS="$OTHER_CPPFLAGS $TRY_ADD_CPPFLAGS"
-      OTHER_LDFLAGS="$OTHER_LDFLAGS $TRY_ADD_LDFLAGS"
+          # But append the LDFLAGS here, so we don't break detection order
+          OTHER_CPPFLAGS="$OTHER_CPPFLAGS $TRY_ADD_CPPFLAGS"
+          OTHER_LDFLAGS="$OTHER_LDFLAGS $TRY_ADD_LDFLAGS"
+      else
+        AC_MSG_RESULT([no (not found)])
+      fi
 
       CPPFLAGS="$ax_pkg_old_cppflags"
       LDFLAGS="$ax_pkg_old_ldflags"
       LIBS="$ax_pkg_old_libs"
 
-      if test "x$HAVE_PKG_$1" = "xno" ; then
-        AC_MSG_RESULT([no (not found)])
-      fi
     fi
 
   fi

@@ -1,5 +1,5 @@
 dnl __BEGIN_LICENSE__
-dnl Copyright (C) 2006, 2007 United States Government as represented by
+dnl Copyright (C) 2006-2010 United States Government as represented by
 dnl the Administrator of the National Aeronautics and Space Administration.
 dnl All Rights Reserved.
 dnl __END_LICENSE__
@@ -21,7 +21,7 @@ AC_DEFUN([AX_FIND_FILES],
       if test ! -z "$ax_find_files_paths" ; then
         AX_LOG([Find Files: Found ${ax_find_files_paths}])
       else
-        AX_LOG([Fine Files: Not Found])
+        AX_LOG([Find Files: Not Found])
         ax_find_files_passed=no
         break
       fi
