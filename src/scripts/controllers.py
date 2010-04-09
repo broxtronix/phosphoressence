@@ -435,7 +435,7 @@ class JoystickController(object):
         self.square_thick_coeff = 0.0
 
         # Default parameters for PhosphorEssence
-        pe.wave_enabled = 1
+        pe.wave_enabled = 0
         pe.wave_mode = 1.0
         pe.square_a = 1.0
         pe.ib_size=10.0
@@ -446,8 +446,8 @@ class JoystickController(object):
         pe.mv_l = 0
         pe.rot = 0
         pe.sx=1.0
-        pe.rot = -0.001
-        pe.sx=0.999
+#        pe.rot = -0.001
+#        pe.sx=0.999
         pe.kaleidoscope_radius=0.25
         
 

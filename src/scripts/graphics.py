@@ -6,6 +6,7 @@ from numpy import *
 
 from parameters import pe
 from shapes.bezier import *
+from shapes.random_walk import *
 from shapes.test import *
 from shapes.polybouncer import *
 from shapes.wheelsprite import *
@@ -183,7 +184,8 @@ class InvertSprite(object):
 
 # Instantiate the graphics object
 pe_graphics = PeGraphics()
-pe_graphics.register(SquareSprite())
+#pe_graphics.register(SquareSprite())
+pe_graphics.register(RandomWalkSprite())
 pe_graphics.register(BorderSprite())
 pe_graphics.register(InvertSprite())
 #ergo = Ergo()
