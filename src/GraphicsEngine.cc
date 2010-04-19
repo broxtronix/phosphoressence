@@ -163,7 +163,8 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
 
   // Set up video playback & start that thread.
   std::cout << "\t--> Opening video stream\n";
-  m_video.reset(new Video("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"));
+  //  m_video.reset(new Video("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"));
+  m_video.reset(new Video(""));
 
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
@@ -177,9 +178,13 @@ GraphicsEngine::~GraphicsEngine() {
   glDeleteTextures(1, &m_video_texture);
 
   // De-allocate any previously allocated textures or framebuffers
+  glDeleteFramebuffersEXT(1, &m_framebuffer0);
   glDeleteTextures(1, &m_framebuffer_texture0);
-  //  glDeleteTextures(1, &m_framebuffer_stencil0);
-  glDeleteFramebuffersEXT(1, &m_framebuffer);
+  glDeleteTextures(1, &m_framebuffer_stencil0);
+
+  glDeleteFramebuffersEXT(1, &m_framebuffer1);
+  glDeleteTextures(1, &m_framebuffer_texture1);
+  glDeleteTextures(1, &m_framebuffer_stencil1);
 }
 
 void GraphicsEngine::setup_mesh() {
@@ -239,7 +244,7 @@ void GraphicsEngine::initializeGL() {
   glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
 
   // Create the framebuffer & framebuffer texture
-  glGenFramebuffersEXT(1, &m_framebuffer);
+  glGenFramebuffersEXT(1, &m_framebuffer0);
 
   // Create the main framebuffer texture
   glGenTextures(1, &m_framebuffer_texture0);
@@ -268,7 +273,8 @@ void GraphicsEngine::initializeGL() {
   pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
   pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
 
-  // Now that GL is setup, we can start the Qt Timer
+  // Now that GL is setup, we can start the Qt Timer that drives our
+  // rendering.
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
   m_timer->start(33.0); // Limit frame rate to ~30 fps
@@ -300,7 +306,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
 
   // Create the framebuffer texture (for rendering...)
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
 
   // Bind the main texture to the framebuffer
   glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
@@ -374,7 +380,7 @@ void GraphicsEngine::drawImage() {
   // Activate the framebuffer.  All of the following drawing is done
   // in the framebuffer so that we have a larger area available to
   // draw in.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
@@ -411,27 +417,27 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // DRAW VIDEO
   // ----------------------
-  // glEnable( GL_TEXTURE_2D );
+  glEnable( GL_TEXTURE_2D );
 
-  // // Grab the frame
-  // m_video->copy_to_texture(m_video_texture);
+  // Grab the frame
+  m_video->copy_to_texture(m_video_texture);
 
-  // // ... and render it.
-  // glBindTexture( GL_TEXTURE_2D, m_video_texture );
-  // qglColor(Qt::white);
-  // glBegin(GL_QUADS);
-  // glTexCoord2f( 0, 1.0 );
-  // glVertex2d( -0.5, -0.5);
-  // glTexCoord2f( 1.0, 1.0 );
-  // glVertex2d( 0.5, -0.5);
-  // glTexCoord2f( 1.0, 0.0 );
-  // glVertex2d( 0.5, 0.5);
-  // glTexCoord2f( 0.0, 0.0 );
-  // glVertex2d( -0.5, 0.5);
-  // glEnd() ;
-  // glBindTexture( GL_TEXTURE_2D, 0 );
+  // ... and render it.
+  glBindTexture( GL_TEXTURE_2D, m_video_texture );
+  qglColor(Qt::white);
+  glBegin(GL_QUADS);
+  glTexCoord2f( 0, 1.0 );
+  glVertex2d( -0.5, -0.5);
+  glTexCoord2f( 1.0, 1.0 );
+  glVertex2d( 0.5, -0.5);
+  glTexCoord2f( 1.0, 0.0 );
+  glVertex2d( 0.5, 0.5);
+  glTexCoord2f( 0.0, 0.0 );
+  glVertex2d( -0.5, 0.5);
+  glEnd() ;
+  glBindTexture( GL_TEXTURE_2D, 0 );
 
-  // glDisable( GL_TEXTURE_2D );
+  glDisable( GL_TEXTURE_2D );
   
 
   // -----------------------
@@ -558,7 +564,7 @@ void GraphicsEngine::drawImage() {
   // ----------------- <Feedback> ----------------------
 
   // Feedback-only rendering
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -588,7 +594,7 @@ void GraphicsEngine::saveFeedback() {
 
   // Activate the framebuffer.  All of the following steps pull data
   // from the framebuffer rather than the main screen.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
 
   // Copy the contents of the framebuffer into the feedback texture.
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);

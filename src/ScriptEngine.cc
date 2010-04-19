@@ -300,6 +300,7 @@ void CommandPromptTask::operator()() {
   std::ostringstream ostr;
   ostr << "import sys\n" 
        << "sys.path.append('" << resources_dir << "/scripts')\n"
+       << "sys.path.append('" << resources_dir << "/scripts/site-packages')\n"
        << "\'PE_RESOURCES = " << resources_dir << "\'\n"
        << "from phosphoressence import *\n"
        << "pe_initialize()";

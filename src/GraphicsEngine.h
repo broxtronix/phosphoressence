@@ -140,10 +140,12 @@ private:
   
   // Image & OpenGL
   GLuint m_feedback_texture;
-  GLuint m_feedback_pbo;
   GLuint m_framebuffer_texture0;
   GLuint m_framebuffer_stencil0;
-  GLuint m_framebuffer;
+  GLuint m_framebuffer_texture1;
+  GLuint m_framebuffer_stencil1;
+  GLuint m_framebuffer0;
+  GLuint m_framebuffer1;
   GLuint m_video_texture;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;

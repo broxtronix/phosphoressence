@@ -60,6 +60,9 @@ except:
     # the C code at the same time, we have to spoof a few things,
     # including the pe_readonly_bindings module.
     class PeCppBridgeDummy:
+        def __init__(self):
+            self.pe_orientation=0
+            self.pe_aspect=1
         def pe_time(self, value): return 0.0;
     pe_cpp_bridge = PeCppBridgeDummy()
 

@@ -9,8 +9,9 @@ from parameters import pe
 from presets import PePreset
 from graphics import pe_graphics
 #from graphics import ergo
-from controllers import OscController, JoystickController
-#from controllers import TuioController
+from controllers.OscController import OscController
+from controllers.JoystickController import JoystickController
+from controllers.TuioController import TuioController
 #from shapes.videoshape import VideoShapes
 
 
@@ -21,16 +22,14 @@ ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 JOY_DEBUG = 1;
-OSC_DEBUG = 0;
+OSC_DEBUG = 1;
 TUIO_DEBUG = 0;
 pe.show_fps = 0;
 
 # Instantiate hardware controllers
 osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
-#tuio = TuioController(TUIO_DEBUG,host="169.254.81.125",port=3333)
-#tuio = TuioController(TUIO_DEBUG,host="169.254.81.125",port=3333)
-#tuio.set_finger_callback(ergo.got_finger)
+tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 
 # Create a video shape
 #vshape = VideoShapes()
@@ -75,7 +74,7 @@ def pe_animate():
         osc.render_callback()
 
         # Update tuio parameters
-        #tuio.render_callback()
+        tuio.render_callback()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

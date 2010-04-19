@@ -54,7 +54,9 @@ void Video::copy_to_texture(vw::uint32 texture) {
   vw::Mutex::Lock lock(m_mutex);
 
   //  cv::Mat frame;
-  m_video_capture >> m_last_frame; // get a new frame from camera
+  if (m_video_capture.grab())
+    m_video_capture.retrieve(m_last_frame); // get a new frame from camera
+
   //  cv::cvtColor(frame, m_last_frame, CV_BGR2GRAY);
   cv::GaussianBlur(m_last_frame, m_last_frame, cv::Size(7,7), 1.5, 1.5);
   //  cv::Canny(m_last_frame, m_last_frame, 0, 30, 3);

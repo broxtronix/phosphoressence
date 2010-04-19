@@ -164,7 +164,7 @@ AX_PKG_ONE_OF(GL,
      AX_PKG(LINUX_GL, [X11], [-lglut -lGLU -lGL], [GL/gl.h GL/glu.h GL/glut.h], [], [], [glCreateShader])])
 
 AX_PKG(OPENVG,        [GL],      [-lOpenVG], [vg/openvg.h])
-AX_PKG(OPENCV,        [],        [-lcv -lcvaux -lhighgui], [cv.h], [opencv])
+AX_PKG(OPENCV,        [],        [-lcv -lcvaux -lcxcore -lml -lhighgui], [cv.h], [opencv])
 
 if test "$ENABLE_QT_QMAKE" = no; then
   AX_GROUP_PKG([QT_QMAKE])
