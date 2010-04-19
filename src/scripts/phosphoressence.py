@@ -9,9 +9,9 @@ from parameters import pe
 from presets import PePreset
 from graphics import pe_graphics
 #from graphics import ergo
-from controllers.OscController import OscController
+#from controllers.OscController import OscController
 from controllers.JoystickController import JoystickController
-from controllers.TuioController import TuioController
+#from controllers.TuioController import TuioController
 #from shapes.videoshape import VideoShapes
 
 
@@ -22,14 +22,14 @@ ENABLE_CONTROLLERS = 1
 
 # Switches for debugging
 JOY_DEBUG = 1;
-OSC_DEBUG = 1;
-TUIO_DEBUG = 0;
+#OSC_DEBUG = 1;
+#TUIO_DEBUG = 0;
 pe.show_fps = 0;
 
 # Instantiate hardware controllers
-osc = OscController(OSC_DEBUG)
+#osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
-tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
+#tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 
 # Create a video shape
 #vshape = VideoShapes()
@@ -41,6 +41,7 @@ tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 # Phosphoressence has been initialized, but the main application loop
 # has not yet started.
 def pe_initialize():
+    pe.decay=0.1
     pass
 #    pe_graphics.register(vshape)
 #    osc.register_shape(vshape)
@@ -71,10 +72,10 @@ def pe_animate():
         joystick.render_callback()
 
         # Update osc parameters
-        osc.render_callback()
+        #        osc.render_callback()
 
         # Update tuio parameters
-        tuio.render_callback()
+        #        tuio.render_callback()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

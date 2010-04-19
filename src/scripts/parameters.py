@@ -275,7 +275,7 @@ pe.register(Parameter( name = "treb_att_r",
 pe.register(Parameter( name = "decay",
                        description = "0..1   controls the eventual fade to black; " + 
                        "1=no fade, 0.9=strong fade, 0.98=recommended",
-                       default_value = 0.98 ))
+                       default_value = 1.0 ))
 
 pe.register(Parameter( name = "invert",
                        description = "0/1    inverts the colors in the image" ))

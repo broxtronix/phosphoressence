@@ -164,7 +164,8 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   // Set up video playback & start that thread.
   std::cout << "\t--> Opening video stream\n";
   //  m_video.reset(new Video("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"));
-  m_video.reset(new Video(""));
+  m_video.reset(new Video("/home/mbroxton/Desktop/monolith.mp4"));
+  //m_video.reset(new Video(""));
 
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
@@ -417,27 +418,27 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   // DRAW VIDEO
   // ----------------------
-  glEnable( GL_TEXTURE_2D );
+//   glEnable( GL_TEXTURE_2D );
 
-  // Grab the frame
-  m_video->copy_to_texture(m_video_texture);
+//   // Grab the frame
+//   m_video->copy_to_texture(m_video_texture);
 
-  // ... and render it.
-  glBindTexture( GL_TEXTURE_2D, m_video_texture );
-  qglColor(Qt::white);
-  glBegin(GL_QUADS);
-  glTexCoord2f( 0, 1.0 );
-  glVertex2d( -0.5, -0.5);
-  glTexCoord2f( 1.0, 1.0 );
-  glVertex2d( 0.5, -0.5);
-  glTexCoord2f( 1.0, 0.0 );
-  glVertex2d( 0.5, 0.5);
-  glTexCoord2f( 0.0, 0.0 );
-  glVertex2d( -0.5, 0.5);
-  glEnd() ;
-  glBindTexture( GL_TEXTURE_2D, 0 );
+//   // ... and render it.
+//   glBindTexture( GL_TEXTURE_2D, m_video_texture );
+//   qglColor(Qt::white);
+//   glBegin(GL_QUADS);
+//   glTexCoord2f( 0, 1.0 );
+//   glVertex2d( -0.5, -0.5);
+//   glTexCoord2f( 1.0, 1.0 );
+//   glVertex2d( 0.5, -0.5);
+//   glTexCoord2f( 1.0, 0.0 );
+//   glVertex2d( 0.5, 0.5);
+//   glTexCoord2f( 0.0, 0.0 );
+//   glVertex2d( -0.5, 0.5);
+//   glEnd() ;
+//   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  glDisable( GL_TEXTURE_2D );
+//   glDisable( GL_TEXTURE_2D );
   
 
   // -----------------------

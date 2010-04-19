@@ -14,9 +14,11 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis2", "decay", 0.85, 1.03, 0.98, "log10")
-        self.bindings.add(self, "/joystick0/axis4", "warp", 4.0, 0.0, 0.0)
-        self.bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
+#        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 1.0, "log10")
+#        self.bindings.add(self, "/joystick0/axis2", "warp", 4.0, 0.0, 0.0)
+#        self.bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
+        self.bindings.add(self, "/joystick0/axis2", "q7", 0.01, 1.0, 0.01)
+        self.bindings.add(self, "/joystick0/axis5", "q8", 0.01, 1.0, 0.01)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.
@@ -47,9 +49,11 @@ class JoystickController(object):
         pe.mv_l = 0
         pe.rot = 0
         pe.sx=1.0
+        pe.warp=0.01
 #        pe.rot = -0.001
 #        pe.sx=0.999
         pe.kaleidoscope_radius=0.25
+        pe.decay=0.999
         
 
     def receive_callback(self, path, value):
@@ -425,12 +429,12 @@ class JoystickController(object):
         pe.ifs_mode = 0
 
         # Tweak decay
-        if (pe.decay < 0.851):
-            pe.set_control_value("decay", 0.1);
+#         if (pe.decay < 0.851):
+#             pe.set_control_value("decay", 0.1);
 
-        if (pe.decay > 0.99 and pe.decay <1.01):
-            pe.set_control_value("decay", pe.decay+0.01)            
-        elif (pe.decay > 0.99 and pe.decay <1.01):
-            pe.set_control_value("decay", 1.0)
-        elif (pe.decay >= 1.01):
-            pe.set_control_value("decay", pe.decay-0.01)
+#         if (pe.decay > 0.99 and pe.decay <1.01):
+#             pe.set_control_value("decay", pe.decay+0.01)            
+#         elif (pe.decay > 0.99 and pe.decay <1.01):
+#             pe.set_control_value("decay", 1.0)
+#         elif (pe.decay >= 1.01):
+#             pe.set_control_value("decay", pe.decay-0.01)
