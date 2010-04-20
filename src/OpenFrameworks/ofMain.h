@@ -15,12 +15,12 @@
 // 	#include "ofArduino.h"
 // #endif
 
-// //--------------------------
-// // graphics
-// #include "ofTexture.h"
-// #include "ofTrueTypeFont.h"
-// #include "ofGraphics.h"
-// #include "ofImage.h"
+//--------------------------
+// graphics
+#include "ofTexture.h"
+#include "ofTrueTypeFont.h"
+#include "ofGraphics.h"
+#include "ofImage.h"
 
 // //--------------------------
 // // app

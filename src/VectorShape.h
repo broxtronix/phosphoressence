@@ -42,7 +42,7 @@ protected:
 
   /// Subclass must implement this method if it wants to provide new
   /// data to the x and y linebuffers.
-  virtual int update(float t0, float frame_number) {
+  virtual void update(float t0, float frame_number) {
     double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
     float elapsed_time = new_time - m_last_time;
     m_last_time = new_time;
@@ -137,11 +137,11 @@ public:
     // that the waveform "fades away" like a real phosphor as it is
     // drawn to the screen.  It's a little messy and hard to read, bit
     // it gets the job done.
-    float dt_draw = 1.0/sample_rate();
-    float tau_excite = 3e-5;                   // TODO : Move to parameters.
-    float tau_decay = -(1/30.0)/log(pe_script_engine().get_parameter("decay")); 
+    //    float dt_draw = 1.0/sample_rate();
+    // float tau_excite = 3e-5;                   // TODO : Move to parameters.
+    // float tau_decay = -(1/30.0)/log(pe_script_engine().get_parameter("decay")); 
                                                // TODO: Avoid using fixed frame rate (30.0)!
-    float beta = (1-exp(-dt_draw/tau_decay));  // TODO: Move tau_decay to pe_parameters()
+    //    float beta = (1-exp(-dt_draw/tau_decay));  // TODO: Move tau_decay to pe_parameters()
 
     // Read the values into a local cache so that we can draw them
     // below.  We initialize the first point in the buffer to be a
@@ -161,7 +161,7 @@ public:
     // over the course of rendering this frame, so we need to compute
     // that decay factor on a sample by sample basis here.  
     float decay = pe_script_engine().get_parameter("decay");
-    double sample_decay = pow(decay,1.0/float(idx));
+    double sample_decay = powf(decay,1.0/float(idx));
 
     // Start by drawing a line that connects from the last point drawn
     // in the previous frame to the first point in this frame.  Note: we
@@ -170,7 +170,7 @@ public:
     if (m_last_point[0] != PE_VECTORSHAPE_NULL &&
         linecache[0][0] != PE_VECTORSHAPE_NULL) {
       // Compute the phosphor color (with the proper decay rate applied)
-      float beta_factor = pow(sample_decay,idx);
+      float beta_factor = powf(sample_decay,idx);
       float r = norm_color[0] * beta_factor;
       float g = norm_color[1] * beta_factor;
       float b = norm_color[2] * beta_factor;
@@ -187,7 +187,7 @@ public:
     for (int i = 1; i < idx; ++i) {
 
       // Compute the phosphor color (with the proper decay rate applied)
-      float beta_factor = pow(sample_decay,idx-i);
+      float beta_factor = powf(sample_decay,idx-i);
       float r = norm_color[0] * beta_factor;
       float g = norm_color[1] * beta_factor;
       float b = norm_color[2] * beta_factor;

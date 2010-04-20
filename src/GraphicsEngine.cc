@@ -11,6 +11,8 @@
 #define GL_GLEXT_PROTOTYPES 1
 #endif
 
+//#include <OpenFrameworks/graphics/ofTexture.h>
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -31,7 +33,7 @@ using namespace vw::GPU;
 // Vision Workbench
 #include <vw/Image.h>
 #include <vw/FileIO.h>
-#include <vw/Math.h>
+//#include <vw/Math.h>
 using namespace vw;
 
 #include <fstream>
@@ -161,12 +163,6 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   // Set mouse tracking
   this->setMouseTracking(true);
 
-  // Set up video playback & start that thread.
-  std::cout << "\t--> Opening video stream\n";
-  //  m_video.reset(new Video("/Users/mbroxton/Documents/CitiesAtNightWorldTour720X480edit7.mpg"));
-  m_video.reset(new Video("/home/mbroxton/Desktop/monolith.mp4"));
-  //m_video.reset(new Video(""));
-
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -176,7 +172,7 @@ GraphicsEngine::~GraphicsEngine() {
 
   // De-allocate feedback texture and video texture
   glDeleteTextures(1, &m_feedback_texture);
-  glDeleteTextures(1, &m_video_texture);
+  glDeleteTextures(1, &m_ground_texture);
 
   // De-allocate any previously allocated textures or framebuffers
   glDeleteFramebuffersEXT(1, &m_framebuffer0);
@@ -219,14 +215,27 @@ void GraphicsEngine::initializeGL() {
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
 
-  // Generate the video texture
-  glGenTextures(1, &m_video_texture);
-  glBindTexture(GL_TEXTURE_2D, m_video_texture);
+  // Generate the ground texture & load the image
+  glGenTextures(1, &m_ground_texture);
+  glBindTexture(GL_TEXTURE_2D, m_ground_texture);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-
+  
+  // Load the ground image
+  std::string ground_image_filename = pe_resources_directory() + "/images/ground.jpg";
+  std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
+  ImageView<PixelRGB<uint8> > ground_image;
+  vw::read_image(ground_image, ground_image_filename);
+  glBindTexture(GL_TEXTURE_2D, m_ground_texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+               ground_image.cols(), 
+               ground_image.rows(),
+               0, GL_RGB, GL_UNSIGNED_BYTE, 
+               ground_image.data());
+  glBindTexture(GL_TEXTURE_2D, 0);
+  
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
   glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
@@ -304,7 +313,6 @@ void GraphicsEngine::resizeGL(int width, int height) {
   //------------------------------------
   // Set up the framebuffer and textures
   //------------------------------------
-  int size = m_framebuffer_width * m_framebuffer_height * 4 * sizeof(vw::uint8);
 
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
@@ -385,61 +393,10 @@ void GraphicsEngine::drawImage() {
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
-  // Set the background color and viewport.
-  qglClearColor(QColor(0, 0, 0, 1.0)); // Black Background
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
-
-  // Set up the orthographic view of the scene.  The exact extent of
-  // the view onto the scene depends on the current panning and zoom
-  // in the UI.
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-m_framebuffer_radius, m_framebuffer_radius, 
-          -m_framebuffer_radius, m_framebuffer_radius, 
-          -1.0, 1.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  // Start by drawing a black frame.
-  glColor4f(0.0,0.0,0.0,1.0);
-  glBegin(GL_QUADS);
-  glVertex2f( -m_framebuffer_radius, -m_framebuffer_radius);
-  glVertex2f( m_framebuffer_radius, -m_framebuffer_radius);
-  glVertex2f( m_framebuffer_radius, m_framebuffer_radius);
-  glVertex2f( -m_framebuffer_radius, m_framebuffer_radius);
-  glEnd();
-
   // -----------------------
   // FEEDBACK TEXTURE 
   // ----------------------
   drawFeedback();
-
-  // -----------------------
-  // DRAW VIDEO
-  // ----------------------
-//   glEnable( GL_TEXTURE_2D );
-
-//   // Grab the frame
-//   m_video->copy_to_texture(m_video_texture);
-
-//   // ... and render it.
-//   glBindTexture( GL_TEXTURE_2D, m_video_texture );
-//   qglColor(Qt::white);
-//   glBegin(GL_QUADS);
-//   glTexCoord2f( 0, 1.0 );
-//   glVertex2d( -0.5, -0.5);
-//   glTexCoord2f( 1.0, 1.0 );
-//   glVertex2d( 0.5, -0.5);
-//   glTexCoord2f( 1.0, 0.0 );
-//   glVertex2d( 0.5, 0.5);
-//   glTexCoord2f( 0.0, 0.0 );
-//   glVertex2d( -0.5, 0.5);
-//   glEnd() ;
-//   glBindTexture( GL_TEXTURE_2D, 0 );
-
-//   glDisable( GL_TEXTURE_2D );
-  
 
   // -----------------------
   // Darken Center
@@ -496,9 +453,26 @@ void GraphicsEngine::drawImage() {
   pe_script_engine().execute("pe_render_bg()");
   glLoadIdentity();
 
+  // Draw the ground texture
+  glEnable( GL_TEXTURE_2D );
+  glBindTexture( GL_TEXTURE_2D, m_ground_texture );
+  qglColor(Qt::white);
+  glBegin(GL_QUADS);
+  glTexCoord2f( 0, 1.0 );
+  glVertex2d( -m_aspect, -1);
+  glTexCoord2f( 1.0, 1.0 );
+  glVertex2d( m_aspect, -1);
+  glTexCoord2f( 1.0, 0.0 );
+  glVertex2d( m_aspect, 1);
+  glTexCoord2f( 0.0, 0.0 );
+  glVertex2d( -m_aspect, 1);
+  glEnd();
+  glBindTexture( GL_TEXTURE_2D, 0 );
+  glDisable( GL_TEXTURE_2D );
+
   // Draw the framebuffer to the real screen.
-  //   glEnable(GL_BLEND);
-  //   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
   glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
 
@@ -533,7 +507,7 @@ void GraphicsEngine::drawImage() {
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
-  //  glDisable(GL_BLEND);
+  glDisable(GL_BLEND);
   m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {
@@ -609,7 +583,7 @@ void GraphicsEngine::recordFrame() {
     std::ostringstream ostr;    
     ostr << "/tmp/pe_frame_";
     for (int i = 1; i < 5; ++i) {
-      if (int(m_record_frame_number / pow(10,i)) == 0) {
+      if (int(m_record_frame_number / powf(10,i)) == 0) {
         ostr << "0";
       }
     }
@@ -649,11 +623,11 @@ void GraphicsEngine::mousePressEvent(QMouseEvent *event) {
 void GraphicsEngine::mouseMoveEvent(QMouseEvent *event) {
   // Left mouse button moves the image around
   if (event->buttons() & Qt::LeftButton) {
-    float x_diff = float(event->x() - lastPos.x()) / m_viewport_width;
-    float y_diff = float(event->y() - lastPos.y()) / m_viewport_height;
-    float ticks;
+    // float x_diff = float(event->x() - lastPos.x()) / m_viewport_width;
+    // float y_diff = float(event->y() - lastPos.y()) / m_viewport_height;
+    // float ticks;
 
-    std::ostringstream s; 
+    // std::ostringstream s; 
 
     // do something here?
   }

@@ -24,22 +24,22 @@ gpu_module_sources = GpuProgram.h GpuProgram.cc Utilities.cc		\
 		     StandardShaders.cc
 
 if MAKE_APP_PHOSPHORESSENCE
-  bin_PROGRAMS += pe
-  pe_SOURCES = pe.cc MainWindow.cc MainWindow.moc.cc GraphicsEngine.cc	\
-	            GraphicsEngine.moc.cc GraphicsElements.cc		\
-	            AudioEngine.cc VideoEngine.cc			\
+  bin_PROGRAMS += phosphoressence
+  phosphoressence_SOURCES = pe.cc MainWindow.cc MainWindow.moc.cc	\
+	            GraphicsEngine.cc GraphicsEngine.moc.cc		\
+	            GraphicsElements.cc AudioEngine.cc VideoEngine.cc	\
 	            SpectrographShape.moc.cc ScriptEngine.cc		\
 	            PeParameters.cc Controller.cc OscController.cc	\
 	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
 	            $(header_sources)
-
-  pe_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
+  phosphoressence_SOURCES += QtKitVideoGrabber.m
+  phosphoressence_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 
 AM_CPPFLAGS = @PE_CPPFLAGS@ $(PYTHON_CPPFLAGS) -I/usr/include/SDL -I/usr/local/include/SDL -I./OpenFrameworks/utils
-AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation -framework CoreAudio
+AM_LDFLAGS  = @PE_LDFLAGS@ $(PYTHON_LDFLAGS) $(PYTHON_EXTRA_LDFLAGS) -L/opt/local/lib -lSDL -lboost_system-mt -framework CoreFoundation -framework CoreAudio -framework Cocoa -framework QTKit -framework CoreVideo
 
-SUBDIRS = OpenFrameworks
+SUBDIRS = pe OpenFrameworks
 
 ##############################################################################
 #                             Tests					     #

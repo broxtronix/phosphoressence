@@ -110,7 +110,6 @@ public:
 
     // Now draw the wave by traversing the buffer in reverse
     // order.
-    float one_minus_beta_accum = 1.0;
     for (int i = 1; i < idx; ++i) {
 
       // Compute the phosphor color

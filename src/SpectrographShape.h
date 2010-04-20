@@ -225,7 +225,7 @@ public slots:
           left_imm[i] = 0;
           right_imm[i] = 0;
           
-          for (unsigned j=start; j<end; j++) {
+          for (int j=start; j<end; j++) {
             left_imm[i] += left_spectrum[j];
             right_imm[i] += right_spectrum[j];
           }

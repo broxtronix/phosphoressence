@@ -8,6 +8,10 @@
 #ifndef __GRAPHICS_ENGINE_H__
 #define __GRAPHICS_ENGINE_H__
 
+// OpenFrameworks
+//#include <OpenFrameworks/graphics/ofTexture.h>
+
+
 // PhosphorEssence
 #include <VideoEngine.h>
 #include <ScriptEngine.h>
@@ -146,7 +150,7 @@ private:
   GLuint m_framebuffer_stencil1;
   GLuint m_framebuffer0;
   GLuint m_framebuffer1;
-  GLuint m_video_texture;
+  GLuint m_ground_texture;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
   boost::shared_ptr<Video> m_video;

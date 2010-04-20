@@ -11,8 +11,6 @@
 #include <PeParameters.h>
 
 #include <vw/FileIO/DiskImageView.h>
-#include <vw/Image/Statistics.h>
-#include <vw/Image/PixelMask.h>
 
 #include <QtGui>
 

@@ -24,7 +24,7 @@ m4_pattern_allow([^PKG_ARBITRARY_QT_NEEDED_HEADERS$])
 
 AC_PREREQ([2.59])
 dnl TODO BEFORE RELEASE: update package version
-AC_INIT([PhosphorEssence], [0.2], [], [PhosphorEssence])
+AC_INIT([PhosphorEssence], [0.3], [], [PhosphorEssence])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
@@ -83,6 +83,7 @@ AM_DISABLE_STATIC
 # Find the tools
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_OBJC
 AC_PROG_INSTALL
 AX_PROG_AR
 AC_PROG_LIBTOOL
@@ -218,10 +219,12 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
+AX_MODULE(VIDEO,    [src/pe/video],   [libpeVideo.la],    yes, [],    [],    [])
 AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
+AM_CONDITIONAL(MAKE_MODULE_VIDEO,             [test "$MAKE_MODULE_VIDEO" = "yes"])
 AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE, [test "$MAKE_APP_PHOSPHORESSENCE" = "yes"])
 
 ##################################################
@@ -241,10 +244,15 @@ if test "yes" = "$ENABLE_VERBOSE" ; then
   AC_MSG_NOTICE([using PE_ENABLE_EXCEPTIONS=$ENABLE_EXCEPTIONS])
 fi
 
+AX_LOG([using CPPFLAGS=$CPPFLAGS])
+AX_LOG([using PE_CPPFLAGS=$PE_CPPFLAGS])
+AX_LOG([using CFLAGS=$CFLAGS])
+AX_LOG([using CXXFLAGS=$CXXFLAGS])
+AX_LOG([using LDFLAGS=$LDFLAGS])
+AX_LOG([using PE_LDFLAGS=$PE_LDFLAGS])
+
 AC_SUBST(PE_CPPFLAGS)
 AC_SUBST(PE_LDFLAGS)
-
-
 
 ##################################################
 # makefiles to process
@@ -253,6 +261,8 @@ AC_SUBST(PE_LDFLAGS)
 AC_CONFIG_FILES([                       \
   Makefile                              \
   src/Makefile                          \
+  src/pe/Makefile                       \
+  src/pe/video/Makefile                 \
   src/OpenFrameworks/Makefile           \
 ])
 

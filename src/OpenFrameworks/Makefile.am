@@ -16,6 +16,14 @@ libOpenFrameworks_la_SOURCES += graphics/ofGraphics.cpp		\
 				graphics/ofTrueTypeFont.cpp     \
 				graphics/ofBitmapFont.cpp
 
+# ofxOpenCv
+libOpenFrameworks_la_SOURCES += ofxOpenCv/ofxCvColorImage.cpp		\
+				ofxOpenCv/ofxCvFloatImage.cpp		\
+				ofxOpenCv/ofxCvGrayscaleImage.cpp	\
+				ofxOpenCv/ofxCvImage.cpp		\
+				ofxOpenCv/ofxCvShortImage.cpp           \
+				ofxOpenCv/ofxCvContourFinder.cpp           
+
 # video
 #libOpenFrameworks_la_SOURCES += video/ofQtUtils.cpp             \
 				video/ofGstUtils.cpp

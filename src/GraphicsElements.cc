@@ -90,7 +90,7 @@ void diffuse ( int N, int b, float * x, float * x0, float diff, float dt ) {
   for ( int k=0 ; k<20 ; k++ ) { 
     for ( int i=1 ; i<=N ; i++ ) {
       for ( int j=1 ; j<=N ; j++ ) {
-        float x_prev = x[IX(i,j)];
+        //        float x_prev = x[IX(i,j)];
         x[IX(i,j)] = (x0[IX(i,j)] + a*(x[IX(i-1,j)]+x[IX(i+1,j)] + 
                                        x[IX(i,j-1)]+x[IX(i,j+1)]))/(1+4*a);
         // if (x[IX(i,j)] != x[IX(i,j)]) {
@@ -198,6 +198,9 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   // Fragment Shader
   m_gpu_backbuffer_program->install();
 
@@ -279,7 +282,7 @@ void GraphicsEngine::drawFeedback() {
       float u = m_feedback_screencoords(i,j)[0];
       float v = m_feedback_screencoords(i,j)[1];
       float radius = sqrt(u*u+v*v);
-      float angle = atan2(v,u);
+      // float angle = atan2(v,u);
 
       // Apply the zoom effect 
       float zoomCoefficient = powf(zoom, powf(zoomExp, 
@@ -341,7 +344,6 @@ void GraphicsEngine::drawFeedback() {
   }
 
   //  We will draw the image as a texture on this quad.
-  glDisable(GL_BLEND);
   glColor4f(1.0,1.0,1.0,1.0);
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
@@ -360,6 +362,7 @@ void GraphicsEngine::drawFeedback() {
   glEnd();
 
   glDisable( GL_TEXTURE_2D );
+  glDisable(GL_BLEND);
   m_gpu_backbuffer_program->uninstall();
 }
 
@@ -471,7 +474,7 @@ void GraphicsEngine::drawVectorField() {
       if (dy < 0) dy = 0;
       if (dx > 1) dx = 1;
       if (dy > 1) dy = 1;
-      float min_len = 1.0f/m_viewport_width; // Is this correct?  
+      //      float min_len = 1.0f/m_viewport_width; // Is this correct?  
 
       for (int y=0; y<nY; y++) { 
         float fy = (y + 0.25f)/(float)(nY + dy + 0.25f - 1.0f) * 2.0f - 1.0f ;
@@ -519,41 +522,41 @@ void GraphicsEngine::drawVectorField() {
 // <<MILKDROP>> This code was adapted from Milkdrop's milkdropfs.cpp.
 // See the milkdrop license in COPYING for more details.
 
-void GraphicsEngine::draw_milkdrop_waves() {
-    glEnable(GL_BLEND);
-    if (pe_script_engine().get_parameter("wave_additive"))
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-    else
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+// void GraphicsEngine::draw_milkdrop_waves() {
+//     glEnable(GL_BLEND);
+//     if (pe_script_engine().get_parameter("wave_additive"))
+//       glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+//     else
+//       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    float wave_r = pe_script_engine().get_parameter("wave_r");
-    float wave_g = pe_script_engine().get_parameter("wave_g");
-    float wave_b = pe_script_engine().get_parameter("wave_b");
-    float wave_a = pe_script_engine().get_parameter("wave_a");
-    float wave_mystery = pe_script_engine().get_parameter("wave_mystery");
+//     float wave_r = pe_script_engine().get_parameter("wave_r");
+//     float wave_g = pe_script_engine().get_parameter("wave_g");
+//     float wave_b = pe_script_engine().get_parameter("wave_b");
+//     float wave_a = pe_script_engine().get_parameter("wave_a");
+//     float wave_mystery = pe_script_engine().get_parameter("wave_mystery");
     
-    if (pe_script_engine().get_parameter("wave_brighten")) {
-      float max = wave_r;
-      if (max < wave_g) max = wave_g;
-      if (max < wave_b) max = wave_b;
-      if (max > 0.01f) {
-        wave_r = wave_r/max;
-        wave_g = wave_g/max;
-        wave_b = wave_b/max;
-      }
+//     if (pe_script_engine().get_parameter("wave_brighten")) {
+//       float max = wave_r;
+//       if (max < wave_g) max = wave_g;
+//       if (max < wave_b) max = wave_b;
+//       if (max > 0.01f) {
+//         wave_r = wave_r/max;
+//         wave_g = wave_g/max;
+//         wave_b = wave_b/max;
+//       }
 
-    }
+//     }
 
-    // Compute wave position, adjusting from the parameter range
-    // [0..1] to the window range [-1..1] for x and [-aspect..aspect]
-    // for y.
-    float x = pe_script_engine().get_parameter("wave_x")*2.0*m_aspect - m_aspect;
-    float y = pe_script_engine().get_parameter("wave_y")*2.0 - 1.0;
+//     // Compute wave position, adjusting from the parameter range
+//     // [0..1] to the window range [-1..1] for x and [-aspect..aspect]
+//     // for y.
+//     float x = pe_script_engine().get_parameter("wave_x")*2.0*m_aspect - m_aspect;
+//     float y = pe_script_engine().get_parameter("wave_y")*2.0 - 1.0;
 
 
-    float bass_rel   = pe_script_engine().get_parameter("bass_att");
-    float mid_rel    = pe_script_engine().get_parameter("mid_att");
-    float treble_rel = pe_script_engine().get_parameter("treb_att");
+//     float bass_rel   = pe_script_engine().get_parameter("bass_att");
+//     float mid_rel    = pe_script_engine().get_parameter("mid_att");
+//     float treble_rel = pe_script_engine().get_parameter("treb_att");
 
-    glDisable(GL_BLEND);
-}
+//     glDisable(GL_BLEND);
+// }
