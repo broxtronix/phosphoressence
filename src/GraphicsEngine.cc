@@ -172,7 +172,6 @@ GraphicsEngine::~GraphicsEngine() {
 
   // De-allocate feedback texture and video texture
   glDeleteTextures(1, &m_feedback_texture);
-  glDeleteTextures(1, &m_ground_texture);
 
   // De-allocate any previously allocated textures or framebuffers
   glDeleteFramebuffersEXT(1, &m_framebuffer0);
@@ -207,8 +206,6 @@ void GraphicsEngine::setup_mesh() {
 
 void GraphicsEngine::initializeGL() {  
 
-  std::cout << "INIT GL\n";
-
   // Set up the GLSL fragment shader.
   std::string resources_dir = pe_resources_directory();
   std::cout << "RESOURCES: " << resources_dir << "\n";
@@ -218,31 +215,15 @@ void GraphicsEngine::initializeGL() {
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
 
-  std::cout << "GEN TEXTURES...\n";
-
-  // Generate the ground texture & load the image
-  glGenTextures(1, &m_ground_texture);
-  glBindTexture(GL_TEXTURE_2D, m_ground_texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-  
-
-  std::cout << "INIT GL 2\n";
-
   // Load the ground image
   std::string ground_image_filename = pe_resources_directory() + "/images/ground.jpg";
   std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
   ImageView<PixelRGB<uint8> > ground_image;
   vw::read_image(ground_image, ground_image_filename);
-  glBindTexture(GL_TEXTURE_2D, m_ground_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-               ground_image.cols(), 
-               ground_image.rows(),
-               0, GL_RGB, GL_UNSIGNED_BYTE, 
-               ground_image.data());
-  glBindTexture(GL_TEXTURE_2D, 0);
+
+  m_ground_texture.allocate(ground_image.cols(), ground_image.rows(), GL_RGB);
+  m_ground_texture.loadData(ground_image.data(), ground_image.cols(), 
+                            ground_image.rows(), GL_RGB);
   
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -296,8 +277,6 @@ void GraphicsEngine::initializeGL() {
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
   m_timer->start(33.0); // Limit frame rate to ~30 fps
-  std::cout << "INIT GL 3\n";
-
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {
@@ -464,21 +443,8 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Draw the ground texture
-  glEnable( GL_TEXTURE_2D );
-  glBindTexture( GL_TEXTURE_2D, m_ground_texture );
   qglColor(Qt::white);
-  glBegin(GL_QUADS);
-  glTexCoord2f( 0, 1.0 );
-  glVertex2d( -m_aspect, -1);
-  glTexCoord2f( 1.0, 1.0 );
-  glVertex2d( m_aspect, -1);
-  glTexCoord2f( 1.0, 0.0 );
-  glVertex2d( m_aspect, 1);
-  glTexCoord2f( 0.0, 0.0 );
-  glVertex2d( -m_aspect, 1);
-  glEnd();
-  glBindTexture( GL_TEXTURE_2D, 0 );
-  glDisable( GL_TEXTURE_2D );
+  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
   // Draw the framebuffer to the real screen.
   glEnable(GL_BLEND);

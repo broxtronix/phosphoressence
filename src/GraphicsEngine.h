@@ -27,6 +27,9 @@
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 
+// PE
+#include <pe/graphics/Texture.h>
+
 // STL
 #include <string>
 #include <list>
@@ -150,7 +153,7 @@ private:
   GLuint m_framebuffer_stencil1;
   GLuint m_framebuffer0;
   GLuint m_framebuffer1;
-  GLuint m_ground_texture;
+  pe::graphics::Texture m_ground_texture;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
   boost::shared_ptr<Video> m_video;

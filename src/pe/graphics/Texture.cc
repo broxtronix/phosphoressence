@@ -411,18 +411,11 @@ void Texture::draw(float x, float y, float w, float h){
   GLfloat px1 = w;
   GLfloat py1 = h;
 
-  if (texData.bFlipTexture == true){
+  // TODO: figure out why this doesn't work!!
+  // if (texData.bFlipTexture == true){
     GLint temp = (GLint)py0;
     py0 = py1;
     py1 = temp;
-  }
-
-  // for rect mode center, let's do this:
-  // if (ofGetRectMode() == OF_RECTMODE_CENTER){
-  //   px0 = -w/2;
-  //   py0 = -h/2;
-  //   px1 = +w/2;
-  //   py1 = +h/2;
   // }
 
   //we translate our drawing points by our anchor point.
@@ -511,7 +504,7 @@ float Texture::getWidth(){
 }
 
 //----------------------------------------------------------
-int nextPow2(int a) {
+int Texture::nextPow2(int a) {
   // from nehe.gamedev.net lesson 43
   int rval=1;
   while(rval<a) rval<<=1;

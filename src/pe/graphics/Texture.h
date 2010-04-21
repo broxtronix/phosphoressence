@@ -87,6 +87,7 @@ namespace graphics {
 
     void loadData(float * data, int w, int h, int glDataType);
     void loadData(unsigned char * data, int w, int h, int glDataType);
+    void loadData(void * data, int w, int h, int glDataType);
 
     void loadScreenData(int x, int y, int w, int h);
 
@@ -121,7 +122,6 @@ namespace graphics {
 
     TextureData texData;
   protected:
-    void loadData(void * data, int w, int h, int glDataType);
     int nextPow2(int a);
 
     vw::Vector2 anchor;
