@@ -219,12 +219,14 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
-AX_MODULE(VIDEO,    [src/pe/video],   [libpeVideo.la],    yes, [],    [],    [])
-AX_APP(PHOSPHORESSENCE,        [src], yes,  [BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
+AX_MODULE(GRAPHICS,     [src/pe/graphics],   [libpeGraphics.la],    yes, [],    [GL])
+AX_MODULE(VIDEO,        [src/pe/video],      [libpeVideo.la],       yes, [GRAPHICS],    [])
+AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
 AM_CONDITIONAL(MAKE_MODULE_VIDEO,             [test "$MAKE_MODULE_VIDEO" = "yes"])
+AM_CONDITIONAL(MAKE_MODULE_GRAPHICS,          [test "$MAKE_MODULE_GRAPHICS" = "yes"])
 AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE, [test "$MAKE_APP_PHOSPHORESSENCE" = "yes"])
 
 ##################################################
@@ -262,6 +264,7 @@ AC_CONFIG_FILES([                       \
   Makefile                              \
   src/Makefile                          \
   src/pe/Makefile                       \
+  src/pe/graphics/Makefile              \
   src/pe/video/Makefile                 \
   src/OpenFrameworks/Makefile           \
 ])

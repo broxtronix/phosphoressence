@@ -32,6 +32,6 @@ AM_LDFLAGS = @PE_LDFLAGS@ -version-info @LIBTOOL_VERSION@
 
 SUBDIRS = .
 
-includedir = $(prefix)/include/pe/graphics
+includedir = $(prefix)/include/pe/video
 
 include $(top_srcdir)/config/rules.mak

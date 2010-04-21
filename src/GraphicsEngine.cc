@@ -207,13 +207,18 @@ void GraphicsEngine::setup_mesh() {
 
 void GraphicsEngine::initializeGL() {  
 
+  std::cout << "INIT GL\n";
+
   // Set up the GLSL fragment shader.
   std::string resources_dir = pe_resources_directory();
+  std::cout << "RESOURCES: " << resources_dir << "\n";
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
   m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
 //                                                 std::vector<int>(),
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
+
+  std::cout << "GEN TEXTURES...\n";
 
   // Generate the ground texture & load the image
   glGenTextures(1, &m_ground_texture);
@@ -223,6 +228,9 @@ void GraphicsEngine::initializeGL() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
   
+
+  std::cout << "INIT GL 2\n";
+
   // Load the ground image
   std::string ground_image_filename = pe_resources_directory() + "/images/ground.jpg";
   std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
@@ -288,6 +296,8 @@ void GraphicsEngine::initializeGL() {
   m_timer = new QTimer(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(timer_callback()));
   m_timer->start(33.0); // Limit frame rate to ~30 fps
+  std::cout << "INIT GL 3\n";
+
 }
 
 void GraphicsEngine::resizeGL(int width, int height) {

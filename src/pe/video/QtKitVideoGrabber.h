@@ -39,44 +39,48 @@
  * from: http://www.openframeworks.cc/forum/viewtopic.php?p=19222#p19222
  */
 
-#ifndef __PE_QTKITVIDEOGRABBER__
-#define __PE_QTKITVIDEOGRABBER__
+#ifndef __PE_VIDEO_QTKITVIDEOGRABBER__
+#define __PE_VIDEO_QTKITVIDEOGRABBER__
 
-class QtKitVideoGrabber {
+#include <pe/graphics/Texture.h>
+
+namespace pe {
+namespace video {
+
+  class QtKitVideoGrabber {
   public:
-	QtKitVideoGrabber();
-	~QtKitVideoGrabber();
+
+    QtKitVideoGrabber();
+    ~QtKitVideoGrabber();
    
-	void			initGrabber(int w, int h);
-	void			grabFrame();
-	bool			isFrameNew();
-	void			update();
-	void 			setUseTexture(bool bUse);
+    void initGrabber(int w, int h);
+    void grabFrame();
+    bool isFrameNew();
+    void update();
+    void setUseTexture(bool bUse);
 	
-	void 			listDevices();
-	void			close();
-	unsigned char 	* getPixels();
-  //	ofTexture &		getTextureReference();
-	void 			setVerbose(bool bTalkToMe);
-	void			setDeviceID(int deviceID);
-	void			setDesiredFrameRate(int framerate){ 
-          //          vw_out(WarningMessage) << "ofxQTKitVideoGrabber -- Cannot specify framerate.";
-        };
-	void			videoSettings() { 
-          //          vw_out(WarningMessage) << "ofxQTKitVideoGrabber -- No video settings available.";
-        };
-	// void 			draw(float x, float y, float w, float h);
-	// void 			draw(float x, float y);
+    void listDevices();
+    void close();
+    unsigned char* getPixels();
+    pe::graphics::Texture& getTextureReference();
+    void setVerbose(bool bTalkToMe);
+    void setDeviceID(int deviceID);
+    void setDesiredFrameRate(int framerate);
+    void videoSettings();
+    void draw(float x, float y, float w, float h);
+    void draw(float x, float y);
 	
-	float 			getHeight();
-	float 			getWidth();
+    float getHeight();
+    float getWidth();
 	
   protected:
 
-	bool confirmInit();
-	bool isInited;
-	int deviceID;
-	void* grabber;
-};
+    bool confirmInit();
+    bool isInited;
+    int deviceID;
+    void* grabber;
+  };
 
-#endif
+}} // namespace pe::video
+
+#endif // __PE_VIDEO_QTKITVIDEOGRABBER__

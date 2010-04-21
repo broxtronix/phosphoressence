@@ -1,32 +1,34 @@
 # __BEGIN_LICENSE__
-# Copyright (C) 2009 Michael J. Broxton
+# Copyright (C) 2006-2010 United States Government as represented by
+# the Administrator of the National Aeronautics and Space Administration.
 # All Rights Reserved.
 # __END_LICENSE__
+
 
 ########################################################################
 # sources
 ########################################################################
 
 if MAKE_MODULE_GRAPHICS
-graphics_subdirs = graphics
-graphics_headers = Graphics.h
+
+include_HEADERS = Texture.h
+
+libpeGraphics_la_SOURCES = Texture.cc
+libpeGraphics_la_LIBADD = @MODULE_GRAPHICS_LIBS@
+
+lib_LTLIBRARIES = libpeGraphics.la
+
 endif
-
-if MAKE_MODULE_VIDEO
-video_subdirs = video
-video_headers = Video.h
-endif
-
-include_HEADERS = $(video_headers) $(graphics_headers)
-
-SUBDIRS = $(graphics_subdirs) $(video_subdirs) .
-
-CLEANFILES = config.h.pre.in~
 
 ########################################################################
 # general
 ########################################################################
 
-includedir = $(prefix)/include/pe
+AM_CPPFLAGS = @PE_CPPFLAGS@ 
+AM_LDFLAGS = @PE_LDFLAGS@ -version-info @LIBTOOL_VERSION@
+
+SUBDIRS = .
+
+includedir = $(prefix)/include/pe/graphics
 
 include $(top_srcdir)/config/rules.mak

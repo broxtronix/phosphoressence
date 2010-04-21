@@ -32,7 +32,6 @@ if MAKE_APP_PHOSPHORESSENCE
 	            PeParameters.cc Controller.cc OscController.cc	\
 	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
 	            $(header_sources)
-  phosphoressence_SOURCES += QtKitVideoGrabber.m
   phosphoressence_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 
