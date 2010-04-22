@@ -18,22 +18,23 @@
 #include <QPoint>
 
 // Vision Workbench
-#include <vw/Core/Log.h>
-#include <vw/Math/BBox.h>
-#include <vw/Math/Vector.h>
-#include <vw/Math/Matrix.h>
+#include <pe/Core/Log.h>
+#include <pe/Math/BBox.h>
+#include <pe/Math/Vector.h>
+#include <pe/Math/Matrix.h>
 
 // PE
 #include <pe/graphics/Texture.h>
 #include <pe/video/QtKitVideoGrabber.h>
+#include <pe/simulation/FluidDynamics.h>
 
 // STL
 #include <string>
 #include <list>
 
 // Forward declarations
-namespace vw { 
-namespace GPU {
+namespace pe { 
+namespace graphics {
   class GpuProgram; 
 }}
 
@@ -150,8 +151,9 @@ private:
   GLuint m_framebuffer1;
   pe::graphics::Texture m_ground_texture;
   pe::video::QtKitVideoGrabber m_video;
-  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
-  boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
+  boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_frontbuffer_program;
+  boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_backbuffer_program;
+  boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
 
   // Drawables & Script Engines
   std::list<boost::shared_ptr<Drawable> > m_drawables;
@@ -177,12 +179,12 @@ private:
   float m_framebuffer_radius;
 
   // Feedback
-  vw::Matrix<vw::Vector2> m_feedback_texcoords;
-  vw::Matrix<vw::Vector2> m_feedback_screencoords;
-  vw::Matrix<vw::Vector2> m_warped_screencoords;
+  pe::Matrix<pe::Vector2> m_feedback_texcoords;
+  pe::Matrix<pe::Vector2> m_feedback_screencoords;
+  pe::Matrix<pe::Vector2> m_warped_screencoords;
 
   // Image Parameters
-  vw::BBox2 m_current_viewport;
+  pe::BBox2 m_current_viewport;
 };
 
 #endif  // __GRAPHICS_ENGINE_H__

@@ -16,20 +16,19 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <vw/Core/Exception.h>
-#include <vw/Core/Log.h>
-
-#include <Utilities.h>
-#include <StandardShaders.h>
-#include <GpuProgram.h>
+#include <pe/Core/Exception.h>
+#include <pe/Core/Log.h>
+#include <pe/Graphics/GpuProgram.h>
+#include <pe/Graphics/Utilities.h>
+#include <pe/Graphics/StandardShaders.h>
 
 using std::string;
 using std::pair;
 using std::vector;
 using std::map;
 
-namespace vw { 
-namespace GPU {
+namespace pe { 
+namespace graphics {
 
   int maxErrorLength = 2048;
 
@@ -128,9 +127,9 @@ namespace GPU {
     glGetInfoLogARB(shader, maxErrorLength, &errorStringLength, errorString);
     glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &isCompiled);
     if(!isCompiled) {
-      vw_out(ErrorMessage, "GPU") << "*********GLSL Vertex Shader Compilation Error*********\n";
-      vw_out(ErrorMessage, "GPU") << errorString;
-      //      vw_out(ErrorMessage, "GPU") << vertexString.c_str();
+      pe_out(ErrorMessage, "GPU") << "*********GLSL Vertex Shader Compilation Error*********\n";
+      pe_out(ErrorMessage, "GPU") << errorString;
+      //      pe_out(ErrorMessage, "GPU") << vertexString.c_str();
       return false;
     }
     return true;
@@ -151,9 +150,9 @@ namespace GPU {
     glGetInfoLogARB(shader, maxErrorLength, &errorStringLength, errorString);
     glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &isCompiled);
     if(!isCompiled) { 
-      vw_out(ErrorMessage, "GPU") << "*********GLSL Fragment Shader Compilation Error*********\n";
-      vw_out(ErrorMessage, "GPU") << errorString;
-      //      vw_out(ErrorMessage, "GPU") << fragmentString.c_str();
+      pe_out(ErrorMessage, "GPU") << "*********GLSL Fragment Shader Compilation Error*********\n";
+      pe_out(ErrorMessage, "GPU") << errorString;
+      //      pe_out(ErrorMessage, "GPU") << fragmentString.c_str();
       return false;
     }
     return true;
@@ -179,7 +178,7 @@ namespace GPU {
       string vertReplacedString;
       const string* sourceString = &vertexString;
       if(vertexAttributes.size()) {
-	TokenReplacer tr;
+        TokenReplacer tr;
 	for(unsigned i=0; i < vertexAttributes.size(); i++) {
 	  sprintf(charBuffer1, "%i", i+1);
 	  sprintf(charBuffer2, "%i", vertexAttributes[i]);
@@ -231,7 +230,7 @@ namespace GPU {
                                                              const string& vertexPath, 
                                                              const vector<int>& vertexAttributes) {
 
-    vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- Attempting to open " 
+    pe_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- Attempting to open " 
                                 << fragmentPath << " and " << vertexPath << "\n";
     
     // Check cache
@@ -242,7 +241,7 @@ namespace GPU {
     iter_prog = program_cache_glsl.find(programKey);
     if(iter_prog != program_cache_glsl.end()) {
       shaderCompilationStatus = SHADER_COMPILATION_STATUS_SUCCESS_CACHE;
-      vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- found cached copy.\n";
+      pe_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- found cached copy.\n";
       return (*iter_prog).second;
     }	
 
@@ -252,7 +251,7 @@ namespace GPU {
 
     if(!vertexPath.empty()) {
       if (!ReadFileAsString(vertexPath, vertexString)) {
-        vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find vertex shader: " 
+        pe_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find vertex shader: " 
                                     << (shader_base_path + vertexPath) + "\n";
 	shaderCompilationStatus = SHADER_COMPILATION_STATUS_ERROR_FILE;
 	throw(Exception("GpuProgram creation failed."));	
@@ -265,7 +264,7 @@ namespace GPU {
     string fragmentString;
     if(!fragmentPath.empty()) {			
       if (!ReadFileAsString(shader_base_path + fragmentPath, fragmentString)) {
-        vw_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find fragment shader: " 
+        pe_out(DebugMessage, "GPU") << "create_gpu_program_glsl() -- could not find fragment shader: " 
                                     << (shader_base_path + fragmentPath) + "\n";
 	shaderCompilationStatus = SHADER_COMPILATION_STATUS_ERROR_FILE;
 	throw(Exception("GpuProgram creation failed."));	
@@ -318,7 +317,7 @@ namespace GPU {
     boost::shared_ptr<GpuProgram> program;
     sprintf(buffer3, "create_gpu_program() -- FRAGMENT: %s%s, VERTEX: %s%s     \n", 
             fragmentPath.c_str(), buffer2, vertexPath.c_str(), buffer1 );
-    vw_out(DebugMessage, "GPU") << buffer3;
+    pe_out(DebugMessage, "GPU") << buffer3;
 
     // FIND PROGRAM
     try {
@@ -331,18 +330,18 @@ namespace GPU {
 
     if(program) {
       if(get_shader_compilation_status() == SHADER_COMPILATION_STATUS_SUCCESS_FILE)
-        vw_out(DebugMessage, "GPU") << "SUCCESS (From File)\n";
+        pe_out(DebugMessage, "GPU") << "SUCCESS (From File)\n";
       if(get_shader_compilation_status() == SHADER_COMPILATION_STATUS_SUCCESS_CACHE)
-	vw_out(DebugMessage, "GPU") << "SUCCESS (From Cache)\n";
+	pe_out(DebugMessage, "GPU") << "SUCCESS (From Cache)\n";
     }
     else {
       if(get_shader_compilation_status() == SHADER_COMPILATION_STATUS_ERROR_FILE)
-	vw_out(DebugMessage, "GPU") << "*** FAILED (File Error) ***\n";
+	pe_out(DebugMessage, "GPU") << "*** FAILED (File Error) ***\n";
       if(get_shader_compilation_status() == SHADER_COMPILATION_STATUS_ERROR_COMPILE)
-	vw_out(DebugMessage, "GPU") << "*** FAILED (Compile Error) ***\n";
+	pe_out(DebugMessage, "GPU") << "*** FAILED (Compile Error) ***\n";
       if(get_shader_compilation_status() == SHADER_COMPILATION_STATUS_ERROR_LINK)
-	vw_out(DebugMessage, "GPU") << "*** FAILED (Link Error) ***\n";
-      vw_throw(LogicErr() << "GpuProgram creation failed.");
+	pe_out(DebugMessage, "GPU") << "*** FAILED (Link Error) ***\n";
+      pe_throw(LogicErr() << "GpuProgram creation failed.");
     }
     return program;
   }
@@ -354,6 +353,6 @@ namespace GPU {
     program_cache_glsl.clear();
   }
 
-} } // namespaces GPU, vw
+} } // namespaces pe::graphics
 
 

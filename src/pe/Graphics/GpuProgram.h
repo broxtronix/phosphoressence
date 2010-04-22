@@ -5,8 +5,8 @@
 // __END_LICENSE__
 
 
-#ifndef __VW_GPU_GPUPROGRAM_H__
-#define __VW_GPU_GPUPROGRAM_H__
+#ifndef __PE_GPU_GPUPROGRAM_H__
+#define __PE_GPU_GPUPROGRAM_H__
 
 #include <map>
 #include <stdlib.h>
@@ -26,11 +26,10 @@
 #include <GL/glext.h>
 #endif 
 
-//#include <vw/GPU/Setup.h>
-//#include <vw/GPU/GPUImage.h>
+#include <boost/shared_ptr.hpp>
 
-namespace vw { namespace GPU {
-
+namespace pe { 
+namespace graphics {
 
   extern std::string shader_base_path;
 
@@ -174,7 +173,7 @@ namespace vw { namespace GPU {
     
     void clear_gpu_program_cache();
 
-} } // namespaces GPU, vw
+} } // namespaces pe::graphics
 
 #endif
 

@@ -10,8 +10,6 @@
 #include <GraphicsEngine.h>
 #include <PeParameters.h>
 
-#include <vw/FileIO/DiskImageView.h>
-
 #include <QtGui>
 
 #include <sstream>

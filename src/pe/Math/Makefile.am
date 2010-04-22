@@ -9,19 +9,14 @@
 # sources
 ########################################################################
 
-if MAKE_MODULE_CORE
+if MAKE_MODULE_MATH
 
-include_HEADERS = Exception.h Debugging.h Thread.h Stopwatch.h Log.h	\
-		  Time.h Features.h Settings.h ConfigParser.h Cache.h	\
-		  VarArray.h Functors.h TypeDeduction.h			\
-		  FundamentalTypes.h CompoundTypes.h
+include_HEADERS = Functors.h Vector.h Matrix.h BBox.h
 
-libpeCore_la_SOURCES = Debugging.cc Exception.cc Thread.cc Time.cc	\
-		       Stopwatch.cc Log.cc Settings.cc ConfigParser.cc	\
-		       Cache.cc
-libpeCore_la_LIBADD = @MODULE_CORE_LIBS@
+libpeMath_la_SOURCES = 
+libpeMATH_la_LIBADD = @MODULE_MATH_LIBS@
 
-lib_LTLIBRARIES = libpeCore.la
+lib_LTLIBRARIES = libpeMath.la
 
 endif
 
@@ -29,11 +24,11 @@ endif
 # general
 ########################################################################
 
-AM_CPPFLAGS = @MODULE_CORE_CPPFLAGS@ @PKG_BOOST_CPPFLAGS@ -I../../
+AM_CPPFLAGS = @MODULE_MATH_CPPFLAGS@ @PKG_BOOST_CPPFLAGS@ -I../../
 AM_LDFLAGS = @PE_LDFLAGS@ -version-info @LIBTOOL_VERSION@
 
 SUBDIRS = .
 
-includedir = $(prefix)/include/pe/Core
+includedir = $(prefix)/include/pe/Math
 
 include $(top_srcdir)/config/rules.mak

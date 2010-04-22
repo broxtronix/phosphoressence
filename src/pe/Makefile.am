@@ -8,28 +8,35 @@
 ########################################################################
 
 if MAKE_MODULE_CORE
-core_subdirs = core
+core_subdirs = Core
 core_headers = Core.h
 endif
 
+if MAKE_MODULE_MATH
+math_subdirs = Math
+math_headers = Math.h
+endif
+
 if MAKE_MODULE_GRAPHICS
-graphics_subdirs = graphics
+graphics_subdirs = Graphics
 graphics_headers = Graphics.h
 endif
 
 if MAKE_MODULE_VIDEO
-video_subdirs = video
+video_subdirs = Video
 video_headers = Video.h
 endif
 
 if MAKE_MODULE_SIMULATION
-simulation_subdirs = simulation
+simulation_subdirs = Simulation
 simulation_headers = Simulation.h
 endif
 
-include_HEADERS = $(core_headers) $(video_headers) $(graphics_headers) $(simulation_headers)
+include_HEADERS = $(core_headers) $(math_headers) $(video_headers)	\
+		  $(graphics_headers) $(simulation_headers)
 
-SUBDIRS = $(core_subdirs) $(graphics_subdirs) $(video_subdirs) $(simulation_subdirs) .
+SUBDIRS = $(core_subdirs) $(math_subdirs) $(graphics_subdirs)	\
+          $(video_subdirs) $(simulation_subdirs) .
 
 CLEANFILES = config.h.pre.in~
 

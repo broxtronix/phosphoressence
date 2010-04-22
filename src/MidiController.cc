@@ -8,9 +8,6 @@
 #include <unistd.h>
 #include <iostream>
 
-#include <vw/Core/Log.h>
-using namespace vw;
-
 #include <MidiController.h>
 #include <PeParameters.h>
 

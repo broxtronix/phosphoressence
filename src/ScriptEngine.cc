@@ -3,6 +3,7 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
+#include <pe/Core/Time.h>
 #include <ScriptEngine.h>
 #include <PeParameters.h>
 #include <ostream>
@@ -16,7 +17,7 @@
 // -----------------------------------------------------------
 
 namespace {
-  vw::RunOnce pe_script_engine_once = VW_RUNONCE_INIT;
+  pe::RunOnce pe_script_engine_once = PE_RUNONCE_INIT;
   boost::shared_ptr<ScriptEngine> pe_script_engine_ptr;
   void init_pe_script_engine() {
     pe_script_engine_ptr = boost::shared_ptr<ScriptEngine>(new ScriptEngine());
@@ -38,7 +39,7 @@ ScriptEngine& pe_script_engine() {
 // for binding c functions to python objects at some point, but not
 // yet!
 static PyObject* pe_py_time(PyObject *self, PyObject *args) {
-  return Py_BuildValue("f", pe_time());
+  return Py_BuildValue("f", pe::pe_time());
 }
 
 static PyObject* pe_py_orientation(PyObject *self, PyObject *args) {
@@ -72,7 +73,7 @@ ScriptEngine::ScriptEngine() {
 
 void ScriptEngine::start() {
   // Start the command shell
-  m_thread.reset(new vw::Thread( m_command_prompt_task ));
+  m_thread.reset(new pe::Thread( m_command_prompt_task ));
 }
 
 ScriptEngine::~ScriptEngine() {
@@ -173,9 +174,9 @@ void ScriptEngine::controller_receive_callback(const char* controller_name,
   PyObject* receive_callback = PyObject_GetAttrString(controller, "receive_callback");  
   if (receive_callback == NULL) { PyErr_Print(); return; }
 
-  PyObject* mylist = PyList_New(values.size());
+  // PyObject* mylist = PyList_New(values.size());
   
-  float test = 4.0;
+  //  float test = 4.0;
 
   if (values.size() == 1) {
     PyObject* arglist = Py_BuildValue("s[f]", path, values[0]);

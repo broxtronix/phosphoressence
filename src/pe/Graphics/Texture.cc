@@ -1,5 +1,5 @@
-#include <vw/Core/Log.h>
-using namespace vw;
+#include <pe/Core/Log.h>
+using namespace pe;
 
 #include <pe/graphics/Texture.h>
 using namespace pe::graphics;
@@ -42,19 +42,19 @@ bool Texture::bAllocated(){
 
 //----------------------------------------------------------
 Texture::Texture(const Texture& mom){
-  vw_out(WarningMessage) << "overloaded Texture copy constructor to do nothing. please use FBO or other means to copy textures";
+  pe_out(WarningMessage) << "overloaded Texture copy constructor to do nothing. please use FBO or other means to copy textures";
 }
 
 //----------------------------------------------------------
 Texture& Texture::operator=(const Texture& mom){
-  vw_out(WarningMessage) << "overloaded Texture = operator to do nothing. please use FBO or other means to copy textures";
+  pe_out(WarningMessage) << "overloaded Texture = operator to do nothing. please use FBO or other means to copy textures";
   return *this;
 }
 
 //----------------------------------------------------------
 TextureData Texture::getTextureData(){
   if(!texData.bAllocated){
-    vw_out(ErrorMessage) << "getTextureData() - texture has not been allocated";
+    pe_out(ErrorMessage) << "getTextureData() - texture has not been allocated";
   }
   return texData;
 }
@@ -176,7 +176,7 @@ void Texture::loadData(void * data, int w, int h, int format, int type){
   // 	check "glTexSubImage2D"
   
   if ( w > texData.tex_w || h > texData.tex_h) {
-    vw_out(ErrorMessage) << "image data too big for allocated texture. not uploading...";
+    pe_out(ErrorMessage) << "image data too big for allocated texture. not uploading...";
     return;
   }
   
@@ -251,7 +251,7 @@ void Texture::loadScreenData(int x, int y, int w, int h){
   texData.bFlipTexture = true;
 
   if ( w > texData.tex_w || h > texData.tex_h) {
-    vw_out(ErrorMessage) << "image data too big for allocated texture. not uploading...";
+    pe_out(ErrorMessage) << "image data too big for allocated texture. not uploading...";
     return;
   }
 

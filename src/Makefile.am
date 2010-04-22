@@ -7,21 +7,12 @@
 # sources
 ########################################################################
 
-StandardShaders.cc:
-	perl StandardShaders.pl
-
-CLEANFILES = StandardShaders.cc
-
 bin_PROGRAMS=
 
 header_sources = MainWindow.h GraphicsEngine.h AudioEngine.h	\
 		 VideoEngine.h ScriptEngine.h PeParameters.h	\
 		 OScopeShape.h SpectrographShape.h Controller.h	\
 		 OscController.h JoystickController.h FFT.h
-
-gpu_module_sources = GpuProgram.h GpuProgram.cc Utilities.cc		\
-		     Utilities.h StandardShaders.h StandardShaders.h	\
-		     StandardShaders.cc
 
 if MAKE_APP_PHOSPHORESSENCE
   bin_PROGRAMS += phosphoressence
@@ -30,8 +21,7 @@ if MAKE_APP_PHOSPHORESSENCE
 	            GraphicsElements.cc AudioEngine.cc VideoEngine.cc	\
 	            SpectrographShape.moc.cc ScriptEngine.cc		\
 	            PeParameters.cc Controller.cc OscController.cc	\
-	            JoystickController.cc FFT.cc $(gpu_module_sources)	\
-	            $(header_sources)
+	            JoystickController.cc FFT.cc $(header_sources)
   phosphoressence_LDADD = $(APP_PHOSPHORESSENCE_LIBS) $(PYTHON_EXTRA_LIBS)
 endif
 

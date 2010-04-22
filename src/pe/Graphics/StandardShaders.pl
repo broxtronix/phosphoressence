@@ -46,7 +46,7 @@ foreach $filename (@files) {
 print OUT "  }\n";
 print OUT "}\n\n";
 
-print OUT "std::string vw::GPU::find_standard_shader(std::string path) {\n";
+print OUT "std::string vw::graphics::find_standard_shader(std::string path) {\n";
 print OUT "  standard_shaders_once.run( init_standard_shaders );\n\n";
 
 print OUT "  std::map<std::string, const char*>::iterator iter_map = standard_shaders_map.find((path).c_str());\n";

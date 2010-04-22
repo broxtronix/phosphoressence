@@ -6,7 +6,7 @@
 #ifndef __AUDIO_ENGINE_H__
 #define __AUDIO_ENGINE_H__
 
-#include <vw/Core/Thread.h>
+#include <pe/Core/Thread.h>
 #include <RtAudio.h>
 #include <boost/circular_buffer.hpp>
 
@@ -26,7 +26,7 @@ protected:
   // This mutex must be locked by child classes when they access the
   // AudioBuffer.  Perhaps this should be abstracted away behind some
   // function call?
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
 
 public:
 
@@ -59,7 +59,7 @@ public:
 /// API so as to remove this dependency.
 ///
 class AudioThread {
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
   int m_sample_rate;
   int m_num_channels;
 
@@ -88,13 +88,13 @@ public:
   ~AudioThread();
 
   void register_listener(boost::shared_ptr<AudioListener> listener) {
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
     m_listeners.push_back(listener);
     listener->set_sample_rate(m_sample_rate);
   }
 
   void clear_listeners() {
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
     m_listeners.clear();
   }
 

@@ -13,7 +13,7 @@
 #define __PE_CORE_DEBUGGING_H__
 
 #include <pe/core/Log.h>
-#include <pe/core/Features.h>
+#include <pe/Core/Features.h>
 
 #ifndef WIN32
 #include <sys/time.h>

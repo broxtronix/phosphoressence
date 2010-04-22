@@ -5,13 +5,13 @@
 // __END_LICENSE__
 
 
-/// \file core/Cache.cc
+/// \file Core/Cache.cc
 /// 
 /// Types and functions to assist cacheing regeneratable data.
 ///
-#include <pe/core/Cache.h>
-#include <pe/core/Debugging.h>
-#include <pe/core/Settings.h>
+#include <pe/Core/Cache.h>
+#include <pe/Core/Debugging.h>
+#include <pe/Core/Settings.h>
 
 namespace {
   pe::RunOnce system_cache_once = PE_RUNONCE_INIT;

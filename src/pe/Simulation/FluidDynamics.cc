@@ -4,14 +4,14 @@
 // __END_LICENSE__
 
 #include <pe/core/Time.h>
+#include <pe/Core/Exception.h>
+#include <pe/Core/FundamentalTypes.h>
 #include <pe/simulation/FluidDynamics.h>
 
 #include <string>
 #include <iostream>
 
-#include <vw/Core/FundamentalTypes.h>
-#include <vw/Core/Exception.h>
-using namespace vw;
+using namespace pe;
 
 // -------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ void print_hasnan(int N, std::string variable, float *x) {
 
 void print_stats(std::string variable, float *x, int fluid_size) {
   
-  float lo = vw::ScalarTypeLimits<float>::highest(), hi = vw::ScalarTypeLimits<float>::lowest();
+  float lo = pe::ScalarTypeLimits<float>::highest(), hi = pe::ScalarTypeLimits<float>::lowest();
   float avg_sum = 0;
   
   for (int j = 1; j <= fluid_size; ++j) {
@@ -49,7 +49,7 @@ void print_stats(std::string variable, float *x, int fluid_size) {
 
 // --------------------------------------------------------------------
 
-void pe::simulation::FluidField::set_bnd ( int N, int b, float * x ) {
+void pe::simulation::FluidSimulation::set_bnd ( int N, int b, float * x ) {
   
   for ( int i=1 ; i<=N ; ++i ) { 
     x[IX(0  ,i)] = b==1 ? -x[IX(1,i)] : x[IX(1,i)];
@@ -64,7 +64,7 @@ void pe::simulation::FluidField::set_bnd ( int N, int b, float * x ) {
 }
 
 
-void pe::simulation::FluidField::add_source ( int N, float * x, float * s, float dt ) {
+void pe::simulation::FluidSimulation::add_source ( int N, float * x, float * s, float dt ) {
   int i, size=(N+2)*(N+2); 
   for ( i=0 ; i<size ; i++ ) {
     x[i] += dt*s[i];
@@ -72,7 +72,7 @@ void pe::simulation::FluidField::add_source ( int N, float * x, float * s, float
 }
 
 
-void pe::simulation::FluidField::diffuse ( int N, int b, float * x, 
+void pe::simulation::FluidSimulation::diffuse ( int N, int b, float * x, 
                                            float * x0, float diff, float dt ) {
   float a=dt*diff*N*N;
 
@@ -94,7 +94,7 @@ void pe::simulation::FluidField::diffuse ( int N, int b, float * x,
 }
 
 
-void pe::simulation::FluidField::advect ( int N, int b, float * d, 
+void pe::simulation::FluidSimulation::advect ( int N, int b, float * d, 
                                           float * d0, float * u, float * v, float dt ) {
   int i0, i1, j0, j1;
   float x, y, s0, t0, s1, t1;
@@ -116,10 +116,10 @@ void pe::simulation::FluidField::advect ( int N, int b, float * d,
       s1 = x-i0; s0 = 1-s1; 
       t1 = y-j0; t0 = 1-t1; 
 
-      VW_ASSERT(i0 >=0 || i0 <= N+1, LogicErr() << "Out of bounds memory access: i0 in advect().");
-      VW_ASSERT(j0 >=0 || j0 <= N+1, LogicErr() << "Out of bounds memory access: j0 in advect().");
-      VW_ASSERT(i1 >=0 || i1 <= N+1, LogicErr() << "Out of bounds memory access: i1 in advect().");
-      VW_ASSERT(j1 >=0 || j1 <= N+1, LogicErr() << "Out of bounds memory access: j1 in advect().");
+      PE_ASSERT(i0 >=0 || i0 <= N+1, LogicErr() << "Out of bounds memory access: i0 in advect().");
+      PE_ASSERT(j0 >=0 || j0 <= N+1, LogicErr() << "Out of bounds memory access: j0 in advect().");
+      PE_ASSERT(i1 >=0 || i1 <= N+1, LogicErr() << "Out of bounds memory access: i1 in advect().");
+      PE_ASSERT(j1 >=0 || j1 <= N+1, LogicErr() << "Out of bounds memory access: j1 in advect().");
 
       d[IX(i,j)] = (s0*(t0*d0[IX(i0,j0)]+t1*d0[IX(i0,j1)]) +
                     s1*(t0*d0[IX(i1,j0)]+t1*d0[IX(i1,j1)]));
@@ -128,7 +128,7 @@ void pe::simulation::FluidField::advect ( int N, int b, float * d,
   set_bnd ( N, b, d );
 }
 
-void pe::simulation::FluidField::project ( int N, float * u, float * v, 
+void pe::simulation::FluidSimulation::project ( int N, float * u, float * v, 
                                            float * p, float * div ) {
   float h = 1.0/N; 
   
@@ -160,14 +160,14 @@ void pe::simulation::FluidField::project ( int N, float * u, float * v,
   set_bnd ( N, 1, u ); set_bnd ( N, 2, v );
 }
 
-void pe::simulation::FluidField::dens_step ( int N, float * x, float * x0, 
+void pe::simulation::FluidSimulation::dens_step ( int N, float * x, float * x0, 
                                              float * u, float * v, float diff, float dt ) {
   add_source ( N, x, x0, dt ); 
   SWAP ( x0, x ); diffuse ( N, 0, x, x0, diff, dt ); 
   SWAP ( x0, x ); advect ( N, 0, x, x0, u, v, dt );
 }
 
-void pe::simulation::FluidField::vel_step ( int N, float * u, float * v, 
+void pe::simulation::FluidSimulation::vel_step ( int N, float * u, float * v, 
                                             float * u0, float * v0, float visc, float dt ) {
   add_source ( N, u, u0, dt ); add_source ( N, v, v0, dt ); 
   SWAP ( u0, u ); diffuse ( N, 1, u, u0, visc, dt ); 
@@ -181,7 +181,7 @@ void pe::simulation::FluidField::vel_step ( int N, float * u, float * v,
 
 // --------------------------------------------------------------
 
-pe::simulation::FluidField::FluidField(int width, int height, float viscosity, float diffusion) {
+pe::simulation::FluidSimulation::FluidSimulation(int width, int height, float viscosity, float diffusion) {
 
   // First we check to make sure the mesh size and fluid size are the
   // same (and are both square).  If they aren't then wacky things
@@ -189,10 +189,10 @@ pe::simulation::FluidField::FluidField(int width, int height, float viscosity, f
   // fluid code and add support for non-square meshes, but for now
   // this prevents future Michael from suffering if he forgets this
   // constraint.
-  VW_ASSERT(width == height, 
+  PE_ASSERT(width == height, 
             NoImplErr() << "Fluid mesh size must be square!");
 
-  VW_ASSERT(width > 1,
+  PE_ASSERT(width > 1,
             NoImplErr() << "Fluid mesh size must be non-zero");
 
   m_fluid_dimension = width;
@@ -219,11 +219,20 @@ pe::simulation::FluidField::FluidField(int width, int height, float viscosity, f
   }
 }
 
-void pe::simulation::FluidField::update() {
+void pe::simulation::FluidSimulation::update() {
   float fluid_dt = pe::pe_time() - m_fluid_previous_time;
   m_fluid_previous_time = pe::pe_time();
   vel_step ( m_fluid_dimension, m_fluid_u.get(), m_fluid_v.get(), 
              m_fluid_u_prev.get(), m_fluid_v_prev.get(), m_fluid_viscosity, fluid_dt ); 
   dens_step ( m_fluid_dimension, m_fluid_density.get(), m_fluid_density_prev.get(), 
               m_fluid_u.get(), m_fluid_v.get(), m_fluid_diffusion, fluid_dt ); 
+}
+
+void pe::simulation::FluidSimulation::add_velocity(int i, int j, pe::Vector2 vel) {
+  m_fluid_u_prev[IX(i+1,j+1)] += vel[0];
+  m_fluid_v_prev[IX(i+1,j+1)] += vel[1];
+}
+
+Vector2 pe::simulation::FluidSimulation::get_velocity(int i, int j) const {
+  return Vector2(m_fluid_u[IX(i+1,j+1)], m_fluid_v[IX(i+1,j+1)]);
 }

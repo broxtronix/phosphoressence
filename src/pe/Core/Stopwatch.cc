@@ -22,11 +22,11 @@
 #include <boost/thread/once.hpp>
 
 // VisionWorkbench includes
-#include <pe/core/Debugging.h>
-#include <pe/core/Exception.h>
+#include <pe/Core/Debugging.h>
+#include <pe/Core/Exception.h>
 
 // Self
-#include <pe/core/Stopwatch.h>
+#include <pe/Core/Stopwatch.h>
 
 using std::endl;
 using std::map;

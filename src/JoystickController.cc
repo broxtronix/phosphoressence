@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <iostream>
 
-#include <vw/Core/Log.h>
-using namespace vw;
+#include <pe/Core/Log.h>
+using namespace pe;
 
 #include <JoystickController.h>
 #include <PeParameters.h>
@@ -30,7 +30,7 @@ struct SdlInstance {
 };
 
 namespace {
-  vw::RunOnce sdl_instance_once = VW_RUNONCE_INIT;
+  pe::RunOnce sdl_instance_once = PE_RUNONCE_INIT;
   boost::shared_ptr<SdlInstance> sdl_instance_ptr;
   void init_sdl() {
     sdl_instance_ptr = boost::shared_ptr<SdlInstance>(new SdlInstance());
@@ -114,7 +114,7 @@ JoystickController::JoystickController() : Controller("joystick") {
   }
 
   m_task.reset(new JoystickTask(this));
-  m_thread.reset(new vw::Thread( m_task ));
+  m_thread.reset(new pe::Thread( m_task ));
 }
 
 void JoystickController::list_joysticks() {

@@ -11,7 +11,7 @@
 ///
 /// See Core/Exception.h for documentation.
 ///
-#include <pe/core/Exception.h>
+#include <pe/Core/Exception.h>
 #include <pe/config.h>
 
 #include <cstdlib>

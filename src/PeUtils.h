@@ -10,7 +10,7 @@
 #ifndef __PE_UTILS__
 #define __PE_UTILS__
 
-#include <vw/Core/Thread.h>
+#include <pe/Core/Thread.h>
 
 template <class T>
 class RingBuffer {
@@ -20,7 +20,7 @@ class RingBuffer {
   int m_read_index;
   T *m_write_ptr;
   T *m_read_ptr;
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
 
 public:
   RingBuffer(int size = 96000) {
@@ -40,7 +40,7 @@ public:
   int size() const { return m_size; }
 
   inline void append(T val) {
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
 
     *m_write_ptr++ = val;                                   
 
@@ -54,7 +54,7 @@ public:
   }  
   
   inline T pop() { 
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
 
     if (m_read_index != m_write_index) {
       T result = *(m_read_ptr);
@@ -72,7 +72,7 @@ public:
   }
 
   bool empty() {
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
     return m_read_index == m_write_index;
   }
 

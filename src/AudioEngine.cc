@@ -3,9 +3,9 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
-#include <vw/Core/Exception.h>
+#include <pe/Core/Exception.h>
 #include <AudioEngine.h>
-using namespace vw;
+using namespace pe;
 
 // ---------------------------------------------------------------------------
 //                              Audio Listener
@@ -25,11 +25,11 @@ void AudioListener::set_sample_rate( int sample_rate ) {
 }
 
 void AudioListener::audio_callback(float* input, unsigned long frame_count, int num_channels) {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
 
   const float *rptr = (const float*)input;
   
-  for( int i=0; i<frame_count; ++i) {
+  for( unsigned i=0; i<frame_count; ++i) {
     
     // Gather data from all channels
     float channel_data[num_channels];
@@ -47,7 +47,7 @@ void AudioListener::audio_callback(float* input, unsigned long frame_count, int 
     if (m_mono) {
 
       // If this is a mono listener, then we simply average the channels together.
-      float avg_channel_data;
+      float avg_channel_data = 0;
       for (int c = 0; c < num_channels; ++c) 
         avg_channel_data += channel_data[c];
       m_circular_buffer.push_back(avg_channel_data / num_channels);
@@ -97,7 +97,7 @@ AudioThread::AudioThread(int num_channels, int sample_rate) :
 }
 
 AudioThread::~AudioThread() {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   m_listeners.clear();
 
   // Stop the stream
@@ -105,7 +105,7 @@ AudioThread::~AudioThread() {
     m_adc.stopStream();
   }
   catch (RtError& e) {
-    vw_throw(vw::LogicErr() << "Could not close input audio stream: " << e.what());
+    pe_throw(pe::LogicErr() << "Could not close input audio stream: " << e.what());
   }
 
   if ( m_adc.isStreamOpen() ) m_adc.closeStream();
@@ -116,7 +116,7 @@ int AudioThread::member_callback( void *outputBuffer, void *inputBuffer,
                                   double streamTime, RtAudioStreamStatus status ) {
 
   typedef std::list<boost::shared_ptr<AudioListener> >::iterator iter_type;
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
 
   // Pass the audio samples along to each of the registered listeners.
   for (iter_type iter = m_listeners.begin(); iter != m_listeners.end(); ++iter ) {

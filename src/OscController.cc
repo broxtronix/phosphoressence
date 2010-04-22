@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <iostream>
 
-#include <vw/Core/Log.h>
-using namespace vw;
+#include <pe/Core/Log.h>
+using namespace pe;
 
 #include <OscController.h>
 #include <PeParameters.h>
@@ -50,7 +50,7 @@ OscController::OscController(std::string receive_port,
 }
 
 void OscController::send(std::string path, float value) {
-  vw_out(DebugMessage, "Controller") << "Controller send: " << path << " -- " << value << "\n";
+  pe_out(DebugMessage, "Controller") << "Controller send: " << path << " -- " << value << "\n";
   lo_send(m_send_addr, path.c_str(), "f", value);
 }
 

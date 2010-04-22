@@ -9,7 +9,7 @@
 /// 
 /// Types and functions to assist in debugging code.
 ///
-#include <pe/core/Debugging.h>
+#include <pe/Core/Debugging.h>
 
 #include <iostream>
 

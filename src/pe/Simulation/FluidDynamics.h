@@ -12,11 +12,12 @@
 #define __PE_SIMULATION_FLUID_H__
 
 #include <boost/shared_array.hpp>
+#include <pe/Math/Vector.h>
 
 namespace pe {
 namespace simulation {
 
-  class FluidField {
+  class FluidSimulation {
 
     // Physical parameters
     float m_fluid_viscosity;
@@ -41,16 +42,19 @@ namespace simulation {
     void dens_step ( int N, float * x, float * x0, float * u, float * v, float diff, float dt );
     void vel_step ( int N, float * u, float * v, float * u0, float * v0, float visc, float dt );
 
-    inline int IX(int i,int j) { return (i)+(m_fluid_dimension+2)*(j); }
+    inline int IX(int i,int j) const { return (i)+(m_fluid_dimension+2)*(j); }
     inline void SWAP(float* &x0,float* &x) { float *tmp=x0; x0=x; x=tmp; }
 
 
   public:
 
-    FluidField(int width, int height, float viscosity = 0.0005, float diffusion = 1.0);
+    FluidSimulation(int width, int height, float viscosity = 0.0005, float diffusion = 1.0);
 
     // Run the simulation forward one time step.
     void update();
+
+    void add_velocity(int i, int j, Vector2 vel);
+    Vector2 get_velocity(int i, int j) const;
 
     // Read the current values of physical constants.
     float viscosity() const { return m_fluid_viscosity; }

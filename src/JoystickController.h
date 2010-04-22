@@ -6,7 +6,7 @@
 #include <string>
 #include <Controller.h>
 
-#include <vw/Core/Thread.h>
+#include <pe/Core/Thread.h>
 
 class JoystickTask;
 class PeJoystick;
@@ -15,7 +15,7 @@ class JoystickController : public Controller {
   std::vector<boost::shared_ptr<PeJoystick> > m_joysticks;
 
   boost::shared_ptr<JoystickTask> m_task;
-  boost::shared_ptr<vw::Thread> m_thread;
+  boost::shared_ptr<pe::Thread> m_thread;
 
 public:
   JoystickController();

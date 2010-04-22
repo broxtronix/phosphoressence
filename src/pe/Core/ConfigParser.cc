@@ -14,11 +14,11 @@
 namespace po = boost::program_options;
 
 
-#include <pe/core/FundamentalTypes.h>
-#include <pe/core/Log.h>
-#include <pe/core/Exception.h>
-#include <pe/core/Settings.h>
-#include <pe/core/ConfigParser.h>
+#include <pe/Core/FundamentalTypes.h>
+#include <pe/Core/Log.h>
+#include <pe/Core/Exception.h>
+#include <pe/Core/Settings.h>
+#include <pe/Core/ConfigParser.h>
 
 using boost::shared_ptr;
 using namespace pe;

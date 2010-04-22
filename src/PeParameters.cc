@@ -7,8 +7,9 @@
 ///
 #include <PeParameters.h>
 
-#include <vw/Core/Thread.h>
-#include <vw/Core/Stopwatch.h>
+#include <pe/Core/Thread.h>
+#include <pe/Core/Stopwatch.h>
+#include <pe/Core/Time.h>
 #include <fstream>
 
 #ifdef __APPLE__
@@ -57,7 +58,7 @@ std::string prefix_from_filename(std::string const& filename) {
 // -----------------------------------------------------------
 
 namespace {
-  vw::RunOnce pe_parameters_once = VW_RUNONCE_INIT;
+  pe::RunOnce pe_parameters_once = PE_RUNONCE_INIT;
   boost::shared_ptr<PeParameters> pe_parameters_ptr;
   void init_pe_parameters() {
     pe_parameters_ptr = boost::shared_ptr<PeParameters>(new PeParameters());
@@ -99,7 +100,7 @@ void VectorSpaceDimension::set_automate(double val) {
   
   // Update the state of the automation override.  
   if (m_controller_timeout > 0) {
-    double current_time = pe_time();
+    double current_time = pe::pe_time();
     double elapsed = current_time - m_last_poll_time;
     m_last_poll_time = current_time;
     m_controller_timeout -= elapsed;
@@ -121,7 +122,7 @@ void VectorSpaceDimension::set_automate(double val) {
 void VectorSpaceDimension::set_control(double val) {
   
   // Switch over into controller mode
-  m_last_poll_time = pe_time();
+  m_last_poll_time = pe::pe_time();
   m_controller_timeout = 5.0; // 5 second timeout for now (for testing)
   m_control_mode = eController;
   
@@ -159,12 +160,12 @@ void PeParameters::add_parameter(std::string name,
                                  std::string description) {
   VectorSpaceDimension p(name, description, default_value, read_only);
 
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   m_parameters.insert(std::pair<std::string, VectorSpaceDimension>(name, p));
 }
 
 void PeParameters::set_value(std::string name, float val) {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
   if(match == m_parameters.end())
@@ -174,7 +175,7 @@ void PeParameters::set_value(std::string name, float val) {
 }
 
 void PeParameters::set_readonly(std::string name, float val) {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
   if(match == m_parameters.end())
@@ -185,10 +186,10 @@ void PeParameters::set_readonly(std::string name, float val) {
 
 float PeParameters::get_value(std::string name) {
   if (name == "time") {
-    return pe_time();
+    return pe::pe_time();
   }
 
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
 
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
   if(match == m_parameters.end()) {
@@ -200,7 +201,7 @@ float PeParameters::get_value(std::string name) {
 }
 
 std::string PeParameters::get_description(std::string name) {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
 
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
   if(match == m_parameters.end()) {
@@ -212,7 +213,7 @@ std::string PeParameters::get_description(std::string name) {
 }
 
 void PeParameters::reset_value(std::string name) {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   
   std::map<std::string, VectorSpaceDimension>::iterator match = m_parameters.find(name);
   if(match == m_parameters.end())
@@ -222,7 +223,7 @@ void PeParameters::reset_value(std::string name) {
 }
 
 void PeParameters::reset_all() {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   
   std::map<std::string, VectorSpaceDimension>::iterator iter = m_parameters.begin();
   while (iter != m_parameters.end()) {
@@ -232,7 +233,7 @@ void PeParameters::reset_all() {
 }
 
 std::list<std::string> PeParameters::param_list() {
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
   std::list<std::string> result;
 
   std::map<std::string, VectorSpaceDimension>::iterator iter = m_parameters.begin();
@@ -244,7 +245,7 @@ std::list<std::string> PeParameters::param_list() {
 }
 
 void PeParameters::print_list() {    
-  vw::Mutex::Lock lock(m_mutex);
+  pe::Mutex::Lock lock(m_mutex);
 
   std::cout << "Here are the knobs you can tweak:\n\n";
     

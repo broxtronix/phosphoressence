@@ -3,8 +3,8 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
-#include <pe/core/Time.h>
-#include <pe/core/Stopwatch.h>
+#include <pe/Core/Time.h>
+#include <pe/Core/Stopwatch.h>
 #include <boost/shared_ptr.hpp>
 
 // -----------------------------------------------------------

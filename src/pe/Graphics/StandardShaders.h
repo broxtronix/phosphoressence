@@ -7,17 +7,17 @@
 
 // StandardShaders.h
 
-#ifndef __VW_GPU_STANDARD_SHADERS_H__
-#define __VW_GPU_STANDARD_SHADERS_H__
+#ifndef __VW_GRAPHICS_STANDARD_SHADERS_H__
+#define __VW_GRAPHICS_STANDARD_SHADERS_H__
 
 #include <map>
 #include <string>
 
 namespace vw { 
-namespace GPU {
+namespace graphics {
 
   std::string find_standard_shader(std::string path);
 
-}}  // __VW_GPU_STANDARD_SHADERS_H__
+}}  // __VW_GRAPHICS_STANDARD_SHADERS_H__
 
 #endif

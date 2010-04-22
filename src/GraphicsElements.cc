@@ -15,12 +15,12 @@
 
 #include <PeParameters.h>
 #include <GraphicsEngine.h>
-#include <GpuProgram.h>
-#include <Fluids.h>
-#include <vw/Math/Vector.h>
-#include <vw/Math/Matrix.h>
-#include <vw/Core/FundamentalTypes.h>
-using namespace vw;
+#include <pe/Graphics/GpuProgram.h>
+#include <pe/Math/Vector.h>
+#include <pe/Math/Matrix.h>
+#include <pe/Core/FundamentalTypes.h>
+#include <pe/Simulation/FluidDynamics.h>
+using namespace pe;
 
 // -------------------------------------------------------------------
 
@@ -100,6 +100,8 @@ void GraphicsEngine::drawFeedback() {
   float sx = pe_script_engine().get_parameter("sx")+0.00001;
   float sy = pe_script_engine().get_parameter("sy")+0.00001;
 
+  // Update the fluid simulation
+  m_fluid_sim->update();
 
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate
   // mesh distortion.  THIS IS WHERE THE MAGIC HAPPENS, FOLKS
@@ -125,31 +127,30 @@ void GraphicsEngine::drawFeedback() {
 
       // Apply the Milkdrop warp effect (most of these constants were
       // taken from the milkdrop source code)
-      m_fluid_u_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.333f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] - m_feedback_screencoords(i,j)[1] * f[3]));
-      m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * cosf(warpTime * 0.375f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[2] + m_feedback_screencoords(i,j)[1] * f[1]));
-      m_fluid_u_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * cosf(warpTime * 0.753f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[1] - m_feedback_screencoords(i,j)[1] * f[2]));
-      m_fluid_v_prev[IX(i+1,j+1)] += warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3]));
+      m_fluid_sim->add_velocity(i,j,Vector2(warpAmount * 0.0035f * sinf(warpTime * 0.333f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] - m_feedback_screencoords(i,j)[1] * f[3])),
+                                            warpAmount * 0.0035f * cosf(warpTime * 0.375f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[2] + m_feedback_screencoords(i,j)[1] * f[1])) ));
+      m_fluid_sim->add_velocity(i,j,Vector2(warpAmount * 0.0035f * cosf(warpTime * 0.753f - warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[1] - m_feedback_screencoords(i,j)[1] * f[2])),
+                                            warpAmount * 0.0035f * sinf(warpTime * 0.825f + warpScaleInv*(m_feedback_screencoords(i,j)[0] * f[0] + m_feedback_screencoords(i,j)[1] * f[3])) ));
 
       // Apply the fluid rotation effect
       //      if (radius != 0) {
       if (radius > 0.8 && radius < 1.2) {
         float direction_u = (v/radius);
         float direction_v = (-u/radius);
-        m_fluid_u_prev[IX(i+1,j+1)] += rot_rate * direction_u;
-        m_fluid_v_prev[IX(i+1,j+1)] += rot_rate * direction_v;
+        m_fluid_sim->add_velocity(i,j, Vector2(rot_rate*direction_u, rot_rate * direction_v));
       }
 
       // Apply the fluid zoom effect
       if (radius != 0) {
         float direction_u = (-u/radius);
         float direction_v = (-v/radius);
-        m_fluid_u_prev[IX(i+1,j+1)] += zoom_rate * direction_u;
-        m_fluid_v_prev[IX(i+1,j+1)] += zoom_rate * direction_v;
+        m_fluid_sim->add_velocity(i,j, Vector2(zoom_rate*direction_u, zoom_rate * direction_v));
       }
 
       // Add in the fluid simulation effect
-      u += m_fluid_u[IX(i+1,j+1)];
-      v += m_fluid_v[IX(i+1,j+1)];
+      Vector2 fluid_velocity = m_fluid_sim->get_velocity(i,j);
+      u += fluid_velocity[0];
+      v += fluid_velocity[1];
 
       // Apply the rotation effect
       float u2 = u - cx;
@@ -174,7 +175,6 @@ void GraphicsEngine::drawFeedback() {
   glBegin(GL_QUADS);
   for (int i = 0 ; i < HORIZ_MESH_SIZE ; ++i) {
     for (int j = 0 ; j < VERT_MESH_SIZE ; ++j) {
-      //      glColor3f(0.0, m_fluid_density[IX(i+1,j+1)]/5.0, 0.0);
       glTexCoord2f( m_feedback_texcoords(i,j)[0], m_feedback_texcoords(i,j)[1] ); 
       glVertex2f(   m_warped_screencoords(i,j)[0] , m_warped_screencoords(i,j)[1] );
       glTexCoord2f( m_feedback_texcoords(i,j+1)[0], m_feedback_texcoords(i,j+1)[1] ); 
@@ -197,7 +197,7 @@ void GraphicsEngine::drawFeedback() {
 // See the milkdrop license in COPYING for more details.
 bool ReversePropagatePoint(float fx, float fy, float *fx2, float *fy2, 
                            int size_x, int size_y, float framebuffer_radius,
-                           vw::Matrix<vw::Vector2>& screencoords) {
+                           pe::Matrix<pe::Vector2>& screencoords) {
 
   float screen_w = 2.0*framebuffer_radius;  
   float screen_h = 2.0*framebuffer_radius;

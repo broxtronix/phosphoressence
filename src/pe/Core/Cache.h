@@ -55,10 +55,10 @@
 #include <typeinfo>
 #include <boost/smart_ptr.hpp>
 
-#include <pe/core/Exception.h>
-#include <pe/core/Thread.h>
-#include <pe/core/Stopwatch.h>
-#include <pe/core/Log.h>
+#include <pe/Core/Exception.h>
+#include <pe/Core/Thread.h>
+#include <pe/Core/Stopwatch.h>
+#include <pe/Core/Log.h>
 
 #include <iostream>
 

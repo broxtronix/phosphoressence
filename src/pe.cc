@@ -130,13 +130,6 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-// VW
-#include <vw/Core.h>
-#include <vw/Image.h>
-#include <vw/Math.h>
-#include <vw/FileIO.h>
-#include <vw/Stereo.h>
-
 // Local files
 #include <MainWindow.h>
 #include <AudioEngine.h>
@@ -150,8 +143,6 @@ namespace po = boost::program_options;
 #include <VectorShape.h>
 #include <PhasescopeShape.h>
 #include <SpectrographShape.h>
-
-using namespace vw;
 
 void setup_parameters() {
   pe_parameters().add_parameter("exit", true, 0.0,

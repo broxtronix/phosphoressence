@@ -49,8 +49,8 @@ Video::Video(std::string url): m_url(url), m_terminate(false) {
 
 Video::~Video() {}
 
-void Video::copy_to_texture(vw::uint32 texture) {
-  vw::Mutex::Lock lock(m_mutex);
+void Video::copy_to_texture(pe::uint32 texture) {
+  pe::Mutex::Lock lock(m_mutex);
 
   //  cv::Mat frame;
   if (m_video_capture.grab()) {}

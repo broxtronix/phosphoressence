@@ -11,8 +11,6 @@
 #define GL_GLEXT_PROTOTYPES 1
 #endif
 
-//#include <OpenFrameworks/graphics/ofTexture.h>
-
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -25,16 +23,14 @@
 
 #include <QtGui>
 
-#include <GraphicsEngine.h>
-#include <GpuProgram.h>
-#include <PeParameters.h>
-using namespace vw::GPU;
+#include <pe/Core/Time.h>
+#include <pe/Core/Stopwatch.h>
+#include <pe/graphics/GpuProgram.h>
+using namespace pe::graphics;
+using namespace pe;
 
-// Vision Workbench
-#include <vw/Image.h>
-#include <vw/FileIO.h>
-//#include <vw/Math.h>
-using namespace vw;
+#include <GraphicsEngine.h>
+#include <PeParameters.h>
 
 #include <fstream>
 
@@ -106,12 +102,12 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   QGLWidget(parent) {
 
   if (!this->isValid()) {
-    vw::vw_out() << "Failed to initialize OpenGL.\nExiting\n\n";
+    pe::pe_out() << "Failed to initialize OpenGL.\nExiting\n\n";
     exit(1);
   }
 
   if (!QGLFormat::hasOpenGL()) {
-    vw::vw_out() << "This system has no OpenGL support.\nExiting\n\n";
+    pe::pe_out() << "This system has no OpenGL support.\nExiting\n\n";
     exit(1);
   }
 
@@ -137,6 +133,9 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+  // Fluid Simulation
+  m_fluid_sim.reset(new pe::simulation::FluidSimulation(HORIZ_MESH_SIZE, HORIZ_MESH_SIZE));
 
   // Start video capture
   // m_video.listDevices();
@@ -193,12 +192,10 @@ void GraphicsEngine::initializeGL() {
   // Load the ground image
   std::string ground_image_filename = pe_resources_directory() + "/images/ground2.jpg";
   std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
-  ImageView<PixelRGB<uint8> > ground_image;
-  vw::read_image(ground_image, ground_image_filename);
-
-  m_ground_texture.allocate(ground_image.cols(), ground_image.rows(), GL_RGB);
-  m_ground_texture.loadData(ground_image.data(), ground_image.cols(), 
-                            ground_image.rows(), GL_RGB, GL_UNSIGNED_BYTE);
+  cv::Mat ground_image = cv::imread(ground_image_filename);
+  m_ground_texture.allocate(ground_image.size().width, ground_image.size().height, GL_RGB);
+  m_ground_texture.loadData(ground_image.ptr(), ground_image.size().width, 
+                            ground_image.size().height, GL_RGB, GL_UNSIGNED_BYTE);
   
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -301,7 +298,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Make sure that the framebuffer is correctly configured.
   GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
   if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-    vw_throw(vw::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
+    pe_throw(pe::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
   // Setup the feedback texture buffer
@@ -419,7 +416,7 @@ void GraphicsEngine::drawImage() {
 
   // Draw the ground texture
   qglColor(Qt::white);
-  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  //m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
   // Draw the video
   // m_video.update();
@@ -482,7 +479,7 @@ void GraphicsEngine::drawImage() {
 #endif
 
   // Recompute FPS
-  double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
+  double new_time = double(pe::Stopwatch::microtime()) / 1.0e6;
   float fps = 1.0/(new_time - m_fps_last_time);
   m_fps_avg = 0.01 * fps + 0.99 * m_fps_avg;
   pe_script_engine().set_parameter("fps", fps);
@@ -550,12 +547,10 @@ void GraphicsEngine::recordFrame() {
     // the screen.
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
-    ImageView<PixelRGB<uint8> > image(m_viewport_width, m_viewport_height);
+    cv::Mat image(m_viewport_width, m_viewport_height, CV_8UC3);
     glReadPixels(0,0,m_viewport_width,m_viewport_height,
-                 GL_RGB, GL_UNSIGNED_BYTE,&(image(0,0)));
-    write_image(ostr.str(), image);
-
-
+                 GL_RGB, GL_UNSIGNED_BYTE,image.ptr());
+    cv::imwrite(ostr.str(), image);
     m_record_frame_number++;
   }
   

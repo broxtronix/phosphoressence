@@ -22,7 +22,7 @@
 #include <PeUtils.h>
 #include <ScriptEngine.h>
  
-#include <vw/Math/Vector.h>
+#include <pe/Math/Vector.h>
 
 #define PE_VECTORSHAPE_NULL -32000.0f
 
@@ -30,11 +30,11 @@ class VectorShape : public Drawable {
 
   double m_last_time;
   double m_timebase;
-  vw::Vector2 m_last_point;
+  pe::Vector2 m_last_point;
 
 protected:
 
-  RingBuffer<vw::Vector2> m_linebuffer;
+  RingBuffer<pe::Vector2> m_linebuffer;
 
   /// Subclass must implement this to indicate the sampling rate of
   /// the data we're using in the draw loop.
@@ -43,7 +43,7 @@ protected:
   /// Subclass must implement this method if it wants to provide new
   /// data to the x and y linebuffers.
   virtual void update(float t0, float frame_number) {
-    double new_time = double(vw::Stopwatch::microtime()) / 1.0e6;
+    double new_time = double(pe::Stopwatch::microtime()) / 1.0e6;
     float elapsed_time = new_time - m_last_time;
     m_last_time = new_time;
 
@@ -59,20 +59,20 @@ protected:
     for (unsigned i = 0; i < elapsed_time*this->sample_rate(); ++i) {
 
       // Lissajous Curve
-      vw::Vector2 d(A*cos(omega*phase*ratio_a/ratio_b*m_timebase), 
+      pe::Vector2 d(A*cos(omega*phase*ratio_a/ratio_b*m_timebase), 
                     B*cos(omega*m_timebase));
 
       // Spirograph Curve
       // float t = m_timebase;
       // float p = phase;
-      // vw::Vector2 d(0.5*((A+B)*cos(omega_a*m_timebase) + p * cos((A+B)*omega_a*t/B)),
+      // pe::Vector2 d(0.5*((A+B)*cos(omega_a*m_timebase) + p * cos((A+B)*omega_a*t/B)),
       //               0.5*((A+B)*sin(omega_a*m_timebase) + p * sin((A+B)*omega_a*t/B)));
 
       // Butterfly Curve
       // ( http://en.wikipedia.org/wiki/Butterfly_curve_(transcendental) )
       // float w = omega_a;
       // float t = m_timebase;
-      // vw::Vector2 d( A * sin(w*t) * (exp(cos(w*t))-2*cos(4*w*t)-pow(sin(w*t/12),5)),
+      // pe::Vector2 d( A * sin(w*t) * (exp(cos(w*t))-2*cos(4*w*t)-pow(sin(w*t/12),5)),
       //                B * cos(w*t) * (exp(cos(w*t))-2*cos(4*w*t)-pow(sin(w*t/12),5)) );
 
       m_linebuffer.append( d );
@@ -81,7 +81,7 @@ protected:
   }
   
 public:
-  VectorShape() : m_last_time(double(vw::Stopwatch::microtime()) / 1.0e6),
+  VectorShape() : m_last_time(double(pe::Stopwatch::microtime()) / 1.0e6),
                   m_timebase(0), m_last_point(PE_VECTORSHAPE_NULL, PE_VECTORSHAPE_NULL) {}
   
   /// This implements the abstract method for class Drawable.  It is
@@ -115,8 +115,8 @@ public:
     float wave_g = pe_script_engine().get_parameter("wave_g");
     float wave_b = pe_script_engine().get_parameter("wave_b");
     float wave_a = pe_script_engine().get_parameter("wave_a");
-    vw::Vector3 color(wave_r, wave_g, wave_b);
-    vw::Vector3 norm_color = color;
+    pe::Vector3 color(wave_r, wave_g, wave_b);
+    pe::Vector3 norm_color = color;
     if (pe_script_engine().get_parameter("wave_brighten")) 
       norm_color = normalize(color);
 
@@ -146,9 +146,9 @@ public:
     // Read the values into a local cache so that we can draw them
     // below.  We initialize the first point in the buffer to be a
     // NULL point just in case the linebuffer is empty.
-    vw::Vector2 linecache[m_linebuffer.size()];
-    linecache[0] = vw::Vector2(PE_VECTORSHAPE_NULL, PE_VECTORSHAPE_NULL);
-    vw::Vector2 new_last_point(PE_VECTORSHAPE_NULL, PE_VECTORSHAPE_NULL);
+    pe::Vector2 linecache[m_linebuffer.size()];
+    linecache[0] = pe::Vector2(PE_VECTORSHAPE_NULL, PE_VECTORSHAPE_NULL);
+    pe::Vector2 new_last_point(PE_VECTORSHAPE_NULL, PE_VECTORSHAPE_NULL);
 
     int idx = 0;
     while (!m_linebuffer.empty() && idx < m_linebuffer.size()) {

@@ -22,7 +22,7 @@
 #include <GraphicsEngine.h>
 #include <FFT.h>
 
-#include <vw/Math/Vector.h>
+#include <pe/Math/Vector.h>
 
 #define NUM_FFT_SAMPLES 2048
 
@@ -45,7 +45,7 @@ public:
 
     // Compute the FFT
     {
-      vw::Mutex::Lock lock(m_mutex);
+      pe::Mutex::Lock lock(m_mutex);
       while ( m_circular_buffer.size() >= 2 ) {
 
         left_samples[m_sample_index] = m_circular_buffer[0];
@@ -78,8 +78,8 @@ public:
           float wave_g = pe_script_engine().get_parameter("wave_g");
           float wave_b = pe_script_engine().get_parameter("wave_b");
           float wave_a = pe_script_engine().get_parameter("wave_a");
-          vw::Vector3 color(wave_r, wave_g, wave_b);
-          vw::Vector3 norm_color = color;
+          pe::Vector3 color(wave_r, wave_g, wave_b);
+          pe::Vector3 norm_color = color;
           if (pe_script_engine().get_parameter("wave_brighten")) 
             norm_color = normalize(color);
           
@@ -196,7 +196,7 @@ public:
 public slots:
   // Compute the FFT & update statistics.  
   void update() {
-    vw::Mutex::Lock lock(m_mutex);
+    pe::Mutex::Lock lock(m_mutex);
 
     while ( m_circular_buffer.size() >= 2 ) {
       

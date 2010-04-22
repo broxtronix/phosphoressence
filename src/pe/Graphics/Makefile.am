@@ -11,9 +11,13 @@
 
 if MAKE_MODULE_GRAPHICS
 
-include_HEADERS = Texture.h
+StandardShaders.cc:
+	perl StandardShaders.pl
+CLEANFILES = StandardShaders.cc
 
-libpeGraphics_la_SOURCES = Texture.cc
+include_HEADERS = Texture.h GpuProgram.h StandardShaders.h Utilities.h
+
+libpeGraphics_la_SOURCES = Texture.cc GpuProgram.cc StandardShaders.cc Utilities.cc
 libpeGraphics_la_LIBADD = @MODULE_GRAPHICS_LIBS@
 
 lib_LTLIBRARIES = libpeGraphics.la
@@ -29,6 +33,6 @@ AM_LDFLAGS = @PE_LDFLAGS@ -version-info @LIBTOOL_VERSION@
 
 SUBDIRS = .
 
-includedir = $(prefix)/include/pe/graphics
+includedir = $(prefix)/include/pe/Graphics
 
 include $(top_srcdir)/config/rules.mak

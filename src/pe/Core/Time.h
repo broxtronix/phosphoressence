@@ -6,7 +6,7 @@
 #ifndef __PE_CORE_TIME__
 #define __PE_CORE_TIME__
 
-#include <pe/core/Thread.h>
+#include <pe/Core/Thread.h>
 
 namespace pe {
 

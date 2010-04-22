@@ -10,8 +10,8 @@
 #include "cv.h"
 #include "highgui.h"
 
-#include <vw/Core/Thread.h>
-#include <vw/Core/FundamentalTypes.h>
+#include <pe/Core/Thread.h>
+#include <pe/Core/FundamentalTypes.h>
 #include <boost/circular_buffer.hpp>
 
 // ---------------------------------------------------------------------------
@@ -21,7 +21,7 @@
 /// Video
 ///
 class Video {
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
   std::string m_url;
   bool m_terminate;
   cv::VideoCapture m_video_capture;
@@ -35,7 +35,7 @@ public:
   void operator()();
   void terminate() { m_terminate = true; }
 
-  void copy_to_texture(vw::uint32);
+  void copy_to_texture(pe::uint32);
 };
 
 #endif // __VIDEO_ENGINE_H__

@@ -12,8 +12,8 @@
 #include <fstream>
 using namespace std;
 
-namespace vw { 
-namespace GPU {
+namespace pe { 
+namespace graphics {
 
   // Class: TokenReplacer
   void TokenReplacer::AddVariable(string& variableName, string& variableValue) {
@@ -82,4 +82,4 @@ namespace GPU {
   } 
 
  
-}} // namespaces GPU, vw
+}} // namespaces pe::graphics

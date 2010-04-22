@@ -15,7 +15,7 @@ m4_pattern_allow([^PKG_PATHS$])
 m4_pattern_allow([^PKG_PATHS_[A-Z_]+$])
 m4_pattern_allow([^PKG_BOOST_INCDIR$])
 m4_pattern_allow([^PKG_BOOST_LIBDIR$])
-m4_pattern_allow([^PKG_VW_LIBS_TEMP$])
+m4_pattern_allow([^PKG_PE_LIBS_TEMP$])
 m4_pattern_allow([^PKG_ARBITRARY_QT_NEEDED_HEADERS$])
 
 ##################################################
@@ -141,11 +141,6 @@ AX_PKG(THREADS,           [BOOST_THREAD], [], [])
 
 AX_PKG(M, [], [-lm], [math.h])
 
-# Vision Workbench
-AX_PKG(VW_CORE,           [BOOST], [-lvwCore],        [vw/Core/Thread.h])
-AX_PKG(VW_IMAGE,          [BOOST], [-lvwImage],       [vw/Image/ImageView.h])
-AX_PKG(VW_FILEIO,         [BOOST], [-lvwFileIO],      [vw/FileIO/DiskImageResource.h])
-
 # Assorted other dependencies
 AX_PKG_APPLE(COREMIDI,    [],      [-framework CoreMidi])
 AX_PKG_APPLE(COREAUDIO,   [],      [-framework CoreAudio])
@@ -221,15 +216,17 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
-AX_MODULE(CORE,         [src/pe/core],       [libpeCore.la],        yes, [BOOST BOOST_PROGRAM_OPTIONS THREADS M], [PTHREADS])
-AX_MODULE(GRAPHICS,     [src/pe/graphics],   [libpeGraphics.la],    yes, [CORE],    [GL])
-AX_MODULE(VIDEO,        [src/pe/video],      [libpeVideo.la],       yes, [CORE GRAPHICS],    [])
-AX_MODULE(SIMULATION,   [src/pe/simulation], [libpeSimulation.la],  yes, [CORE],  [])
-AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO SIMULATION BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
+AX_MODULE(CORE,         [src/pe/Core],       [libpeCore.la],        yes, [BOOST BOOST_PROGRAM_OPTIONS THREADS M], [PTHREADS])
+AX_MODULE(MATH,         [src/pe/Math],       [libpeMath.la],        yes, [CORE],    [])
+AX_MODULE(GRAPHICS,     [src/pe/Graphics],   [libpeGraphics.la],    yes, [CORE],    [GL])
+AX_MODULE(VIDEO,        [src/pe/Video],      [libpeVideo.la],       yes, [CORE GRAPHICS],    [])
+AX_MODULE(SIMULATION,   [src/pe/Simulation], [libpeSimulation.la],  yes, [CORE MATH],  [])
+AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO SIMULATION BOOST_THREAD BOOST_PROGRAM_OPTIONS QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
 AM_CONDITIONAL(MAKE_MODULE_CORE,              [test "$MAKE_MODULE_CORE" = "yes"])
+AM_CONDITIONAL(MAKE_MODULE_MATH,              [test "$MAKE_MODULE_MATH" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_VIDEO,             [test "$MAKE_MODULE_VIDEO" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_GRAPHICS,          [test "$MAKE_MODULE_GRAPHICS" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_SIMULATION,        [test "$MAKE_MODULE_SIMULATION" = "yes"])
@@ -270,10 +267,11 @@ AC_CONFIG_FILES([                       \
   Makefile                              \
   src/Makefile                          \
   src/pe/Makefile                       \
-  src/pe/core/Makefile                  \
-  src/pe/graphics/Makefile              \
-  src/pe/video/Makefile                 \
-  src/pe/simulation/Makefile            \
+  src/pe/Core/Makefile                  \
+  src/pe/Math/Makefile                  \
+  src/pe/Graphics/Makefile              \
+  src/pe/Video/Makefile                 \
+  src/pe/Simulation/Makefile            \
   src/OpenFrameworks/Makefile           \
 ])
 

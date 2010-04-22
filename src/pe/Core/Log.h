@@ -23,8 +23,8 @@
 #ifndef __PE_CORE_LOG_H__
 #define __PE_CORE_LOG_H__
 
-#include <pe/core/Features.h>
-#include <pe/core/Thread.h>
+#include <pe/Core/Features.h>
+#include <pe/Core/Thread.h>
 
 // Boost Headers
 #include <boost/algorithm/string.hpp>

@@ -9,8 +9,8 @@
 #include <Python.h>
 #include <iostream>
 #include <vector>
-#include <vw/Core/Stopwatch.h>
-#include <vw/Core/Thread.h>
+#include <pe/Core/Stopwatch.h>
+#include <pe/Core/Thread.h>
 
 /// CommandPromptThread
 ///
@@ -33,9 +33,9 @@ public:
 
 class ScriptEngine {
 
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
   boost::shared_ptr<CommandPromptTask> m_command_prompt_task;
-  boost::shared_ptr<vw::Thread> m_thread;
+  boost::shared_ptr<pe::Thread> m_thread;
 
 public: 
   ScriptEngine();

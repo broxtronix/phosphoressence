@@ -8,10 +8,10 @@
 #include <fstream>
 
 #include <pe/config.h>
-#include <pe/core/Thread.h>
-#include <pe/core/Cache.h>
-#include <pe/core/Settings.h>
-#include <pe/core/ConfigParser.h>
+#include <pe/Core/Thread.h>
+#include <pe/Core/Cache.h>
+#include <pe/Core/Settings.h>
+#include <pe/Core/ConfigParser.h>
 
 // Boost headers
 #include <boost/bind.hpp>

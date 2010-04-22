@@ -15,7 +15,7 @@
 #ifndef __PE_GRAPHICS_TEXTURE_H__
 #define __PE_GRAPHICS_TEXTURE_H__
 
-#include <vw/Math/Vector.h>
+#include <pe/Math/Vector.h>
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -28,9 +28,9 @@
 namespace pe {
 namespace graphics {
   
-  class Drawable {
+  class PeDrawable {
   public:
-    virtual ~Drawable(){}
+    virtual ~PeDrawable(){}
     virtual void draw(float x,float y)=0;
     virtual void draw(float x,float y,float w, float h)=0;
     virtual float getHeight()=0;
@@ -64,7 +64,7 @@ namespace graphics {
   void EnableTextureEdgeHack();
   void DisableTextureEdgeHack();
 
-  class Texture : public Drawable {
+  class Texture : public PeDrawable {
 
   public :
 
@@ -105,8 +105,8 @@ namespace graphics {
     // these are helpers to allow you to get points for the texture ala "glTexCoordf" 
     // but are texture type independent. 
     // use them for immediate or non immediate mode
-    vw::Vector2 getCoordFromPoint(float xPos, float yPos);		
-    vw::Vector2 getCoordFromPercent(float xPts, float yPts);		
+    pe::Vector2 getCoordFromPoint(float xPos, float yPos);		
+    pe::Vector2 getCoordFromPercent(float xPts, float yPts);		
 	
     void setTextureWrap(GLint wrapModeHorizontal, GLint wrapModeVertical);
     void setTextureMinMagFilter(GLint minFilter, GLint maxFilter);
@@ -122,7 +122,7 @@ namespace graphics {
   protected:
     int nextPow2(int a);
 
-    vw::Vector2 anchor;
+    pe::Vector2 anchor;
     bool bAnchorIsPct;
 
 

@@ -13,8 +13,8 @@
 #include <map>
 #include <list>
 
-#include <vw/Core/Thread.h>
-#include <vw/Math/Vector.h>
+#include <pe/Core/Thread.h>
+#include <pe/Math/Vector.h>
 #include <pe/core/Time.h>
 
 // -----------------------------------------------------------
@@ -109,7 +109,7 @@ public:
 class PeParameters {
 
   std::map<std::string, VectorSpaceDimension> m_parameters;
-  vw::Mutex m_mutex;
+  pe::Mutex m_mutex;
 
 public:
   void add_parameter(std::string name, 
