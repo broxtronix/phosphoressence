@@ -62,40 +62,12 @@ namespace {
   void init_pe_parameters() {
     pe_parameters_ptr = boost::shared_ptr<PeParameters>(new PeParameters());
   }
-
-  vw::RunOnce pe_time_once = VW_RUNONCE_INIT;
-  boost::shared_ptr<PeTime> pe_time_ptr;
-  void init_pe_time() {
-    pe_time_ptr = boost::shared_ptr<PeTime>(new PeTime());
-  }
 }
 
 PeParameters& pe_parameters() {
   pe_parameters_once.run( init_pe_parameters );
   return *pe_parameters_ptr;
 }
-
-double pe_time() {
-  pe_time_once.run( init_pe_time );
-  return (*pe_time_ptr)();
-}
-
-// ---------------------------------------------------------------------
-// PeTime
-// ---------------------------------------------------------------------
-
-PeTime::PeTime() {
-  m_time = 0;    
-  m_last_time = vw::Stopwatch::microtime();
-}
-
-double PeTime::operator()() {
-    vw::Mutex::Lock lock(m_mutex);
-    long long new_time = vw::Stopwatch::microtime();
-    m_time += double(new_time - m_last_time) / 1e6;
-    m_last_time = new_time;
-    return m_time;
-  }
 
 // ---------------------------------------------------------------------
 // VectorSpaceDimension

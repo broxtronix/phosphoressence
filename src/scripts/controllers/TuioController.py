@@ -70,7 +70,7 @@ class TuioController(object):
             # Finger Drag
             elif id in self.fingers:
 		f = self.fingers[id]
-                f.drag(obj.xpos, obj.ypos, frame)
+                f.drag(obj.xpos, obj.ypos, self.thisframe)
                 if (self.tuio_handler):
                     self.tuio_handler.got_fingerdrag(f)
 

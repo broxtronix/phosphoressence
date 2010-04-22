@@ -7,6 +7,11 @@
 # sources
 ########################################################################
 
+if MAKE_MODULE_CORE
+core_subdirs = core
+core_headers = Core.h
+endif
+
 if MAKE_MODULE_GRAPHICS
 graphics_subdirs = graphics
 graphics_headers = Graphics.h
@@ -17,9 +22,14 @@ video_subdirs = video
 video_headers = Video.h
 endif
 
-include_HEADERS = $(video_headers) $(graphics_headers)
+if MAKE_MODULE_SIMULATION
+simulation_subdirs = simulation
+simulation_headers = Simulation.h
+endif
 
-SUBDIRS = $(graphics_subdirs) $(video_subdirs) .
+include_HEADERS = $(core_headers) $(video_headers) $(graphics_headers) $(simulation_headers)
+
+SUBDIRS = $(core_subdirs) $(graphics_subdirs) $(video_subdirs) $(simulation_subdirs) .
 
 CLEANFILES = config.h.pre.in~
 

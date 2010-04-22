@@ -125,35 +125,6 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
 
-  // Fluid simulation
-  //
-  // First we check to make sure the mesh size and fluid size are the
-  // same (and are both square).  If they aren't then wacky things
-  // could happen, including a seg fault.  Someday I'll go through the
-  // fluid code and add support for non-square meshes, but for now
-  // this prevents future Michael from suffering if he forgets this
-  // constraint.
-  VW_ASSERT(HORIZ_MESH_SIZE == FLUID_DIMENSION, 
-            NoImplErr() << "Mesh size and FLUID_DIMENSION are not equal!");
-  VW_ASSERT(VERT_MESH_SIZE == FLUID_DIMENSION, 
-            NoImplErr() << "Mesh size and FLUID_DIMENSION are not equal!");
-
-  m_fluid_previous_time = pe_time();
-  m_fluid_u.reset(new float[FLUID_SIZE]);
-  m_fluid_v.reset(new float[FLUID_SIZE]);
-  m_fluid_u_prev.reset(new float[FLUID_SIZE]);
-  m_fluid_v_prev.reset(new float[FLUID_SIZE]);
-  m_fluid_density.reset(new float[FLUID_SIZE]);
-  m_fluid_density_prev.reset(new float[FLUID_SIZE]);
-
-  for (int i=0; i < FLUID_SIZE; ++i) {
-    m_fluid_u[i] = 0.0;
-    m_fluid_v[i] = 0.0;
-    m_fluid_u_prev[i] = 0.0;
-    m_fluid_v_prev[i] = 0.0;
-    m_fluid_density[i] = 0.0;
-    m_fluid_density_prev[i] = 0.0;
-  }
 
   // Other variables
   m_fps_avg = 30.0;
@@ -220,7 +191,7 @@ void GraphicsEngine::initializeGL() {
 //                                                 std::vector<int>());
 
   // Load the ground image
-  std::string ground_image_filename = pe_resources_directory() + "/images/ground.jpg";
+  std::string ground_image_filename = pe_resources_directory() + "/images/ground2.jpg";
   std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
   ImageView<PixelRGB<uint8> > ground_image;
   vw::read_image(ground_image, ground_image_filename);

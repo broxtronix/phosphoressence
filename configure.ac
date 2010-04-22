@@ -29,7 +29,7 @@ AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE([nostdinc 1.8.5])
-AX_CONFIG_HEADER_PREFIX([src/pe_config.h], [PE_])
+AX_CONFIG_HEADER_PREFIX([src/pe/config.h], [PE_])
 
 dnl Fix for early autoconf that doesn't export these
 AC_SUBST([abs_top_srcdir])
@@ -139,6 +139,8 @@ fi
 # if they are replacing Boost threads with something else for their platform.
 AX_PKG(THREADS,           [BOOST_THREAD], [], [])
 
+AX_PKG(M, [], [-lm], [math.h])
+
 # Vision Workbench
 AX_PKG(VW_CORE,           [BOOST], [-lvwCore],        [vw/Core/Thread.h])
 AX_PKG(VW_IMAGE,          [BOOST], [-lvwImage],       [vw/Image/ImageView.h])
@@ -219,14 +221,18 @@ AX_PKG_ONE_OF(QT,
 AX_GROUP_PKG(BOOST_COMMON, [BOOST BOOST_PROGRAM_OPTIONS])
 AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 
-AX_MODULE(GRAPHICS,     [src/pe/graphics],   [libpeGraphics.la],    yes, [],    [GL])
-AX_MODULE(VIDEO,        [src/pe/video],      [libpeVideo.la],       yes, [GRAPHICS],    [])
-AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
+AX_MODULE(CORE,         [src/pe/core],       [libpeCore.la],        yes, [BOOST BOOST_PROGRAM_OPTIONS THREADS M], [PTHREADS])
+AX_MODULE(GRAPHICS,     [src/pe/graphics],   [libpeGraphics.la],    yes, [CORE],    [GL])
+AX_MODULE(VIDEO,        [src/pe/video],      [libpeVideo.la],       yes, [CORE GRAPHICS],    [])
+AX_MODULE(SIMULATION,   [src/pe/simulation], [libpeSimulation.la],  yes, [CORE],  [])
+AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO SIMULATION BOOST_THREAD BOOST_PROGRAM_OPTIONS VW_CORE VW_IMAGE VW_FILEIO QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
+AM_CONDITIONAL(MAKE_MODULE_CORE,              [test "$MAKE_MODULE_CORE" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_VIDEO,             [test "$MAKE_MODULE_VIDEO" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_GRAPHICS,          [test "$MAKE_MODULE_GRAPHICS" = "yes"])
+AM_CONDITIONAL(MAKE_MODULE_SIMULATION,        [test "$MAKE_MODULE_SIMULATION" = "yes"])
 AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE, [test "$MAKE_APP_PHOSPHORESSENCE" = "yes"])
 
 ##################################################
@@ -264,8 +270,10 @@ AC_CONFIG_FILES([                       \
   Makefile                              \
   src/Makefile                          \
   src/pe/Makefile                       \
+  src/pe/core/Makefile                  \
   src/pe/graphics/Makefile              \
   src/pe/video/Makefile                 \
+  src/pe/simulation/Makefile            \
   src/OpenFrameworks/Makefile           \
 ])
 

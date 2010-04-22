@@ -43,8 +43,6 @@ class QPoint;
 
 #define HORIZ_MESH_SIZE 128
 #define VERT_MESH_SIZE HORIZ_MESH_SIZE
-#define FLUID_DIMENSION HORIZ_MESH_SIZE
-#define FLUID_SIZE (FLUID_DIMENSION+2)*(FLUID_DIMENSION+2)
 #define FRAMEBUFFER_SIZE 1600
 
 /// Drawable
@@ -182,12 +180,6 @@ private:
   vw::Matrix<vw::Vector2> m_feedback_texcoords;
   vw::Matrix<vw::Vector2> m_feedback_screencoords;
   vw::Matrix<vw::Vector2> m_warped_screencoords;
-
-  // Fluid simulation
-  boost::shared_array<float> m_fluid_u, m_fluid_v;
-  boost::shared_array<float> m_fluid_u_prev, m_fluid_v_prev; 
-  boost::shared_array<float> m_fluid_density, m_fluid_density_prev;
-  float m_fluid_previous_time;  
 
   // Image Parameters
   vw::BBox2 m_current_viewport;

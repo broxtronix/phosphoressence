@@ -15,7 +15,7 @@
 
 #include <vw/Core/Thread.h>
 #include <vw/Math/Vector.h>
-
+#include <pe/core/Time.h>
 
 // -----------------------------------------------------------
 // Utilities
@@ -27,27 +27,6 @@ std::string pe_resources_directory();
 
 // Erases a file suffix if one exists and returns the base string
 std::string prefix_from_filename(std::string const& filename);
-
-// ---------------------------------------------------------------------
-// PeTime
-// ---------------------------------------------------------------------
-
-class PeTime {
-  float m_time;
-  long long m_last_time;
-  vw::Mutex m_mutex;
-
-public:
-  PeTime();
-  double operator()();
-};
-
-/// Return the singleton instance of the PhosphorEssence time
-/// structure.  The time struct is created the first time this method
-/// is invoked and initialized to time = 0.  You should *always* access
-/// the time using this function.
-double pe_time();
-
 
 // ---------------------------------------------------------------------
 // VectorSpaceDimension
