@@ -12,18 +12,22 @@ class FingerState:
     Provides accumulated state for tracking fingers.
     """
 
-    def __init__(self,sid,x=0.0,y=0.0,prox=0.0,orient=0.0,eccent=0.0,xvel=0.0,yvel=0.0,time=0.0):
+    def __init__(self,sid,x,y,source,frame):
 	self.sid = sid
 	self.x = x
 	self.y = y
-	self.prox = prox
-	self.orient = orient
-	self.eccent = eccent
-	self.xvel = xvel
-	self.yvel = yvel
-	self.ang = 0.0
-	self.path = None
-	self.lastpt = None
+        self.source = source
+	self.xvel = 0
+	self.yvel = 0
+        self.frame = frame
+
+    
+    def drag(self, new_x, new_y, new_frame):
+        self.xvel = new_x - self.x
+        self.yvel = new_y - self.y
+        self.x = new_x
+        self.y = new_y
+        self.frame = new_frame
 
 class TuioController(object):
 
@@ -54,9 +58,11 @@ class TuioController(object):
 
             # Finger Down
             if not (id in self.fingers):
-	 	f = FingerState(sid=id,x=obj.xpos,y=obj.ypos,prox=1.0)
-	 	f.frame = self.thisframe
-	 	f.source = obj.source
+	 	f = FingerState(sid=id,
+                                x=obj.xpos,
+                                y=obj.ypos,
+                                source=obj.source,
+                                frame=self.thisframe)
 	 	self.fingers[id] = f
                 if (self.tuio_handler):
                     self.tuio_handler.got_fingerdown(f)
@@ -64,9 +70,7 @@ class TuioController(object):
             # Finger Drag
             elif id in self.fingers:
 		f = self.fingers[id]
-		f.frame = self.thisframe
-		f.x = obj.xpos
-		f.y = obj.ypos
+                f.drag(obj.xpos, obj.ypos, frame)
                 if (self.tuio_handler):
                     self.tuio_handler.got_fingerdrag(f)
 
