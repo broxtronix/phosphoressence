@@ -23,7 +23,6 @@
 using namespace cv;
 
 Video::Video(std::string url): m_url(url), m_terminate(false) {
-
   std::cout << "Attempting to open " << url << "\n";
 
   // Plays a file on disk.

@@ -166,6 +166,10 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+  // Start video capture
+  // m_video.listDevices();
+  // m_video.initGrabber(320,240);
 }
 
 GraphicsEngine::~GraphicsEngine() {
@@ -223,7 +227,7 @@ void GraphicsEngine::initializeGL() {
 
   m_ground_texture.allocate(ground_image.cols(), ground_image.rows(), GL_RGB);
   m_ground_texture.loadData(ground_image.data(), ground_image.cols(), 
-                            ground_image.rows(), GL_RGB);
+                            ground_image.rows(), GL_RGB, GL_UNSIGNED_BYTE);
   
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -445,6 +449,11 @@ void GraphicsEngine::drawImage() {
   // Draw the ground texture
   qglColor(Qt::white);
   m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+
+  // Draw the video
+  // m_video.update();
+  // if (m_video.isFrameNew())
+  //   m_video.draw(-0.5, -0.5, 1.0, 1.0);
 
   // Draw the framebuffer to the real screen.
   glEnable(GL_BLEND);

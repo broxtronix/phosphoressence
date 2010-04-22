@@ -13,7 +13,7 @@
 // __END_LICENSE__
 
 #ifndef __PE_GRAPHICS_TEXTURE_H__
-#define __PE_GRAPHICS_TEXTURE_H___
+#define __PE_GRAPHICS_TEXTURE_H__
 
 #include <vw/Math/Vector.h>
 
@@ -85,9 +85,7 @@ namespace graphics {
     void allocate(int w, int h, int internalGlDataType); 
     void clear();
 
-    void loadData(float * data, int w, int h, int glDataType);
-    void loadData(unsigned char * data, int w, int h, int glDataType);
-    void loadData(void * data, int w, int h, int glDataType);
+    void loadData(void * data, int w, int h, int format, int type);
 
     void loadScreenData(int x, int y, int w, int h);
 

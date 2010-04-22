@@ -8,10 +8,6 @@
 #ifndef __GRAPHICS_ENGINE_H__
 #define __GRAPHICS_ENGINE_H__
 
-// OpenFrameworks
-//#include <OpenFrameworks/graphics/ofTexture.h>
-
-
 // PhosphorEssence
 #include <VideoEngine.h>
 #include <ScriptEngine.h>
@@ -29,6 +25,7 @@
 
 // PE
 #include <pe/graphics/Texture.h>
+#include <pe/video/QtKitVideoGrabber.h>
 
 // STL
 #include <string>
@@ -154,9 +151,9 @@ private:
   GLuint m_framebuffer0;
   GLuint m_framebuffer1;
   pe::graphics::Texture m_ground_texture;
+  pe::video::QtKitVideoGrabber m_video;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<vw::GPU::GpuProgram> m_gpu_backbuffer_program;
-  boost::shared_ptr<Video> m_video;
 
   // Drawables & Script Engines
   std::list<boost::shared_ptr<Drawable> > m_drawables;

@@ -6,14 +6,14 @@
  *
  */
 
-// #include <vw/Core/Log.h>
-// using namespace vw;
-
 #include <pe/video/QtKitVideoGrabber.h>
+#include <pe/graphics/Texture.h>
 using namespace pe::video;
 
 #import "Cocoa/Cocoa.h"
 #import "QTKit/QTKit.h"
+
+#include <iostream>
 
 static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPix) {
   for(int i = 0; i < numPix; i++){
@@ -29,7 +29,7 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
   NSInteger width, height;
   
   CVImageBufferRef cvFrame;
-  //  ofTexture* texture;
+  pe::graphics::Texture* texture;
   unsigned char* pixels;	
 
   BOOL isRunning;
@@ -45,7 +45,7 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
 @property(nonatomic, retain) QTCaptureDeviceInput* videoDeviceInput;
 @property(nonatomic, readonly) BOOL isRunning;
 @property(readonly) unsigned char* pixels;
-//@property(readonly) ofTexture* texture;
+@property(readonly) pe::graphics::Texture* texture;
 @property(readonly) BOOL isFrameNew;
 @property(nonatomic, readwrite) BOOL verbose;
 
@@ -72,7 +72,7 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
 @synthesize session;
 @synthesize videoDeviceInput;
 @synthesize pixels;
-//@synthesize texture;
+@synthesize texture;
 @synthesize isFrameNew;
 @synthesize verbose;
 
@@ -82,27 +82,25 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
     width = _width;
     height = _height;		
     [self setPixelBufferAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
-						    [NSNumber numberWithInt: kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
-						  [NSNumber numberWithInt:width], kCVPixelBufferWidthKey, 
-						  [NSNumber numberWithInt:height], kCVPixelBufferHeightKey, 
-						  [NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey,
-						  nil]];	
+	[NSNumber numberWithInt: kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+	[NSNumber numberWithInt:width], kCVPixelBufferWidthKey, 
+	[NSNumber numberWithInt:height], kCVPixelBufferHeightKey, 
+						  //	[NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey,
+	nil]];	
     
     //instance variables
     cvFrame = NULL;
     hasNewFrame = false;
-    // texture = new ofTexture();
-    // texture->allocate(_width, _height, GL_RGB);
+    texture = new pe::graphics::Texture();
+    texture->allocate(_width, _height, GL_RGBA);
     pixels = (unsigned char*)calloc(sizeof(char), _width*_height*3);
     
     //set up device
     NSArray* videoDevices = [[QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo] 
 			      arrayByAddingObjectsFromArray:[QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed]];
     
-    // if(verbose) {
-    //   std::string list = [[videoDevices description] stdString];
-    //   vw_out(DebugMessage) << "ofxQtKitVideoGrabberImpl -- Device List: " << list << "\n";
-    // }
+    // std::string list = [[videoDevices description] cString];
+    // std::cout << "QtKitVideoGrabberImpl -- Device List: " << list << "\n";
     
     NSError *error = nil;
     BOOL success;
@@ -111,32 +109,45 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
     self.session = [[QTCaptureSession alloc] init];
     success = [self.session addOutput:self error:&error];
     if( !success ) {
-      //      vw_out(ErrorMessage) << "ofxQtKitVideoGrabberImpl - ERROR - Error adding output";
+      std::cout << "ERROR: QtKitVideoGrabberImpl - ERROR - Error adding output";
       return nil;
     }
     
     // Try to open the new device
     if(deviceID >= videoDevices.count){
-      //      vw_out(ErrorMessage) << "ofxQtKitVideoGrabberImpl - ERROR - Error selected a nonexistent device";
+      std::cout << "QtKitVideoGrabberImpl - ERROR - Error selected a nonexistent device";
       deviceID = videoDevices.count - 1;
     }
 		
     QTCaptureDevice* selectedVideoDevice = [videoDevices objectAtIndex:deviceID];
     success = [selectedVideoDevice open:&error];
     if (selectedVideoDevice == nil || !success) {
-      //      vw_out(ErrorMessage) << "ofxQtKitVideoGrabberImpl - ERROR - Selected device not opened";
+      std::cout << "QtKitVideoGrabberImpl - ERROR - Selected device not opened";
       return nil;
     } else { 
-      // if(verbose) 
-      // 	vw_out(DebugMessage) << "ofxQtKitVideoGrabberImpl -- Attached camera " 
-      // 			     << [[selectedVideoDevice description] cString] << "\n";
+      //      if(verbose) 
+      std::cout << "\t--> QtKitVideoGrabber -- Using camera " 
+		<< [[selectedVideoDevice description] cString] << "\n";
 			
       // Add the selected device to the session
       videoDeviceInput = [[QTCaptureDeviceInput alloc] initWithDevice:selectedVideoDevice];
       success = [session addInput:videoDeviceInput error:&error];
-      //      if(!success) 
-	//	vw_out(ErrorMessage) << "ofxQtKitVideoGrabberImpl - ERROR - Error adding device to session";	
+      if(!success) 
+	std::cout  << "QtKitVideoGrabberImpl - ERROR - Error adding device to session";	
 
+//       // Create a decompressed video output stream for this session
+//       [mCaptureDecompressedVideoOutput setPixelBufferAttributes:pixelBufferOptions]; 
+		
+// #if QTKIT_VERSION_MAX_ALLOWED >= QTKIT_VERSION_7_6_3
+//       [mCaptureDecompressedVideoOutput setAutomaticallyDropsLateVideoFrames:YES]; 
+// #endif
+//       success = [mCaptureSession addOutput:mCaptureDecompressedVideoOutput error:&error];
+//       if (!success) {
+// 	cout << "QTKit failed to add Output to Capture Session" << endl; 
+// 	[localpool drain]; 
+// 	return 0;
+//       }
+		
       //start the session
       [session startRunning];
     }
@@ -150,9 +161,11 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
 	 withSampleBuffer:(QTSampleBuffer *)sampleBuffer 
 	   fromConnection:(QTCaptureConnection *)connection {
 
-  CVImageBufferRef toRelease = cvFrame;
   CVBufferRetain(videoFrame);
+
+  CVImageBufferRef toRelease;
   @synchronized(self){
+    toRelease = cvFrame;
     cvFrame = videoFrame;
     hasNewFrame = YES;
   }	
@@ -162,28 +175,34 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
 }
 
 - (void) update {
-  @synchronized(self){
-    if(hasNewFrame){
-      CVPixelBufferLockBaseAddress(cvFrame, 0);
-      unsigned char* src = (unsigned char*)CVPixelBufferGetBaseAddress(cvFrame);;
-      
-      //I wish this weren't necessary, but
-      //in my tests the only performant & reliabile
-      //pixel format for QTCapture is k32ARGBPixelFormat, 
-      //to my knowledge there is only RGBA format
-      //available to gl textures
-      
-      //convert pixels from ARGB to RGB			
-      argb_to_rgb(src, pixels, width*height);
-      //      texture->loadData(pixels, width, height, GL_RGB);
-      CVPixelBufferUnlockBaseAddress(cvFrame, 0);
+  if(hasNewFrame){
+
+    CVPixelBufferRef localFrame;
+
+
+    @synchronized(self) {
+      localFrame = CVBufferRetain(cvFrame);
       hasNewFrame = NO;
-      isFrameNew = YES;
     }
-    else{
-      isFrameNew = NO;
-    }
-  }	
+   
+    CVPixelBufferLockBaseAddress(localFrame, 0);
+    unsigned char* baseaddress = (unsigned char*)CVPixelBufferGetBaseAddress(localFrame);
+      
+    size_t twidth = CVPixelBufferGetWidth(localFrame);
+    size_t theight = CVPixelBufferGetHeight(localFrame);
+    size_t trowBytes = CVPixelBufferGetBytesPerRow(localFrame);
+
+    std::cout << "GOT A FRAME... " << twidth << " x " << theight << "  @  " << trowBytes << "\n";
+    
+    //convert pixels from BGRA to RGB			
+    //      argb_to_rgb(src, pixels, width*height);
+    texture->loadData(baseaddress, twidth, theight, GL_RGBA, GL_UNSIGNED_BYTE);
+    CVPixelBufferUnlockBaseAddress(localFrame, 0);
+    CVBufferRelease(localFrame);
+    isFrameNew = YES;
+  } else {
+    isFrameNew = NO;
+  }
 }
 
 - (void) stop {
@@ -194,7 +213,7 @@ static inline void argb_to_rgb(unsigned char* src, unsigned char* dst, int numPi
   self.session = nil;
   
   free(pixels);
-  //  delete texture;
+  delete texture;
 }
 
 
@@ -285,11 +304,11 @@ unsigned char* QtKitVideoGrabber::getPixels() {
   return NULL;
 }
 
-// ofTexture &	QtKitVideoGrabber::getTextureReference() {
-//   if(confirmInit()){
-//     return *[(QtKitVideoGrabberImpl*)grabber texture];
-//   }
-// }
+pe::graphics::Texture&	QtKitVideoGrabber::getTextureReference() {
+  if(confirmInit()){
+    return *[(QtKitVideoGrabberImpl*)grabber texture];
+  }
+}
 
 void QtKitVideoGrabber::setVerbose(bool bTalkToMe) {
   if(confirmInit()){
@@ -297,17 +316,17 @@ void QtKitVideoGrabber::setVerbose(bool bTalkToMe) {
   }
 }
 
-// void QtKitVideoGrabber::draw(float x, float y, float w, float h) {
-//   if(confirmInit()){
-//     [(QtKitVideoGrabberImpl*)grabber texture]->draw(x, y, w, h);
-//   }
-// }
+void QtKitVideoGrabber::draw(float x, float y, float w, float h) {
+  if(confirmInit()){
+    [(QtKitVideoGrabberImpl*)grabber texture]->draw(x, y, w, h);
+  }
+}
 
-// void QtKitVideoGrabber::draw(float x, float y) {
-//   if(confirmInit()){
-//     [(QtKitVideoGrabberImpl*)grabber texture]->draw(x, y);
-//   }
-// }
+void QtKitVideoGrabber::draw(float x, float y) {
+  if(confirmInit()){
+    [(QtKitVideoGrabberImpl*)grabber texture]->draw(x, y);
+  }
+}
 
 float QtKitVideoGrabber::getHeight() {
   if(confirmInit()){
@@ -325,7 +344,7 @@ float QtKitVideoGrabber::getWidth() {
 		  
 bool QtKitVideoGrabber::confirmInit() {
   if(!isInited){
-    //    vw_out(ErrorMessage) << "QtKitVideoGrabber -- ERROR -- Calling method on non intialized video grabber";
+    std::cout << "QtKitVideoGrabber -- ERROR -- Calling method on non intialized video grabber";
   }
   return isInited;
 }

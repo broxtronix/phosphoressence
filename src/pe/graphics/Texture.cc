@@ -137,7 +137,7 @@ void Texture::allocate(int w, int h, int internalGlDataType){
   // can't do this on OpenGL ES: on full-blown OpenGL, 
   // internalGlDataType and glDataType (GL_LUMINANCE below)
   // can be different; on ES they must be exactly the same.
-  //		glTexImage2D(texData.textureTarget, 0, texData.glTypeInternal, (GLint)texData.tex_w, (GLint)texData.tex_h, 0, GL_LUMINANCE, PIXEL_TYPE, 0);  // init to black...
+  //glTexImage2D(texData.textureTarget, 0, texData.glTypeInternal, (GLint)texData.tex_w, (GLint)texData.tex_h, 0, GL_LUMINANCE, PIXEL_TYPE, 0);  // init to black...
   glTexImage2D(texData.textureTarget, 0, texData.glTypeInternal, (GLint)texData.tex_w, (GLint)texData.tex_h, 0, texData.glType, texData.pixelType, 0);  // init to black...
 #else
   glTexImage2D(texData.textureTarget, 0, texData.glTypeInternal, texData.tex_w, texData.tex_h, 0, texData.glTypeInternal, GL_UNSIGNED_BYTE, 0);
@@ -164,17 +164,7 @@ void Texture::allocate(int w, int h, int internalGlDataType){
 }
 
 //----------------------------------------------------------
-void Texture::loadData(unsigned char * data, int w, int h, int glDataType){
-  loadData( (void *)data, w, h, glDataType);
-}
-
-//----------------------------------------------------------
-void Texture::loadData(float * data, int w, int h, int glDataType){
-  loadData( (void *)data, w, h, glDataType);
-}
-
-//----------------------------------------------------------
-void Texture::loadData(void * data, int w, int h, int glDataType){
+void Texture::loadData(void * data, int w, int h, int format, int type){
   
   //	can we allow for uploads bigger then texture and
   //	just take as much as the texture can?
@@ -193,7 +183,7 @@ void Texture::loadData(void * data, int w, int h, int glDataType){
   //update our size with the new dimensions - this should be the same size or smaller than the allocated texture size
   texData.width 	= w;
   texData.height 	= h;
-  texData.glType  = glDataType;
+  texData.glType  = format;
   
   //compute new tex co-ords based on the ratio of data's w, h to texture w,h;
 #ifndef TARGET_OF_IPHONE	
@@ -237,7 +227,7 @@ void Texture::loadData(void * data, int w, int h, int glDataType){
   // update the texture image:
   glEnable(texData.textureTarget);
   glBindTexture(texData.textureTarget, (GLuint)texData.textureID);
-  glTexSubImage2D(texData.textureTarget, 0, 0, 0, w, h, texData.glType, texData.pixelType, data); // MEMO: important to use pixelType here
+  glTexSubImage2D(texData.textureTarget, 0, 0, 0, w, h, format, type, data); // MEMO: important to use pixelType here
   glDisable(texData.textureTarget);
 
   //------------------------ back to normal.

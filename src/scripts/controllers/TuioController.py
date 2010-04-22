@@ -38,7 +38,7 @@ class TuioController(object):
 
         # Set up tracking of messages from OSC
 	self.tracking = tuio.Tracking(host=host,port=port)
-	self.tracking.manager.add(self.osc_callback,"/*")
+	self.tracking.manager.add(self.osc_callback,"/msaremote/*")
 
         # Set up some bindings
         self.bindings = PeBindings()
@@ -50,41 +50,48 @@ class TuioController(object):
         for obj in self.tracking.objects():
             print "TUIO object=",obj
         for obj in self.tracking.cursors():
-	    id = obj.sessionid
-	    if not (id in self.fingers):
-		f = FingerState(sid=id,x=obj.xpos,y=obj.ypos,prox=1.0)
-		f.frame = self.thisframe
-		f.source = obj.source
-		self.fingers[id] = f
-		self.processfinger("fingerdown",f)
-	    elif id in self.fingers:
+            id = obj.sessionid
+
+            # Finger Down
+            if not (id in self.fingers):
+	 	f = FingerState(sid=id,x=obj.xpos,y=obj.ypos,prox=1.0)
+	 	f.frame = self.thisframe
+	 	f.source = obj.source
+	 	self.fingers[id] = f
+                if (self.tuio_handler):
+                    self.tuio_handler.got_fingerdown(f)
+
+            # Finger Drag
+            elif id in self.fingers:
 		f = self.fingers[id]
 		f.frame = self.thisframe
 		f.x = obj.xpos
 		f.y = obj.ypos
-		# print "Dragging of sessionid=",id," xy=",obj.xpos,obj.ypos
-		self.processfinger("fingerdrag",f)
-	todelete = []
-	for id in self.fingers:
-	    if self.fingers[id].frame != self.thisframe:
-		# print "Should be doing FINGER UP of id=",id
-		todelete.append(id)
-	for id in todelete:
-		self.processfinger("fingerup",self.fingers[id])
-		# print "Deleting fingers id=",id
-		del self.fingers[id]
+                if (self.tuio_handler):
+                    self.tuio_handler.got_fingerdrag(f)
+
+        # Finger Up
+        todelete = []
+        for id in self.fingers:
+            if self.fingers[id].frame != self.thisframe:
+                # print "Should be doing FINGER UP of id=",id
+                todelete.append(id)
+        for id in todelete:
+            if (self.tuio_handler):
+                self.tuio_handler.got_fingerup(self.fingers[id])
+                # print "Deleting fingers id=",id
+                del self.fingers[id]
 
 
     def render_callback(self): 
 	
         # Call the tracking update to fetch new OSC data.
         self.tracking.update()
-
         self.multitouch_update()
 
         if (self.tuio_handler):
             self.tuio_handler.render_callback()
-
+            
         if (self.osc_handler):
             self.osc_handler.render_callback()
 

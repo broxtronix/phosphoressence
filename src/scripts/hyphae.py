@@ -1,4 +1,4 @@
-
+from parameters import pe
 
 class MultitouchHandler(object):
 
@@ -13,19 +13,16 @@ class MultitouchHandler(object):
             print "Unknown event type: ", event_type
 
     def got_fingerdown(self,f):
-        print "Finger down: ", f
+        print "Finger down: ", f.sid
 
     def got_fingerdrag(self,f):
-        print "Finger drag: ", f
+        print "Finger drag: ", f.sid
 
     def got_fingerup(self,f):
-        print "Finger up: ", f
+        print "Finger up: ", f.sid
 
     def render_callback(self):
-        
-        
-
-
+        pass
 
 class OscHandler(object):
 
@@ -82,3 +79,6 @@ class OscHandler(object):
             if (pe.vg_mode > 3):
                 pe.vg_mode = 0
 	    print "vg_mode = ",pe.vg_mode
+
+    def render_callback(self):
+        pass
