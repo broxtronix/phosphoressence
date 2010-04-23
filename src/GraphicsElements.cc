@@ -33,8 +33,8 @@ void GraphicsEngine::drawFeedback() {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
 
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glEnable(GL_BLEND);
+  // glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Fragment Shader
   m_gpu_backbuffer_program->install();
@@ -188,7 +188,7 @@ void GraphicsEngine::drawFeedback() {
   glEnd();
 
   glDisable( GL_TEXTURE_2D );
-  glDisable(GL_BLEND);
+  //  glDisable(GL_BLEND);
   m_gpu_backbuffer_program->uninstall();
 }
 

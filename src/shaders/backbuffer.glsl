@@ -295,16 +295,15 @@ void main() {
   vec4 g;
   if (decay >= 1.0) 
     // When gain is greater than 1.0, we fade up all channels
-    g = vec4(decay, decay, decay, 1.0);
+    g = vec4(decay, decay, decay, decay);
   else
-    // But when less than 1.0, we only fade out the luminance channel
-    g = vec4(1.0, 1.0, decay, 1.0); // XXX
+    // But when less than 1.0, we only fade out the luminance and alpha channel
+    g = vec4(1.0, 1.0, decay, decay); 
 
   vec4 hsv_texel = g * rgb_to_hsv(mixed_texel);
   hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
-  hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation & luminance
+  hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation, luminance, and alpha
   vec4 final_texel = hsv_to_rgb(hsv_texel);
-  final_texel.a = 0.8;
 
   // Return the final value
   gl_FragColor = final_texel;
@@ -315,5 +314,5 @@ void main() {
       gl_FragColor.g != gl_FragColor.g ||
       gl_FragColor.b != gl_FragColor.b ||
       gl_FragColor.a != gl_FragColor.a)
-    gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+    gl_FragColor = vec4(0.0,0.0,0.0,0.0);
 }

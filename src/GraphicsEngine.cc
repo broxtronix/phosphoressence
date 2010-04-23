@@ -195,7 +195,7 @@ void GraphicsEngine::initializeGL() {
   cv::Mat ground_image = cv::imread(ground_image_filename);
   m_ground_texture.allocate(ground_image.size().width, ground_image.size().height, GL_RGB);
   m_ground_texture.loadData(ground_image.ptr(), ground_image.size().width, 
-                            ground_image.size().height, GL_RGB, GL_UNSIGNED_BYTE);
+                            ground_image.size().height, GL_BGR, GL_UNSIGNED_BYTE);
   
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -204,7 +204,6 @@ void GraphicsEngine::initializeGL() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-  // glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
 
   glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -416,7 +415,7 @@ void GraphicsEngine::drawImage() {
 
   // Draw the ground texture
   qglColor(Qt::white);
-  //m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
   // Draw the video
   // m_video.update();
@@ -456,7 +455,7 @@ void GraphicsEngine::drawImage() {
   glVertex2d( m_aspect, 1.0);
   glTexCoord2f( 0.5-w_texture, 0.5+h_texture );
   glVertex2d( -m_aspect, 1.0);
-  glEnd() ;
+  glEnd();
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );

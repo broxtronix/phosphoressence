@@ -30,7 +30,7 @@ pe.show_fps = 0;
 # Instantiate hardware controllers
 #osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
-tuio = TuioController(TUIO_DEBUG,host="10.0.1.193",port=3333)
+tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 
 # Set up Hyphae
 osc_handler = hyphae.OscHandler()
