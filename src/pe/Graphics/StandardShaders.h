@@ -7,17 +7,17 @@
 
 // StandardShaders.h
 
-#ifndef __VW_GRAPHICS_STANDARD_SHADERS_H__
-#define __VW_GRAPHICS_STANDARD_SHADERS_H__
+#ifndef __PE_GRAPHICS_STANDARD_SHADERS_H__
+#define __PE_GRAPHICS_STANDARD_SHADERS_H__
 
 #include <map>
 #include <string>
 
-namespace vw { 
+namespace pe { 
 namespace graphics {
 
   std::string find_standard_shader(std::string path);
 
-}}  // __VW_GRAPHICS_STANDARD_SHADERS_H__
+}}  // __PE_GRAPHICS_STANDARD_SHADERS_H__
 
 #endif

@@ -150,7 +150,7 @@ private:
   GLuint m_framebuffer0;
   GLuint m_framebuffer1;
   pe::graphics::Texture m_ground_texture;
-  pe::video::QtKitVideoGrabber m_video;
+  boost::shared_ptr<VideoEngine> m_video_engine;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_backbuffer_program;
   boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;

@@ -138,8 +138,7 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_fluid_sim.reset(new pe::simulation::FluidSimulation(HORIZ_MESH_SIZE, HORIZ_MESH_SIZE));
 
   // Start video capture
-  // m_video.listDevices();
-  // m_video.initGrabber(320,240);
+  m_video_engine.reset(new VideoEngine());
 }
 
 GraphicsEngine::~GraphicsEngine() {
@@ -368,12 +367,15 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
+  // Draw the video
+  m_video_engine->draw(0.5, 0.5, 1.0, 1.0);
+
   // -----------------------
   // Call out to python environment
   // -----------------------
   
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
-  pe_script_engine().execute("pe_render()");
+  //  pe_script_engine().execute("pe_render()");
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
@@ -414,13 +416,8 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Draw the ground texture
-  qglColor(Qt::white);
-  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
-
-  // Draw the video
-  // m_video.update();
-  // if (m_video.isFrameNew())
-  //   m_video.draw(-0.5, -0.5, 1.0, 1.0);
+  // qglColor(Qt::white);
+  // m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
   // Draw the framebuffer to the real screen.
   glEnable(GL_BLEND);

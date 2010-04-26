@@ -700,3 +700,12 @@ pe.register(Parameter( name = "vg_stroke_thickness",
            description = "Thickness of stroke.",
            default_value = 0.01))
 
+
+pe.register(Parameter( name = "vision_threshold",
+           description = "Threshold",
+           default_value = 0.5))
+
+pe.register(Parameter( name = "vision_num_blobs",
+           description = "Number of blobs.",
+           default_value = 50))
+

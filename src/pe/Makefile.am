@@ -32,11 +32,16 @@ simulation_subdirs = Simulation
 simulation_headers = Simulation.h
 endif
 
+if MAKE_MODULE_VISION
+vision_subdirs = Vision
+vision_headers = Vision.h
+endif
+
 include_HEADERS = $(core_headers) $(math_headers) $(video_headers)	\
-		  $(graphics_headers) $(simulation_headers)
+		  $(graphics_headers) $(simulation_headers) $(vision_headers)
 
 SUBDIRS = $(core_subdirs) $(math_subdirs) $(graphics_subdirs)	\
-          $(video_subdirs) $(simulation_subdirs) .
+          $(video_subdirs) $(simulation_subdirs) $(vision_subdirs) .
 
 CLEANFILES = config.h.pre.in~
 

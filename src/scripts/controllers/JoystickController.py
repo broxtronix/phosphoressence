@@ -17,8 +17,8 @@ class JoystickController(object):
 #        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 1.0, "log10")
 #        self.bindings.add(self, "/joystick0/axis2", "warp", 4.0, 0.0, 0.0)
 #        self.bindings.add(self, "/joystick0/axis5", "echo_alpha", 0.0, 0.98, 0.0)
-        self.bindings.add(self, "/joystick0/axis2", "q7", 0.01, 1.0, 0.01)
-        self.bindings.add(self, "/joystick0/axis5", "q8", 0.01, 1.0, 0.01)
+#        self.bindings.add(self, "/joystick0/axis2", "q7", 0.01, 1.0, 0.01)
+#        self.bindings.add(self, "/joystick0/axis5", "q8", 0.01, 1.0, 0.01)
 
         # Local variables, for helping us to keep track of various
         # joystick settings.

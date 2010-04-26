@@ -15,27 +15,22 @@
 #include <boost/circular_buffer.hpp>
 
 // ---------------------------------------------------------------------------
-//                              Video Thread
+//                              Video Engine
 // ---------------------------------------------------------------------------
 
-/// Video
-///
-class Video {
-  pe::Mutex m_mutex;
-  std::string m_url;
-  bool m_terminate;
-  cv::VideoCapture m_video_capture;
-  cv::Mat m_last_frame;
+class VideoTask;
+
+class VideoEngine {
+  boost::shared_ptr<VideoTask> m_task;
+  boost::shared_ptr<pe::Thread> m_thread;
 
 public:
 
-  Video(std::string url);
-  ~Video();
+  VideoEngine(std::string url = "");
+  ~VideoEngine();
 
   void operator()();
-  void terminate() { m_terminate = true; }
-
-  void copy_to_texture(pe::uint32);
+  void draw(int x, int y, int width, int height);
 };
 
 #endif // __VIDEO_ENGINE_H__

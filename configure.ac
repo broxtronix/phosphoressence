@@ -219,18 +219,20 @@ AX_GROUP_PKG(BOOST_ALL,    [BOOST_COMMON BOOST_FILESYSTEM])
 AX_MODULE(CORE,         [src/pe/Core],       [libpeCore.la],        yes, [BOOST BOOST_PROGRAM_OPTIONS THREADS M], [PTHREADS])
 AX_MODULE(MATH,         [src/pe/Math],       [libpeMath.la],        yes, [CORE],    [])
 AX_MODULE(GRAPHICS,     [src/pe/Graphics],   [libpeGraphics.la],    yes, [CORE],    [GL])
-AX_MODULE(VIDEO,        [src/pe/Video],      [libpeVideo.la],       yes, [CORE GRAPHICS],    [])
+AX_MODULE(VIDEO,        [src/pe/Video],      [libpeVideo.la],       yes, [CORE GRAPHICS OPENCV],    [])
+AX_MODULE(VISION,       [src/pe/Vision],     [libpeVision.la],      yes, [CORE OPENCV],   [])
 AX_MODULE(SIMULATION,   [src/pe/Simulation], [libpeSimulation.la],  yes, [CORE MATH],  [])
-AX_APP(PHOSPHORESSENCE, [src], yes,  [GRAPHICS VIDEO SIMULATION BOOST_THREAD BOOST_PROGRAM_OPTIONS QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
+AX_APP(PHOSPHORESSENCE, [src], yes,  [CORE GRAPHICS MATH VIDEO SIMULATION VISION BOOST_THREAD BOOST_PROGRAM_OPTIONS QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
 AM_CONDITIONAL(MAKE_MODULE_CORE,              [test "$MAKE_MODULE_CORE" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_MATH,              [test "$MAKE_MODULE_MATH" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_VIDEO,             [test "$MAKE_MODULE_VIDEO" = "yes"])
+AM_CONDITIONAL(MAKE_MODULE_VISION,            [test "$MAKE_MODULE_VISION" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_GRAPHICS,          [test "$MAKE_MODULE_GRAPHICS" = "yes"])
 AM_CONDITIONAL(MAKE_MODULE_SIMULATION,        [test "$MAKE_MODULE_SIMULATION" = "yes"])
-AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE, [test "$MAKE_APP_PHOSPHORESSENCE" = "yes"])
+AM_CONDITIONAL(MAKE_APP_PHOSPHORESSENCE,      [test "$MAKE_APP_PHOSPHORESSENCE" = "yes"])
 
 ##################################################
 # final processing
@@ -270,6 +272,7 @@ AC_CONFIG_FILES([                       \
   src/pe/Core/Makefile                  \
   src/pe/Math/Makefile                  \
   src/pe/Graphics/Makefile              \
+  src/pe/Vision/Makefile                \
   src/pe/Video/Makefile                 \
   src/pe/Simulation/Makefile            \
   src/OpenFrameworks/Makefile           \
