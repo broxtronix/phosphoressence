@@ -40,7 +40,7 @@ namespace vision {
                               // blobs came into existence
     TrackedBlob& getById( int id );  // returns a reference to the
     // corresponding blob in blobs vector
-    void draw( float x, float y );  // draws all blobs
+    void draw();
 
   protected:
 

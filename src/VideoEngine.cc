@@ -102,8 +102,8 @@ public:
       GaussianBlur(working_frame, working_frame, cv::Size(7,7), 1.5, 1.5);
       
       // Compute the threhold image.
-      float thresh = pe_script_engine().get_parameter("vision_threshold");
-      //      float thresh = 0.5;
+      //float thresh = pe_script_engine().get_parameter("vision_threshold");
+      float thresh = 0.5;
       cv::threshold(working_frame, working_frame, 255*thresh, 255, cv::THRESH_BINARY);
 
       //      imshow("test", working_frame);
@@ -134,6 +134,7 @@ public:
 
     m_video_texture.draw(m_aspect_ratio, -1.0, -2*m_aspect_ratio, 2.0);
     m_contour_finder.draw();
+    m_blob_tracker.draw();
   }
 
   void terminate() { m_terminate = true; }

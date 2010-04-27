@@ -1,4 +1,5 @@
 #include <pe/Vision/BlobTracker.h>
+#include <pe/Graphics/BitmapFont.h>
 
 pe::vision::BlobTracker::BlobTracker() {
   listener = NULL;
@@ -49,37 +50,16 @@ pe::vision::TrackedBlob&  pe::vision::BlobTracker::getById( int id ) {
 
 
 
-void pe::vision::BlobTracker::draw( float x, float y ) {
-  // ofEnableAlphaBlending();
-  // ofSetColor( 255,0,200,100 );
-  // glPushMatrix();
-  // glTranslatef( x, y, 0.0 );
-  
-  // ofFill();
-  // for( int i=0; i<blobs.size(); i++ ) {
-  //   ofRect( blobs[i].boundingRect.x, blobs[i].boundingRect.y,
-  //           blobs[i].boundingRect.width, blobs[i].boundingRect.height );
-  // }
-  // ofDisableAlphaBlending();
-
-  // ofSetColor(0xffffff);
-  // for( int i=0; i<blobs.size(); i++ ) {
-  //   glBegin(GL_LINE_LOOP);
-  //   for( int j=0; j<blobs[i].pts.size(); j++ ) {
-  //     glVertex2f( blobs[i].pts[j].x, blobs[i].pts[j].y );
-  //   }
-  //   glEnd();
-  // }
-  
-  // ofSetColor( 0xffffff );
-  // for( int i=0; i<blobs.size(); i++ ) {
-  //   ostringstream docstring;
-  //   //docstring << blobs[i].id << endl;
-  //   docstring << findOrder(blobs[i].id) << endl;
-  //   ofDrawBitmapString( docstring.str(),
-  //                       blobs[i].centroid.x, blobs[i].centroid.y );
-  // }
-  // glPopMatrix();
+void pe::vision::BlobTracker::draw() {
+  glEnable(GL_BLEND);
+  glColor4f(1.0, 1.0, 1.0, 1.0);
+  for( int i=0; i<blobs.size(); i++ ) {
+    std::ostringstream docstring;
+    docstring << findOrder(blobs[i].id) << std::endl;
+    pe::graphics::drawBitmapString( docstring.str(),
+                                    blobs[i].centroid.x(), 
+                                    blobs[i].centroid.y() );
+  }
 }
 
 

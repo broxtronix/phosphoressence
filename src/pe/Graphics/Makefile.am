@@ -15,9 +15,9 @@ StandardShaders.cc:
 	perl StandardShaders.pl
 CLEANFILES = StandardShaders.cc
 
-include_HEADERS = Texture.h GpuProgram.h StandardShaders.h Utilities.h
+include_HEADERS = Texture.h GpuProgram.h StandardShaders.h Utilities.h BitmapFont.h
 
-libpeGraphics_la_SOURCES = Texture.cc GpuProgram.cc StandardShaders.cc Utilities.cc
+libpeGraphics_la_SOURCES = Texture.cc GpuProgram.cc StandardShaders.cc Utilities.cc BitmapFont.cc
 libpeGraphics_la_LIBADD = @MODULE_GRAPHICS_LIBS@
 
 lib_LTLIBRARIES = libpeGraphics.la
