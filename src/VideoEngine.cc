@@ -39,7 +39,7 @@ class VideoTask {
   bool m_terminate;
   float m_aspect_ratio;
   boost::shared_ptr<cv::VideoCapture> m_video_capture;
-  cv::Mat m_raw_frame, m_prev_frame, m_background_frame;
+  cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame;
   pe::graphics::Texture m_video_texture;
   pe::vision::ContourFinder m_contour_finder;
   pe::vision::BlobTracker m_blob_tracker;
@@ -67,7 +67,7 @@ public:
 
     // Save the background image & set the intial previous frame.
     m_prev_frame = m_raw_frame;
-    m_background_frame = m_raw_frame;
+    m_background_frame = m_raw_frame.clone();
 
     // Allocate texture memory
     m_video_texture.allocate(frame.size().width, frame.size().height, GL_RGB);
@@ -95,21 +95,21 @@ public:
       (*m_video_capture) >> frame; 
       cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
       
-      cv::Mat working_frame = m_raw_frame.clone();
-      // Todo: add background subtraction.
+      // Background subtraction
+      cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
 
       // Blur a bit
-      GaussianBlur(working_frame, working_frame, cv::Size(7,7), 1.5, 1.5);
+      GaussianBlur(m_working_frame, m_working_frame, cv::Size(7,7), 1.5, 1.5);
       
       // Compute the threhold image.
       //float thresh = pe_script_engine().get_parameter("vision_threshold");
       float thresh = 0.5;
-      cv::threshold(working_frame, working_frame, 255*thresh, 255, cv::THRESH_BINARY);
+      cv::threshold(m_working_frame, m_working_frame, 255*thresh, 255, cv::THRESH_BINARY);
 
-      //      imshow("test", working_frame);
+      //      imshow("test", m_working_frame);
 
       // Find Contours
-      m_contour_finder.findContours(working_frame,
+      m_contour_finder.findContours(m_working_frame,
                                     100,     // Min area
                                     640*480, // Max area
                                     10,
@@ -135,6 +135,15 @@ public:
     m_video_texture.draw(m_aspect_ratio, -1.0, -2*m_aspect_ratio, 2.0);
     m_contour_finder.draw();
     m_blob_tracker.draw();
+  }
+  
+  void capture_background_frame() {
+    pe::Mutex::Lock lock(m_mutex);
+
+    // Grab a new background frame
+    cv::Mat frame;
+    (*m_video_capture) >> frame;
+    cvtColor(frame, m_background_frame, CV_BGR2GRAY);
   }
 
   void terminate() { m_terminate = true; }
@@ -162,4 +171,6 @@ void VideoEngine::draw(int x, int y, int width, int height) {
   m_task->draw(x,y,width,height);
 }
 
-
+void VideoEngine::capture_background_frame() {
+  m_task->capture_background_frame();
+}

@@ -33,6 +33,8 @@ public:
 
   void operator()();
   void draw(int x, int y, int width, int height);
+  void capture_background_frame();
+
 };
 
 #endif // __VIDEO_ENGINE_H__
