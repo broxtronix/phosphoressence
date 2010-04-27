@@ -11,6 +11,7 @@
 #include "highgui.h"
 
 #include <pe/Core/Thread.h>
+#include <pe/Math/Vector.h>
 #include <pe/Core/FundamentalTypes.h>
 #include <boost/circular_buffer.hpp>
 
@@ -26,7 +27,8 @@ class VideoEngine {
 
 public:
 
-  VideoEngine(std::string url = "");
+  // An empty URL string causes us to open the default camera
+  VideoEngine(pe::Vector2 resolution);
   ~VideoEngine();
 
   void operator()();

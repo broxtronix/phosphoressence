@@ -4,7 +4,7 @@ import math, time
 class HyphaeController(object):
 
     def __init__(self):
-        pe.decay=1
+        pe.decay=0.98
         pe.q7 = 0.5
         pe.q8 = 0.5
 

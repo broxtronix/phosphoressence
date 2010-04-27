@@ -25,6 +25,7 @@
 
 #include <pe/Core/Time.h>
 #include <pe/Core/Stopwatch.h>
+#include <pe/Math/Vector.h>
 #include <pe/graphics/GpuProgram.h>
 using namespace pe::graphics;
 using namespace pe;
@@ -136,9 +137,6 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
 
   // Fluid Simulation
   m_fluid_sim.reset(new pe::simulation::FluidSimulation(HORIZ_MESH_SIZE, HORIZ_MESH_SIZE));
-
-  // Start video capture
-  m_video_engine.reset(new VideoEngine());
 }
 
 GraphicsEngine::~GraphicsEngine() {
@@ -269,6 +267,9 @@ void GraphicsEngine::resizeGL(int width, int height) {
   //------------------------------------
   vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
   
+  // Start video capture
+  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480)));
+
   //------------------------------------
   // Set up the framebuffer and textures
   //------------------------------------

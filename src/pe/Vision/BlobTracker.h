@@ -33,7 +33,6 @@ namespace vision {
 
     std::vector<TrackedBlob>  blobs;
 
-
     BlobTracker();
     void setListener( BlobListener* _listener );
     void trackBlobs( const std::vector<pe::vision::Blob>& blobs );
