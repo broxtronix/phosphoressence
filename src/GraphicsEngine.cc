@@ -128,8 +128,9 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_record = false;
   m_record_frame_number = 0;
 
-  // Set mouse tracking
+  // Set mouse tracking & grab keybard
   this->setMouseTracking(true);
+  this->grabKeyboard();
 
   // Set the size policy that the widget can grow or shrink and still
   // be useful.
@@ -563,9 +564,9 @@ void GraphicsEngine::paintEvent(QPaintEvent * /* event */) {
 }
 
 void GraphicsEngine::mousePressEvent(QMouseEvent *event) { 
-  grabKeyboard();
-  lastPos = event->pos();
-  updateCurrentMousePosition();
+  // Update background image
+  std::cout << "Capturing new background frame.\n";
+  m_video_engine->capture_background_frame();
 }
 
 void GraphicsEngine::mouseMoveEvent(QMouseEvent *event) {
@@ -637,6 +638,11 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
       std::cout << "Starting screen capture.\n";
     else
       std::cout << "Stopping screen capture.  Results can be found in /tmp\n";
+    break;
+
+  case Qt::Key_B:  
+    std::cout << "Capturing new background frame.\n";
+    m_video_engine->capture_background_frame();
     break;
 
   case Qt::Key_Up:  

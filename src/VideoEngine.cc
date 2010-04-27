@@ -36,16 +36,16 @@ using namespace cv;
 
 class VideoTask {
   pe::Mutex m_mutex;
-  bool m_terminate;
+  bool m_terminate, m_needs_background_captured;
   float m_aspect_ratio;
   boost::shared_ptr<cv::VideoCapture> m_video_capture;
-  cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame;
+  cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame, m_render_frame;
   pe::graphics::Texture m_video_texture;
   pe::vision::ContourFinder m_contour_finder;
   pe::vision::BlobTracker m_blob_tracker;
 
 public:
-  VideoTask(pe::Vector2 resolution) : m_terminate(false) {
+  VideoTask(pe::Vector2 resolution) : m_terminate(false), m_needs_background_captured(false) {
 
     m_video_capture.reset(new cv::VideoCapture(0));
     
@@ -59,7 +59,6 @@ public:
     m_video_capture->set(CV_CAP_PROP_FRAME_WIDTH, resolution[0]);
     m_video_capture->set(CV_CAP_PROP_FRAME_WIDTH, resolution[1]);
 
-
     // Seed the first frame
     cv::Mat frame;
     (*m_video_capture) >> frame;
@@ -68,6 +67,8 @@ public:
     // Save the background image & set the intial previous frame.
     m_prev_frame = m_raw_frame;
     m_background_frame = m_raw_frame.clone();
+    m_working_frame = m_raw_frame.clone();
+    m_render_frame = m_raw_frame;
 
     // Allocate texture memory
     m_video_texture.allocate(frame.size().width, frame.size().height, GL_RGB);
@@ -94,16 +95,23 @@ public:
       // Get a new frame from camera
       (*m_video_capture) >> frame; 
       cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
+
+      // Reset background image if requested
+      if (m_needs_background_captured) {
+        m_background_frame = m_raw_frame.clone();
+        m_needs_background_captured = false;
+      }
       
       // Background subtraction
       cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
+      m_render_frame = m_working_frame.clone();
 
       // Blur a bit
       GaussianBlur(m_working_frame, m_working_frame, cv::Size(7,7), 1.5, 1.5);
       
       // Compute the threhold image.
       //float thresh = pe_script_engine().get_parameter("vision_threshold");
-      float thresh = 0.5;
+      float thresh = 0.2;
       cv::threshold(m_working_frame, m_working_frame, 255*thresh, 255, cv::THRESH_BINARY);
 
       //      imshow("test", m_working_frame);
@@ -127,9 +135,9 @@ public:
 
   void draw(int x, int y, int width, int height) {
     pe::Mutex::Lock lock(m_mutex);
-    m_video_texture.loadData(m_raw_frame.ptr(), 
-                             m_raw_frame.size().width, 
-                             m_raw_frame.size().height, 
+    m_video_texture.loadData(m_render_frame.ptr(), 
+                             m_render_frame.size().width, 
+                             m_render_frame.size().height, 
                              GL_LUMINANCE, GL_UNSIGNED_BYTE);
 
     m_video_texture.draw(m_aspect_ratio, -1.0, -2*m_aspect_ratio, 2.0);
@@ -138,12 +146,7 @@ public:
   }
   
   void capture_background_frame() {
-    pe::Mutex::Lock lock(m_mutex);
-
-    // Grab a new background frame
-    cv::Mat frame;
-    (*m_video_capture) >> frame;
-    cvtColor(frame, m_background_frame, CV_BGR2GRAY);
+    m_needs_background_captured = true;
   }
 
   void terminate() { m_terminate = true; }
