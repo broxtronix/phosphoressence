@@ -12,6 +12,7 @@
 
 #include <pe/Core/Thread.h>
 #include <pe/Math/Vector.h>
+#include <pe/simulation/FluidDynamics.h>
 #include <pe/Core/FundamentalTypes.h>
 #include <boost/circular_buffer.hpp>
 
@@ -28,11 +29,13 @@ class VideoEngine {
 public:
 
   // An empty URL string causes us to open the default camera
-  VideoEngine(pe::Vector2 resolution);
+  VideoEngine(pe::Vector2 resolution, 
+              boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim);
   ~VideoEngine();
 
   void operator()();
-  void draw(int x, int y, int width, int height);
+  void draw();
+  void drawDebug();
   void capture_background_frame();
 
 };

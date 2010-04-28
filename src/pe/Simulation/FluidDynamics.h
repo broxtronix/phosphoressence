@@ -22,11 +22,11 @@ namespace simulation {
     // Physical parameters
     float m_fluid_viscosity;
     float m_fluid_diffusion;
+    float m_framebuffer_radius;
 
     // Internal Parameters
     int m_fluid_dimension;
     int m_fluid_size;
-
 
     boost::shared_array<float> m_fluid_u, m_fluid_v;
     boost::shared_array<float> m_fluid_u_prev, m_fluid_v_prev; 
@@ -54,6 +54,7 @@ namespace simulation {
     void update();
 
     void add_velocity(int i, int j, Vector2 vel);
+    void add_velocity_worldcoords(float x, float y, pe::Vector2 vel);
     Vector2 get_velocity(int i, int j) const;
 
     // Read the current values of physical constants.
@@ -63,6 +64,8 @@ namespace simulation {
     // Set the current values of physical constants.
     void set_viscosity(float v) { m_fluid_viscosity = v; }
     void set_diffusion(float d) { m_fluid_diffusion = d; }
+
+    void set_framebuffer_radius(float radius) { m_framebuffer_radius = radius; }
   };
 
 }} // namespace pe::simulation

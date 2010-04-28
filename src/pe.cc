@@ -166,6 +166,7 @@ int main(int argc, char *argv[]) {
   po::options_description desc("Phosphoressence: the video feedback framework.");
   desc.add_options()
     ("help", "Display this help message")
+    ("debug,d", "Start PhosphorEssence in video debugging mode.\n")
     ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.")
     ("vertical,v", "Rotate the canvas by 90 degrees for vertical projection.");
   po::variables_map vm;
@@ -190,7 +191,7 @@ int main(int argc, char *argv[]) {
 
   // Start up the Qt GUI
   QApplication app(argc, argv);
-  MainWindow main_window;
+  MainWindow main_window(vm.count("debug"));
 
   // Start up the OSC control thread.  It listens in the background,
   // changing the values in PeParameters as it receives updates.

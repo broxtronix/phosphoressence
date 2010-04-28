@@ -99,8 +99,8 @@ void check_gl_errors( void )
 //               GraphicsEngine Public Methods
 // --------------------------------------------------------------
 
-GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) : 
-  QGLWidget(parent) {
+GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debug_mode) : 
+  QGLWidget(parent), m_debug_mode(debug_mode) {
 
   if (!this->isValid()) {
     pe::pe_out() << "Failed to initialize OpenGL.\nExiting\n\n";
@@ -121,7 +121,6 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt) :
   m_feedback_texcoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_feedback_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
   m_warped_screencoords.set_size(HORIZ_MESH_SIZE + 1, VERT_MESH_SIZE + 1);
-
 
   // Other variables
   m_fps_avg = 30.0;
@@ -259,6 +258,9 @@ void GraphicsEngine::resizeGL(int width, int height) {
   m_framebuffer_radius = sqrt(1+pow(m_aspect,2));
   pe_parameters().set_value("aspect", m_aspect);
 
+  // Set up radii for fluid sim
+  m_fluid_sim->set_framebuffer_radius(m_framebuffer_radius);
+
   // Set the framebuffer dimensions.  
   m_framebuffer_width = FRAMEBUFFER_SIZE;
   m_framebuffer_height = FRAMEBUFFER_SIZE;
@@ -269,7 +271,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
   
   // Start video capture
-  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480)));
+  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
 
   //------------------------------------
   // Set up the framebuffer and textures
@@ -370,7 +372,10 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   // Draw the video
-  m_video_engine->draw(0.5, 0.5, 1.0, 1.0);
+  if (m_debug_mode)
+    m_video_engine->drawDebug();
+  else 
+    m_video_engine->draw();
 
   // -----------------------
   // Call out to python environment

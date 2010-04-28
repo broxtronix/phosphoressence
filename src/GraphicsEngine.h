@@ -78,7 +78,7 @@ class GraphicsEngine : public QGLWidget {
 public:
   
   // Constructors/Destructor
-  GraphicsEngine(QWidget *parent, QGLFormat const& frmt);
+  GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debug_mode);
   virtual ~GraphicsEngine();
   
   // Set a default size for this widget.  This is usually overridden
@@ -185,6 +185,9 @@ private:
 
   // Image Parameters
   pe::BBox2 m_current_viewport;
+
+  // Debug mode
+  bool m_debug_mode;
 };
 
 #endif  // __GRAPHICS_ENGINE_H__

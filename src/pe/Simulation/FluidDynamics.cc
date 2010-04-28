@@ -200,6 +200,7 @@ pe::simulation::FluidSimulation::FluidSimulation(int width, int height, float vi
 
   m_fluid_viscosity = viscosity;
   m_fluid_diffusion = diffusion;
+  m_framebuffer_radius = 1.0;
 
   m_fluid_previous_time = pe::pe_time();
   m_fluid_u.reset(new float[m_fluid_size]);
@@ -229,8 +230,21 @@ void pe::simulation::FluidSimulation::update() {
 }
 
 void pe::simulation::FluidSimulation::add_velocity(int i, int j, pe::Vector2 vel) {
-  m_fluid_u_prev[IX(i+1,j+1)] += vel[0];
-  m_fluid_v_prev[IX(i+1,j+1)] += vel[1];
+  if (i >= 0 || i < m_fluid_dimension || j >= 0 || j < m_fluid_dimension) {
+    m_fluid_u_prev[IX(i+1,j+1)] += vel[0];
+    m_fluid_v_prev[IX(i+1,j+1)] += vel[1];
+  }
+}
+
+  // Add Velocity in simulation space: [-aspect aspect][-1.0 1.0]
+  void pe::simulation::FluidSimulation::add_velocity_worldcoords(float x, float y, 
+                                                                 pe::Vector2 vel) {
+    int i = m_fluid_dimension * (x + m_framebuffer_radius) / (2.0 * m_framebuffer_radius);
+    int j = m_fluid_dimension * (y + m_framebuffer_radius) / (2.0 * m_framebuffer_radius);
+    if (i >= 0 || i < m_fluid_dimension || j >= 0 || j < m_fluid_dimension) {
+        m_fluid_u_prev[IX(i+1,j+1)] += vel[0];
+        m_fluid_v_prev[IX(i+1,j+1)] += vel[1];
+      }
 }
 
 Vector2 pe::simulation::FluidSimulation::get_velocity(int i, int j) const {

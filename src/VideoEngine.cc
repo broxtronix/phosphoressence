@@ -23,6 +23,7 @@
 #include <pe/Graphics/Texture.h>
 #include <pe/Vision/ContourFinder.h>
 #include <pe/Vision/BlobTracker.h>
+#include <pe/Core/Time.h>
 #include <VideoEngine.h>
 #include <iostream>
 
@@ -43,9 +44,11 @@ class VideoTask {
   pe::graphics::Texture m_video_texture;
   pe::vision::ContourFinder m_contour_finder;
   pe::vision::BlobTracker m_blob_tracker;
+  boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
 
 public:
-  VideoTask(pe::Vector2 resolution) : m_terminate(false), m_needs_background_captured(false) {
+  VideoTask(pe::Vector2 resolution,
+            boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim) : m_terminate(false), m_needs_background_captured(false), m_fluid_sim(fluid_sim) {
 
     m_video_capture.reset(new cv::VideoCapture(0));
     
@@ -103,7 +106,8 @@ public:
       }
       
       // Background subtraction
-      cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
+      //      cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
+      m_working_frame = m_raw_frame.clone();
       m_render_frame = m_working_frame.clone();
 
       // Blur a bit
@@ -133,7 +137,20 @@ public:
     } 
   }
 
-  void draw(int x, int y, int width, int height) {
+  void draw() {
+    pe::Mutex::Lock lock(m_mutex);
+    m_contour_finder.draw();
+
+    // Add in perturbations to the fluid layer.
+    for (int i = 0; i < m_blob_tracker.blobs.size(); ++i) {
+      m_fluid_sim->add_velocity_worldcoords(m_blob_tracker.blobs[i].smoothedCentroid.x(),
+                                            m_blob_tracker.blobs[i].smoothedCentroid.y(), 
+                                            10.0*m_blob_tracker.blobs[i].deltaLoc);
+    }
+    m_blob_tracker.draw();
+  }
+
+  void drawDebug() {
     pe::Mutex::Lock lock(m_mutex);
     m_video_texture.loadData(m_render_frame.ptr(), 
                              m_render_frame.size().width, 
@@ -158,8 +175,9 @@ public:
 //                              Video Engine
 // ---------------------------------------------------------------------------
 
-VideoEngine::VideoEngine(pe::Vector2 resolution) {
-  m_task.reset(new VideoTask(resolution));
+VideoEngine::VideoEngine(pe::Vector2 resolution,
+                         boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim) {
+  m_task.reset(new VideoTask(resolution, fluid_sim));
   m_thread.reset(new pe::Thread( m_task ));
 }
 
@@ -170,8 +188,12 @@ VideoEngine::~VideoEngine() {
   }
 }
 
-void VideoEngine::draw(int x, int y, int width, int height) {
-  m_task->draw(x,y,width,height);
+void VideoEngine::draw() {
+  m_task->draw();
+}
+
+void VideoEngine::drawDebug() {
+  m_task->drawDebug();
 }
 
 void VideoEngine::capture_background_frame() {

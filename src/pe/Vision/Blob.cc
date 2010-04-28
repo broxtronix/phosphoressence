@@ -14,6 +14,7 @@ pe::vision::TrackedBlob::TrackedBlob( pe::vision::Blob const& b ) {
   length = b.length;
   boundingRect = b.boundingRect;
   centroid = b.centroid;
+  smoothedCentroid = b.centroid;
   hole = b.hole;
   contour = b.contour;
   

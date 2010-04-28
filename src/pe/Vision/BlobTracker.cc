@@ -55,10 +55,13 @@ void pe::vision::BlobTracker::draw() {
   glColor4f(1.0, 1.0, 1.0, 1.0);
   for( int i=0; i<blobs.size(); i++ ) {
     std::ostringstream docstring;
-    docstring << findOrder(blobs[i].id) << std::endl;
+    docstring << findOrder(blobs[i].id) << "\n"; 
+    // docstring << findOrder(blobs[i].id) << " (" 
+    //           << blobs[i].deltaLoc.x() 
+    //           << " " << blobs[i].deltaLoc.y() << ")\n";
     pe::graphics::drawBitmapString( docstring.str(),
-                                    blobs[i].centroid.x(), 
-                                    blobs[i].centroid.y() );
+                                    blobs[i].smoothedCentroid.x(), 
+                                    blobs[i].smoothedCentroid.y() );
   }
 }
 
@@ -179,21 +182,19 @@ void pe::vision::BlobTracker::trackBlobs( const std::vector<pe::vision::Blob>& _
   
   for( j=0; j<num_results; j++ ) {
     error = 0;
+
     // get the error for each blob and sum
     for( i=0; i<cursize; i++ ) {
-      //TrackedBlob *f = 0;
-      
       if( matrix[j][i] != -1 ) {
         error += blobs[i].error[matrix[j][i]];
       }
     }
 
-    if( error < best_error)	{
+    if( error < best_error )	{
       best_error = error;
       best_error_ndx = j;
     }
   }
-  
   
   // now that we know the optimal configuration,
   // set the IDs and calculate some things..
@@ -209,13 +210,19 @@ void pe::vision::BlobTracker::trackBlobs( const std::vector<pe::vision::Blob>& _
       if( blobs[i].id != -1 ) {
         TrackedBlob *oldblob = &(*prev)[matrix[best_error_ndx][i]];
 
-        blobs[i].deltaLoc.x() = (blobs[i].centroid.x() - oldblob->centroid.x());
-        blobs[i].deltaLoc.y() = (blobs[i].centroid.y() - oldblob->centroid.y());
+        // IIR filter produces smoothed centroid location
+        blobs[i].smoothedCentroid.x() = 0.1*blobs[i].centroid.x() + 0.9 * oldblob->smoothedCentroid.x();
+        blobs[i].smoothedCentroid.y() = 0.1*blobs[i].centroid.y() + 0.9 * oldblob->smoothedCentroid.y();
+
+        // Compute delta locations based on smooth data
+        blobs[i].deltaLoc.x() = (blobs[i].smoothedCentroid.x() - oldblob->smoothedCentroid.x());
+        blobs[i].deltaLoc.y() = (blobs[i].smoothedCentroid.y() - oldblob->smoothedCentroid.y());
+
 
         blobs[i].deltaArea = blobs[i].area - oldblob->area;
 
-        blobs[i].predictedPos.x() = blobs[i].centroid.x() + blobs[i].deltaLoc.x();
-        blobs[i].predictedPos.y() = blobs[i].centroid.y() + blobs[i].deltaLoc.y();
+        blobs[i].predictedPos.x() = blobs[i].smoothedCentroid.x() + blobs[i].smoothedCentroid.x();
+        blobs[i].predictedPos.y() = blobs[i].smoothedCentroid.y() + blobs[i].smoothedCentroid.y();
 
         blobs[i].deltaLocTotal.x() = oldblob->deltaLocTotal.x() + blobs[i].deltaLoc.x();
         blobs[i].deltaLocTotal.y() = oldblob->deltaLocTotal.y() + blobs[i].deltaLoc.y();
