@@ -14,7 +14,7 @@ from controllers.JoystickController import JoystickController
 from controllers.TuioController import TuioController
 
 # Bring in the Hyphae-specific environment for Alchemy 2010.
-import hyphae
+from hyphae import hyphae
 
 # Use these controls to effect whether phosphoressence behaves as a
 # visualization plugin, an interactive VJ rig, or both!
