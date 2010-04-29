@@ -132,8 +132,8 @@ public:
       // Track blobs
       m_blob_tracker.trackBlobs(m_contour_finder.blobs());
 
-      // Record frames at 60 Hz, tops!
-      pe::Thread::sleep_ms(16);
+      // Record frames at 30 Hz, tops!
+      pe::Thread::sleep_ms(33);
     } 
   }
 

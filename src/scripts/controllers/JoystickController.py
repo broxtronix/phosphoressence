@@ -49,7 +49,7 @@ class JoystickController(object):
         pe.mv_l = 0
         pe.rot = 0
         pe.sx=1.0
-        pe.warp=0.01
+        pe.warp=0.0
 #        pe.rot = -0.001
 #        pe.sx=0.999
         pe.kaleidoscope_radius=0.25

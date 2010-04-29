@@ -59,6 +59,7 @@ def pe_initialize():
 # or augmenting this method, programmers can animate PhosphorEssence
 # parameters.
 def pe_animate():
+    
     if ( ENABLE_PRESETS ) :
         preset = PePreset.current_preset()
         if (preset):

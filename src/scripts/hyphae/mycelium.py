@@ -12,11 +12,12 @@ from OpenVG import VGU
 from OpenVG.constants import *
 
 FRAMEBUFER_SIZE = 1600
-PIXEL_SCALE_FACTOR = 1.0/300.0
+PIXEL_SCALE_FACTOR = 1.0/400.0
 
 class Mycelium(object):
 
     def __init__(self):
+        random.seed()
         VG.create_context((FRAMEBUFER_SIZE,FRAMEBUFER_SIZE))
         self.hypha = []
 
@@ -45,9 +46,10 @@ class Hyphae(object):
         self.center = array([float(x), float(y)])
         self.tendrils = []
         self.next_id = 0
+        self.num_generated_tendrils = 0
 
-        for i in range(1,random.uniform(1,30)):
-            self.add_tendril(self.center,self.center,2,1.0)
+        for i in range(1,int(random.uniform(1,30))):
+            self.add_tendril(self.center,self.center, random.uniform(1.2, 2.0))
 
     # We pass in the complete list of hypha so that hyphae children
     # can access those center loctaions.
@@ -65,48 +67,100 @@ class Hyphae(object):
         glVertex2f(self.center[0]*PIXEL_SCALE_FACTOR, self.center[1]*PIXEL_SCALE_FACTOR)
         glEnd()
 
-        # # Create the path (a simple circle for now...)
-        # p = VG.Path()
-        # VGU.ellipse(p, (self.center[0]*PIXEL_SCALE_FACTOR,
-        #                 self.center[1]*PIXEL_SCALE_FACTOR),
-        #             (10.0*PIXEL_SCALE_FACTOR, 10.0*PIXEL_SCALE_FACTOR))
-
-        # # Set up the drawing and painting parameters
-        # VG.set(VG_STROKE_LINE_WIDTH, pe.vg_stroke_thickness)
-        # paint = VG.ColorPaint((pe.vg_stroke_r, pe.vg_stroke_g, 
-        #                        pe.vg_stroke_b, pe.vg_stroke_a))
-        # VG.set_paint(paint, VG_STROKE_PATH)
-        
-        # paint = VG.ColorPaint((1.0, 0.0, 0.0, 1.0))
-        # VG.set_paint(paint, VG_FILL_PATH)
-        
-        # p.draw(VG_FILL_PATH)
-        # #        p.draw(VG_STROKE_PATH)
-
         for t in self.tendrils:
-            t.render(hypha)
+            # Remove connected tendrils
+            if (t.connected):
+                self.tendrils.remove(t)
+            else:
+                t.render(hypha)
 
-    def add_tendril(self, l, c, r, s):
-        self.tendrils.append( Tendril(self, self.next_id, l, c, r, s ) )
+    def add_tendril(self, l, c, r):
+        self.tendrils.append( Tendril(self, self.next_id, l, c, r) )
         self.next_id = self.next_id + 1
+        self.num_generated_tendrils = self.num_generated_tendrils + 1
 
-class Tendril(object):
 
-    def __init__(self, parent, tendril_id, loc, center, r, s):
+# -------------------------------------------------------------------------------
+#                               PlantSmarts
+# -------------------------------------------------------------------------------
+
+# The PlantSmarts class tracks other Tendrils and Hyphae in a
+# performant manner.  It keeps track of the closest of each, and
+# searches for the new best match occasionally.  The more occasional
+# the search, the better!
+class PlantSmarts(object):
+
+    def __init__(self, parent, center, loc):
         self.parent = parent
+        self.closest_hyphae = None
+        self.closest_tendril = None
+        self.tcenter = center
+        self.loc = loc
+
+    def center(self):
+        return self.tcenter
+
+    # Update the nearest hyphae
+    def update_closest_hyphae(self, hypha):
+        # Check to see if we are the only hyphae.  If so, we return
+        # None.
+        if (len(hypha) == 1):
+            self.closest_hyphae = None
+        else:
+            self.closest_hyphae = None
+            closestDist = 10000;
+            for h in hypha:
+                d = linalg.norm(self.loc - h.center)
+                if ((d < closestDist) and (h != self.parent)):
+                    closestDist = d
+                    self.closest_hyphae = h
+    
+        return self.closest_hyphae
+
+    def update_closest_tendril(self, hypha):
+
+        # Check to see if we are the only hyphae.  If so, we return
+        # None.
+        if (len(hypha) == 1):
+            self.closest_tendril = None
+        else:
+            self.closest_tendril = None
+            closestDist = 10000
+            for h in hypha:
+                for t in h.tendrils:
+                    distl = linalg.norm(self.loc - t.loc)
+                    if ((distl < closestDist) and (t != self) and
+                        (t.parent != self.parent) and (t.connected == False)):
+                        closestDist = distl
+                        self.closest_tendril = t
+        return self.closest_tendril
+
+# -------------------------------------------------------------------------------
+#                               Tendril
+# -------------------------------------------------------------------------------
+
+class Tendril(PlantSmarts):
+
+    def __init__(self, parent, tendril_id, loc, center, r):
+        PlantSmarts.__init__(self, parent, center.copy(), loc.copy())
+
         self.tendril_id = tendril_id
-        self.loc = loc.copy()
-        self.tcenter = center.copy()
         self.vel = array([random.uniform(-0.5,0.5), random.uniform(-0.5,0.5)])
         self.acc = array([0.0, 0.0])
         self.radius = r
-        self.speed = s
         self.maxspeed = 1.0
         self.connected = False
-        self.seperateFactor = 2
+        self.separateFactor = 1
 
     def render(self, hypha):
-#        print "Rendering " + str(self.tendril_id) + "   " + str(self.loc) + " " + str(self.tcenter)
+        #        print "Rendering " + str(self.tendril_id) + "   " + str(self.loc) + " " + str(self.tcenter)
+
+        # Periodically update the closest hyphae and tendril.  The
+        # less often you do this, the faster the simulation runs!
+        if (random.randint(1,200) == 1):
+            self.update_closest_tendril(hypha)
+            self.update_closest_hyphae(hypha)
+
         if (not self.connected):
             self.fungal(hypha)
             self.branch(hypha)
@@ -116,25 +170,35 @@ class Tendril(object):
         glLoadIdentity()
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glColor4f(1.0, 1.0, 1.0, 1.0)
+        glPointSize(self.radius)
+
+        # Draw shadow
+        glColor4f(0.0, 0.0, 0.0, 0.5)
+        glBegin(GL_POINTS)
+        glVertex2f((self.loc[0]+self.radius/2)*PIXEL_SCALE_FACTOR, (self.loc[1]-self.radius/2)*PIXEL_SCALE_FACTOR)
+        glEnd()
 
         # Draw the dots at the vertices
-        glPointSize(self.radius)
+        if (self.connected):
+            glColor4f(1.0, 0.0, 0.0, 1.0)
+        else:
+            glColor4f(1.0, 1.0, 1.0, 1.0)
         glBegin(GL_POINTS)
         glVertex2f(self.loc[0]*PIXEL_SCALE_FACTOR, self.loc[1]*PIXEL_SCALE_FACTOR)
         glEnd()
+
 
     def fungal(self, hypha):
         disp = self.disperse()       # grow away from own center
         wand = self.wander()         # adds randomness
         atrc = self.attract(hypha)   # grow towards closest hyphae center, check if connected
         stic = self.stick(hypha)     # connect to other tendril tips, check if connected
-#        sep = separateFactor(hypha)  # ??
+#        sep = self.separate(hypha)   # ??
 
         # Weight these forces
-        disp *= 0.2
-        wand *= 0.2
-        atrc *= 0.1
+        disp *= 0.1
+        wand *= 0.15
+        atrc *= 0.05
         stic *= 1.0
 #        sep *= 0.5
 
@@ -158,11 +222,10 @@ class Tendril(object):
         self.acc = array([0.0,0.0])
 
     def branch(self, hypha):
-        for h in hypha:
-            if (linalg.norm(h.center - self.tcenter) == 0):
-                r = random.uniform(0,20)
-                if ((r <= 0.2) and (len(h.tendrils) < 5)):
-                    h.add_tendril( self.loc, self.tcenter, 1.0, 0.9 )
+        k = linalg.norm(self.loc - self.tcenter)
+        r = random.uniform(0,(100/(k+0.5)))
+        if ((r <= 0.2) and (self.parent.num_generated_tendrils < 50)):
+            self.parent.add_tendril( self.loc, self.tcenter, 1.0)
 
     def disperse(self):
         d = array([0.0,0.0])
@@ -180,48 +243,51 @@ class Tendril(object):
         return w
 
     def attract(self, hypha):
-        closest = array([0.0,0.0])
-        closestDist = 10000;
-        for h in hypha:
-            d = linalg.norm(self.loc - h.center)
 
-            if ((d < closestDist) and (linalg.norm(h.center - self.tcenter) != 0)):
-                closestDist = d
-                closest = h.center
-                if (d < 1) and (d > 0):
-                    connected = True
+        d = array([0.0,0.0])
+        
+        # Check to see if we are the only hyphae.  If so, we return
+        # zero acceleration (i.e. no attraction)
+        if (self.closest_hyphae != None):
+            d = self.closest_hyphae.center - self.loc
+            dist = linalg.norm(d)
 
-        d = closest - self.loc
-        if (linalg.norm(d) != 0.0):  # avoid NaN
-            d /= linalg.norm(d)  # normalize
+            # Check to see if we connected to another hyphae center
+            if (dist < 5) and (dist > 0):
+                self.connected = True
+
+            # Normalize
+            if (linalg.norm(d) != 0.0): # avoid NaN
+                d /= linalg.norm(d)
+                
         return d
 
     def stick(self, hypha):
-        closest = array([0.0,0.0])
         d = array([0.0, 0.0])
-        closestDist = 10000;
-        for h in hypha:
-            for t in h.tendrils:
-                distl = linalg.norm(self.loc - t.loc)
-                if ((distl < closestDist) and (linalg.norm(self.tcenter - t.tcenter) != 0)):
-                    closestDist = distl
-                    closest = t.loc
-                    if (distl < 1 and distl > 0):
-                        connected = True
-#                    if (distl < 31):
-#                        separateFactor = 0
-        if (linalg.norm(self.loc - closest) < 50):
-            d = closest - self.loc
-            if (linalg.norm(d) != 0.0):  # avoid NaN
-                d /= linalg.norm(d)  # normalize
+        
+        # Make sure there is a closest tendril we are tracking
+        if (self.closest_tendril != None):
+
+            distl = linalg.norm(self.loc - self.closest_tendril.loc)
+            if (distl < 3 and distl > 0):   # Check for connection
+                self.connected = True
+
+            if (distl < 31):
+                self.separateFactor = 0
+
+            if (distl < 50):                 # If the other tendril is close, zoom towards it.
+                d = self.closest_tendril.loc - self.loc
+                if (linalg.norm(d) != 0.0):  # avoid NaN
+                    d /= linalg.norm(d)      # normalize
+
         return d
 
     def separate(self, hypha):
         sum = array([0.0,0.0])
         desiredseparation = 0
         for h in hypha:
-            if ( linalg.norm(h.center - self.tcenter) == 0):
-                desiredseparation = random.uniform(1,40)
+            if (h == self.parent):
+                desiredseparation = random.uniform(1,40) * self.separateFactor
 
             for t in h.tendrils:
                 d = linalg.norm(self.loc - t.loc)
@@ -229,8 +295,9 @@ class Tendril(object):
                 # If the distance is greater than 0 and less than an
                 # arbitrary amount (0 when you are yourself)
                 if ((d > 0) and (d < desiredseparation)):
-                    diff = self.loc - otherTendril.loc
-                    diff /= linalg.norm(diff)
+                    diff = self.loc - t.loc
+                    if (linalg.norm(diff) != 0.0):  # avoid NaN
+                        diff /= linalg.norm(diff)   # normalize
 
                     # Weight by distance
                     sum += diff
