@@ -161,7 +161,7 @@ class Tendril(object):
         for h in hypha:
             if (linalg.norm(h.center - self.tcenter) == 0):
                 r = random.uniform(0,20)
-                if ((r <= 0.2) and (len(h.tendrils) < 50)):
+                if ((r <= 0.2) and (len(h.tendrils) < 5)):
                     h.add_tendril( self.loc, self.tcenter, 1.0, 0.9 )
 
     def disperse(self):
