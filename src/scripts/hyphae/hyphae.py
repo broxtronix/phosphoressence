@@ -1,14 +1,24 @@
 from parameters import pe
 import math, time
+from mycelium import Mycelium
 
 class HyphaeController(object):
 
     def __init__(self):
-        pe.decay=0.98
+        pe.decay=1.0
         pe.q7 = 0.5
         pe.q8 = 0.5
 
+        self.mycelium = Mycelium()
+        self.mycelium.spawn(0,250)
+        # self.mycelium.spawn(180,0)
+        # self.mycelium.spawn(199,32)
+        # self.mycelium.spawn(-132,323)
+        # self.mycelium.spawn(-233,-)
+
     def render_callback(self):
+
+        self.mycelium.render()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

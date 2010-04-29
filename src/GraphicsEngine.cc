@@ -372,17 +372,17 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   // Draw the video
-  if (m_debug_mode)
-    m_video_engine->drawDebug();
-  else 
-    m_video_engine->draw();
+  // if (m_debug_mode)
+  //   m_video_engine->drawDebug();
+  // else 
+  //   m_video_engine->draw();
 
   // -----------------------
   // Call out to python environment
   // -----------------------
   
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
-  //  pe_script_engine().execute("pe_render()");
+  pe_script_engine().execute("pe_render()");
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.

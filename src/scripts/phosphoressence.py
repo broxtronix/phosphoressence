@@ -80,18 +80,18 @@ def pe_animate():
         # Update tuio parameters
         tuio.render_callback()
 
-        # Render Hypae Sprites
-        hyphae.render_callback()
-
-
 
 # Default render callback
 #
 # This method is called by the GraphicsEngine as it renders each frame.
 def pe_render():
-    pe_graphics.render()
-    pe.set_control_value('rot_rate',0)
-    pe.set_control_value('zoom_rate',0)
+
+    # Render Hypae Sprites
+    hyphae.render_callback()
+
+#    pe_graphics.render()
+#    pe.set_control_value('rot_rate',0)
+#    pe.set_control_value('zoom_rate',0)
 
 def pe_render_back():
     pe.set_control_value('vision_threshold',0.5+0.4*math.cos(pe.time))
