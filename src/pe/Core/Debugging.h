@@ -12,7 +12,7 @@
 #ifndef __PE_CORE_DEBUGGING_H__
 #define __PE_CORE_DEBUGGING_H__
 
-#include <pe/core/Log.h>
+#include <pe/Core/Log.h>
 #include <pe/Core/Features.h>
 
 #ifndef WIN32

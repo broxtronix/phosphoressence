@@ -19,7 +19,7 @@ $output_filename = $pwd . "/StandardShaders.cc";
 open(OUT, ">$output_filename");
 
 # Print Initial Code
-print OUT "\#include <vw/Core/Thread.h>\n";
+print OUT "\#include <pe/Core/Thread.h>\n";
 print OUT "\#include <StandardShaders.h>\n\n";
 print OUT "\#include <iostream>\n\n";
 

@@ -4,7 +4,7 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
-#include <pe/core/Thread.h>
+#include <pe/Core/Thread.h>
 #include <pe_config.h>
 
 namespace pe { 

@@ -1,7 +1,7 @@
 #include <pe/Core/Log.h>
 using namespace pe;
 
-#include <pe/graphics/Texture.h>
+#include <pe/Graphics/Texture.h>
 using namespace pe::graphics;
 
 static bool bTexHackEnabled = true;

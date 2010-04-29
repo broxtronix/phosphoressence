@@ -5,7 +5,7 @@
 /* src/pe/config.h.pre.in.  Generated from configure.ac by autoheader.  */
 
 /* The version of Boost with which the software built. */
-#define PE_BOOST_VERSION 104200
+#define PE_BOOST_VERSION 104000
 
 /* enable the C++ exception mechanism */
 #define PE_ENABLE_EXCEPTIONS 1
@@ -29,16 +29,16 @@
 #define PE_HAVE_MEMORY_H 1
 
 /* Define to 1 if the pkg package is available */
-#define PE_HAVE_PKG_APPLE_COREAUDIO 1
+#define PE_HAVE_PKG_APPLE_COREAUDIO 0
 
 /* Define to 1 if the pkg package is available */
-#define PE_HAVE_PKG_APPLE_COREMIDI 1
+#define PE_HAVE_PKG_APPLE_COREMIDI 0
 
 /* Define to 1 if the pkg package is available */
-#define PE_HAVE_PKG_APPLE_GL 1
+#define PE_HAVE_PKG_APPLE_GL 0
 
 /* Define to 1 if the pkg package is available */
-#define PE_HAVE_PKG_APPLE_QMAKE_QT 1
+#define PE_HAVE_PKG_APPLE_QMAKE_QT 0
 
 /* Define to 1 if the ARBITRARY_QT package is available. */
 #define PE_HAVE_PKG_ARBITRARY_QT 0
@@ -101,10 +101,10 @@
 /* #undef PE_HAVE_PKG_GUESS_QT */
 
 /* Define to 1 if the LINUX_GL package is available. */
-/* #undef PE_HAVE_PKG_LINUX_GL */
+#define PE_HAVE_PKG_LINUX_GL 1
 
 /* Define to 1 if the pkg package is available */
-/* #undef PE_HAVE_PKG_LINUX_QMAKE_QT */
+#define PE_HAVE_PKG_LINUX_QMAKE_QT 1
 
 /* Define to 1 if the LO package is available. */
 #define PE_HAVE_PKG_LO 1
@@ -152,28 +152,28 @@
 #define PE_HAVE_PKG_QT_QMAKE 1
 
 /* Define to 1 if the QT_QMAKE_GUI package is available. */
-/* #undef PE_HAVE_PKG_QT_QMAKE_GUI */
+#define PE_HAVE_PKG_QT_QMAKE_GUI 1
 
 /* Define to 1 if the QT_QMAKE_NETWORK package is available. */
-/* #undef PE_HAVE_PKG_QT_QMAKE_NETWORK */
+#define PE_HAVE_PKG_QT_QMAKE_NETWORK 1
 
 /* Define to 1 if the QT_QMAKE_OPENGL package is available. */
-/* #undef PE_HAVE_PKG_QT_QMAKE_OPENGL */
+#define PE_HAVE_PKG_QT_QMAKE_OPENGL 1
 
 /* Define to 1 if the QT_QMAKE_SQL package is available. */
-/* #undef PE_HAVE_PKG_QT_QMAKE_SQL */
+#define PE_HAVE_PKG_QT_QMAKE_SQL 1
 
 /* Define to 1 if the RTAUDIO package is available. */
 #define PE_HAVE_PKG_RTAUDIO 1
 
 /* Define to 1 if the SDL package is available. */
-#define PE_HAVE_PKG_SDL 0
+#define PE_HAVE_PKG_SDL 1
 
 /* Define to 1 if the SIMULATION module is available. */
 #define PE_HAVE_PKG_SIMULATION 1
 
 /* Define to 1 if the TCMALLOC package is available. */
-#define PE_HAVE_PKG_TCMALLOC 1
+#define PE_HAVE_PKG_TCMALLOC 0
 
 /* Define to 1 if the THREADS package is available. */
 #define PE_HAVE_PKG_THREADS 1
@@ -185,7 +185,7 @@
 #define PE_HAVE_PKG_VISION 1
 
 /* Define to 1 if the X11 package is available. */
-/* #undef PE_HAVE_PKG_X11 */
+#define PE_HAVE_PKG_X11 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #define PE_HAVE_PWD_H 1
@@ -233,6 +233,9 @@
 
 /* Define to the one symbol short name of this package. */
 #define PE_PACKAGE_TARNAME "PhosphorEssence"
+
+/* Define to the home page for this package. */
+#define PE_PACKAGE_URL ""
 
 /* Define to the version of this package. */
 #define PE_PACKAGE_VERSION "0.3"
