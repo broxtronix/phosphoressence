@@ -3,6 +3,7 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
+#include <Python.h>
 #include <pe/Core/Time.h>
 #include <ScriptEngine.h>
 #include <PeParameters.h>
@@ -28,6 +29,25 @@ ScriptEngine& pe_script_engine() {
   pe_script_engine_once.run( init_pe_script_engine );
   return *pe_script_engine_ptr;
 }
+
+/// CommandPromptThread
+///
+/// This thread runs a simple read-eval-print loop that forwards
+/// commands to our embedded python interpreter.
+// 
+class CommandPromptTask {
+  PyObject *m_global_dict, *m_main_module, *m_pe_dict;
+  bool m_interpreter_active;
+  
+public:
+  CommandPromptTask() : m_interpreter_active(false) {}
+  void operator()();
+
+  PyObject* global_dict() const { return m_global_dict; }
+  PyObject* main_module() const { return m_main_module; }
+  PyObject* pe_dict() const { return m_pe_dict; }
+  bool active() const { return m_interpreter_active; }
+};
 
 // ---------------------------------------------------------------------
 //              PhosphorEssence Python Module Methods

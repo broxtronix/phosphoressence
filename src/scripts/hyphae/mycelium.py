@@ -7,9 +7,6 @@ import OpenGL
 OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from OpenVG import VG
-from OpenVG import VGU
-from OpenVG.constants import *
 
 FRAMEBUFER_SIZE = 1600
 PIXEL_SCALE_FACTOR = 1.0/400.0
@@ -18,7 +15,6 @@ class Mycelium(object):
 
     def __init__(self):
         random.seed()
-        VG.create_context((FRAMEBUFER_SIZE,FRAMEBUFER_SIZE))
         self.hypha = []
 
 
@@ -28,14 +24,6 @@ class Mycelium(object):
 
     # pass the list of hypha to each hyphae
     def render(self):
-        # Set up rendering context.  Messy, but necessary for now.
-        smack = 1.0/FRAMEBUFER_SIZE
-        glLoadIdentity()
-        glScale(smack,smack,1.0)
-        VG.set(VG_MATRIX_MODE, VG_MATRIX_PATH_USER_TO_SURFACE)
-        VG.load_identity()
-        VG.scale(1.0/smack, 1.0/smack)
-
         for h in self.hypha:
             h.render(self.hypha); 
 

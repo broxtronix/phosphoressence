@@ -25,7 +25,7 @@ print OUT "\#include <iostream>\n\n";
 
 print OUT "static std::map<std::string, const char*> standard_shaders_map;\n\n";
 print OUT "namespace {\n";
-print OUT "  vw::RunOnce standard_shaders_once = VW_RUNONCE_INIT;\n";
+print OUT "  pe::RunOnce standard_shaders_once = PE_RUNONCE_INIT;\n";
 print OUT "  void init_standard_shaders() {\n";
 
 #Iterate Through Input Files, printing map insert functions
@@ -46,7 +46,7 @@ foreach $filename (@files) {
 print OUT "  }\n";
 print OUT "}\n\n";
 
-print OUT "std::string vw::graphics::find_standard_shader(std::string path) {\n";
+print OUT "std::string pe::graphics::find_standard_shader(std::string path) {\n";
 print OUT "  standard_shaders_once.run( init_standard_shaders );\n\n";
 
 print OUT "  std::map<std::string, const char*>::iterator iter_map = standard_shaders_map.find((path).c_str());\n";

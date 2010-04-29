@@ -13,7 +13,7 @@ if MAKE_MODULE_VIDEO
 
 include_HEADERS = QtKitVideoGrabber.h
 
-libpeVideo_la_SOURCES = QtKitVideoGrabber.m
+libpeVideo_la_SOURCES = #QtKitVideoGrabber.m
 libpeVideo_la_LIBADD = @MODULE_VIDEO_LIBS@
 
 lib_LTLIBRARIES = libpeVideo.la

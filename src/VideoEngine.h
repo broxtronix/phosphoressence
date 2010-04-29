@@ -12,7 +12,7 @@
 
 #include <pe/Core/Thread.h>
 #include <pe/Math/Vector.h>
-#include <pe/simulation/FluidDynamics.h>
+#include <pe/Simulation/FluidDynamics.h>
 #include <pe/Core/FundamentalTypes.h>
 #include <boost/circular_buffer.hpp>
 

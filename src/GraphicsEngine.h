@@ -24,9 +24,8 @@
 #include <pe/Math/Matrix.h>
 
 // PE
-#include <pe/graphics/Texture.h>
-#include <pe/video/QtKitVideoGrabber.h>
-#include <pe/simulation/FluidDynamics.h>
+#include <pe/Graphics/Texture.h>
+#include <pe/Simulation/FluidDynamics.h>
 
 // STL
 #include <string>

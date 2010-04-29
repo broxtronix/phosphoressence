@@ -26,9 +26,7 @@
 #include <pe/Core/Time.h>
 #include <pe/Core/Stopwatch.h>
 #include <pe/Math/Vector.h>
-#include <pe/graphics/GpuProgram.h>
-using namespace pe::graphics;
-using namespace pe;
+#include <pe/Graphics/GpuProgram.h>
 
 #include <GraphicsEngine.h>
 #include <PeParameters.h>
@@ -42,6 +40,9 @@ using namespace pe;
 // Switch from uin8 to floating point textures
 #define PE_GL_FORMAT GL_RGBA16F_ARB
 //#define PE_GL_FORMAT GL_RGBA
+
+using namespace pe::graphics;
+using namespace pe;
 
 // --------------------------------------------------------------
 //                       GLSL DEBUGGING
@@ -114,6 +115,7 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debu
 
   if (!format().sampleBuffers())
     std::cout << "\n\nCould not activate FSAA; results will be suboptimal\n\n";
+
   if (!format().doubleBuffer())
     std::cout << "\n\nCould not set double buffering; results will be suboptimal\n\n";
 
@@ -356,6 +358,12 @@ void GraphicsEngine::drawImage() {
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
+//   qglClearColor(QColor(0, 0, 0)); // Clear the framebuffer
+//   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//    qglColor(Qt::white);
+//   m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+
   // -----------------------
   // FEEDBACK TEXTURE 
   // ----------------------
@@ -372,10 +380,10 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   // Draw the video
-  // if (m_debug_mode)
-  //   m_video_engine->drawDebug();
-  // else 
-  //   m_video_engine->draw();
+  if (m_debug_mode)
+    m_video_engine->drawDebug();
+  else 
+    m_video_engine->draw();
 
   // -----------------------
   // Call out to python environment
@@ -466,12 +474,23 @@ void GraphicsEngine::drawImage() {
   glDisable(GL_BLEND);
   m_gpu_frontbuffer_program->uninstall();
 
-  if (pe_script_engine().get_parameter("show_fps") != 0) {
-    char fps_cstr[255];
-    sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
-    QString fps_str(fps_cstr);
-    this->renderText(20,20,fps_str);
-  }
+//   if (pe_script_engine().get_parameter("show_fps") != 0) {
+//     char fps_cstr[255];
+//     sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
+//     QString fps_str(fps_cstr);
+//     this->renderText(20,20,fps_str);
+//   }
+
+//   glColor4f(1.0,0.0,0.0,1.0);
+//   glLineWidth(5.0);
+//   glBegin(GL_LINE_STRIP);
+//   glVertex2f(0.0, 0.0);
+//   glVertex2f(1.0, 0.0);
+//   glVertex2f(1.0, 1.0);
+//   glVertex2f(0.0, 1.0);
+//   glVertex2f(0.0, 0.0);
+//   glEnd();
+
 
   // Swap the buffer and render to the screen.
   this->recordFrame();

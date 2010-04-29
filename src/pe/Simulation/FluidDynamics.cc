@@ -3,10 +3,10 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
-#include <pe/core/Time.h>
+#include <pe/Core/Time.h>
 #include <pe/Core/Exception.h>
 #include <pe/Core/FundamentalTypes.h>
-#include <pe/simulation/FluidDynamics.h>
+#include <pe/Simulation/FluidDynamics.h>
 
 #include <string>
 #include <iostream>

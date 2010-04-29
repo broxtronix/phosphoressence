@@ -37,7 +37,7 @@ using namespace cv;
 
 class VideoTask {
   pe::Mutex m_mutex;
-  bool m_terminate, m_needs_background_captured;
+  bool m_initialized, m_terminate, m_needs_background_captured;
   float m_aspect_ratio;
   boost::shared_ptr<cv::VideoCapture> m_video_capture;
   cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame, m_render_frame;
@@ -54,8 +54,12 @@ public:
     
     // check if we succeeded  
     if(!m_video_capture->isOpened()) {
-      std::cout << "Could not open video camera 0.  Exiting.\n";
-      exit(1);
+      std::cout << "WARNING: Could not open video camera.\n";
+      m_initialized = false;
+      m_terminate = true;
+      return;
+    } else {
+      m_initialized = true;
     }
 
     // Set capture size
@@ -138,11 +142,14 @@ public:
   }
 
   void draw() {
+    if (!m_initialized)
+      return;
+
     pe::Mutex::Lock lock(m_mutex);
     m_contour_finder.draw();
 
     // Add in perturbations to the fluid layer.
-    for (int i = 0; i < m_blob_tracker.blobs.size(); ++i) {
+    for (unsigned i = 0; i < m_blob_tracker.blobs.size(); ++i) {
       m_fluid_sim->add_velocity_worldcoords(m_blob_tracker.blobs[i].smoothedCentroid.x(),
                                             m_blob_tracker.blobs[i].smoothedCentroid.y(), 
                                             10.0*m_blob_tracker.blobs[i].deltaLoc);
@@ -151,6 +158,9 @@ public:
   }
 
   void drawDebug() {
+    if (!m_initialized)
+      return;
+
     pe::Mutex::Lock lock(m_mutex);
     m_video_texture.loadData(m_render_frame.ptr(), 
                              m_render_frame.size().width, 

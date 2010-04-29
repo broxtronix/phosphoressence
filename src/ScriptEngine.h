@@ -6,30 +6,13 @@
 #ifndef __SCRIPT_ENGINE_H__
 #define __SCRIPT_ENGINE_H__
 
-#include <Python.h>
 #include <iostream>
 #include <vector>
 #include <pe/Core/Stopwatch.h>
 #include <pe/Core/Thread.h>
 
-/// CommandPromptThread
-///
-/// This thread runs a simple read-eval-print loop that forwards
-/// commands to our embedded python interpreter.
-// 
-class CommandPromptTask {
-  PyObject *m_global_dict, *m_main_module, *m_pe_dict;
-  bool m_interpreter_active;
-  
-public:
-  CommandPromptTask() : m_interpreter_active(false) {}
-  void operator()();
-
-  PyObject* global_dict() const { return m_global_dict; }
-  PyObject* main_module() const { return m_main_module; }
-  PyObject* pe_dict() const { return m_pe_dict; }
-  bool active() const { return m_interpreter_active; }
-};
+// Forward Declaration
+class CommandPromptTask;
 
 class ScriptEngine {
 

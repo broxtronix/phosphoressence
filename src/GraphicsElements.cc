@@ -317,7 +317,7 @@ void GraphicsEngine::drawVectorField() {
             
             if (fx > -m_aspect && fx < m_aspect) {
 
-              float fx2, fy2;
+              float fx2 = 0, fy2 = 0;
               ReversePropagatePoint(fx, fy, &fx2, &fy2, 
                                     HORIZ_MESH_SIZE, VERT_MESH_SIZE, 
                                     m_framebuffer_radius,

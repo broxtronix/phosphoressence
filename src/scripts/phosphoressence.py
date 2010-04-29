@@ -24,21 +24,21 @@ ENABLE_CONTROLLERS = 1
 # Switches for debugging
 JOY_DEBUG = 1;
 #OSC_DEBUG = 1;
-TUIO_DEBUG = 1;
+#TUIO_DEBUG = 1;
 pe.show_fps = 0;
 
 # Instantiate hardware controllers
 #osc = OscController(OSC_DEBUG)
 joystick = JoystickController(JOY_DEBUG)
-tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
+#tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 
 # Set up Hyphae
 osc_handler = hyphae.OscHandler()
-tuio_handler = hyphae.MultitouchHandler()
+#tuio_handler = hyphae.MultitouchHandler()
 hyphae = hyphae.HyphaeController()
 
-tuio.set_osc_handler(osc_handler)
-tuio.set_tuio_handler(tuio_handler)
+#tuio.set_osc_handler(osc_handler)
+#tuio.set_tuio_handler(tuio_handler)
 
 # Default initialization handler
 #
@@ -79,7 +79,7 @@ def pe_animate():
         #        osc.render_callback()
 
         # Update tuio parameters
-        tuio.render_callback()
+        #        tuio.render_callback()
 
 
 # Default render callback
