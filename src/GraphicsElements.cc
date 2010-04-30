@@ -28,10 +28,7 @@ void GraphicsEngine::drawFeedback() {
 
   // Copy the pixel data from the pixel buffer object to the feedback texture.
   glEnable( GL_TEXTURE_2D );
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture( GL_TEXTURE_2D, m_feedback_texture );
+  glBindTexture( GL_TEXTURE_2D, m_feedback_texture0 );
 
   // glEnable(GL_BLEND);
   // glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -41,7 +38,6 @@ void GraphicsEngine::drawFeedback() {
 
   // Feedback decay, gamma, etc are controlled using a fragment shader.
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
-  m_gpu_backbuffer_program->set_input_int("framebuffer_texture", 1);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));

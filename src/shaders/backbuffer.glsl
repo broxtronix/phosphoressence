@@ -1,6 +1,5 @@
 // Top level uniform variables
 uniform sampler2D feedback_texture;
-uniform sampler2D framebuffer_texture;
 uniform float framebuffer_radius;
 uniform float decay;
 uniform float ifs_mode;

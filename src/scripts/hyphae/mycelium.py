@@ -36,7 +36,7 @@ class Hyphae(object):
         self.next_id = 0
         self.num_generated_tendrils = 0
 
-        for i in range(1,int(random.uniform(1,30))):
+        for i in range(1,int(random.uniform(5,30))):
             self.add_tendril(self.center,self.center, random.uniform(1.2, 2.0))
 
     # We pass in the complete list of hypha so that hyphae children
@@ -161,10 +161,10 @@ class Tendril(PlantSmarts):
         glPointSize(self.radius)
 
         # Draw shadow
-        glColor4f(0.0, 0.0, 0.0, 0.5)
-        glBegin(GL_POINTS)
-        glVertex2f((self.loc[0]+self.radius/2)*PIXEL_SCALE_FACTOR, (self.loc[1]-self.radius/2)*PIXEL_SCALE_FACTOR)
-        glEnd()
+        #         glColor4f(0.0, 0.0, 0.0, 0.5)
+        #         glBegin(GL_POINTS)
+        #         glVertex2f((self.loc[0]+self.radius/2)*PIXEL_SCALE_FACTOR, (self.loc[1]-self.radius/2)*PIXEL_SCALE_FACTOR)
+        #         glEnd()
 
         # Draw the dots at the vertices
         if (self.connected):

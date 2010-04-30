@@ -146,7 +146,8 @@ GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debu
 GraphicsEngine::~GraphicsEngine() {
 
   // De-allocate feedback texture and video texture
-  glDeleteTextures(1, &m_feedback_texture);
+  glDeleteTextures(1, &m_feedback_texture0);
+  glDeleteTextures(1, &m_feedback_texture1);
 
   // De-allocate any previously allocated textures or framebuffers
   glDeleteFramebuffersEXT(1, &m_framebuffer0);
@@ -186,6 +187,7 @@ void GraphicsEngine::initializeGL() {
   std::cout << "RESOURCES: " << resources_dir << "\n";
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
   m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
+  m_gpu_hyphaebuffer_program = create_gpu_program(resources_dir + "/shaders/hyphaebuffer.glsl");
 //                                                 std::vector<int>(),
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
@@ -198,14 +200,21 @@ void GraphicsEngine::initializeGL() {
   m_ground_texture.loadData(ground_image.ptr(), ground_image.size().width, 
                             ground_image.size().height, GL_BGR, GL_UNSIGNED_BYTE);
   
-  // Generate the feedback texture
-  glGenTextures(1, &m_feedback_texture);
-  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
+  // Generate the feedback textures
+  glGenTextures(1, &m_feedback_texture0);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture0);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+  glBindTexture(GL_TEXTURE_2D, 0);
 
+  glGenTextures(1, &m_feedback_texture1);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture1);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // Crank up the anisotropic filtering.  Not totally sure what this
@@ -216,6 +225,7 @@ void GraphicsEngine::initializeGL() {
 
   // Create the framebuffer & framebuffer texture
   glGenFramebuffersEXT(1, &m_framebuffer0);
+  glGenFramebuffersEXT(1, &m_framebuffer1);
 
   // Create the main framebuffer texture
   glGenTextures(1, &m_framebuffer_texture0);
@@ -225,8 +235,17 @@ void GraphicsEngine::initializeGL() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  // Create the main stencil texture
+  // Create the main framebuffer texture
+  glGenTextures(1, &m_framebuffer_texture1);
+  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Create the stencil renderbuffers
   glGenRenderbuffersEXT(1, &m_framebuffer_stencil0);
+  glGenRenderbuffersEXT(1, &m_framebuffer_stencil1);
 
   // Uncomment to get rid of the tearing (i.e. tearing)!
 #ifdef __APPLE__
@@ -277,9 +296,10 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Start video capture
   m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
 
-  //------------------------------------
-  // Set up the framebuffer and textures
-  //------------------------------------
+  //-------------------------------------------
+  // Set up the framebuffer and textures 
+  // for framebuffer 0 (the PE feedback buffer)
+  //-------------------------------------------
 
   // Create the framebuffer texture (for rendering...)
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
@@ -304,15 +324,73 @@ void GraphicsEngine::resizeGL(int width, int height) {
   // Make sure that the framebuffer is correctly configured.
   GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
   if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-    pe_throw(pe::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer.\n");
+    pe_throw(pe::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer 0.\n");
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
+  //-------------------------------------------
+  // Set up the framebuffer and textures 
+  // for framebuffer 1 (the hyphae buffer)
+  //-------------------------------------------
+
+  // Create the framebuffer texture (for rendering...)
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer1);
+
+  // Bind the main texture to the framebuffer
+  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture1);
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
+               m_framebuffer_width, m_framebuffer_height, 
+               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                            GL_TEXTURE_2D, m_framebuffer_texture1, 0);
+
+  // Bind the stencil buffer to the framebuffer
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, m_framebuffer_stencil1);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, 
+                           m_framebuffer_width, m_framebuffer_height);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_DEPTH_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil1);
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_STENCIL_ATTACHMENT_EXT,
+                               GL_RENDERBUFFER_EXT, m_framebuffer_stencil1);
+
+  // Make sure that the framebuffer is correctly configured.
+  status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
+    pe_throw(pe::LogicErr() << "GraphicsEngine::initializeGl() - could not initialize framebuffer 1.\n");
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  //-------------------------------------------
+  // Set up the feedback texture
+  //-------------------------------------------
+
   // Setup the feedback texture buffer
-  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture0);
   glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
                m_framebuffer_width, m_framebuffer_height,
                0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
   glBindTexture(GL_TEXTURE_2D, 0);
+
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture1);
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
+               m_framebuffer_width, m_framebuffer_height,
+               0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Clear the feedback texture so that it starts out as
+  // black/transparent.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+  glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+  qglClearColor(QColor(0, 0, 0, 0));       
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  // Clear the hyphae framebuffer
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer1);
+  qglClearColor(QColor(0, 0, 0, 0));       // Clear the framebuffer
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  saveFeedback();
 
   //------------------------------------
   // Set up the warp mesh
@@ -350,21 +428,18 @@ void GraphicsEngine::drawImage() {
   // Make this context current, and store the current OpenGL state
   // before we start to modify it. (This is a QT function)
   makeCurrent();
-  
-  // ------------------------ <FrameBuffer> -------------------------
+
+  // ----------------- <FrameBuffer 1 - Hyphae Layer> --------------------
  
   // Activate the framebuffer.  All of the following drawing is done
   // in the framebuffer so that we have a larger area available to
   // draw in.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer1);
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
   // Set the background color and viewport
-  qglClearColor(QColor(0, 0, 0, 255));       // Clear the framebuffer
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
-  
 
   // Set up the orthographic view of the scene.  The exact extent of
   // the view onto the scene depends on the current panning and zoom
@@ -376,6 +451,72 @@ void GraphicsEngine::drawImage() {
           -1.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+
+  qglClearColor(QColor(0, 0, 0, 0));       
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // -----------------------
+  // Render hyphae feedback
+  // -----------------------
+  glEnable( GL_TEXTURE_2D );
+  glBindTexture( GL_TEXTURE_2D, m_feedback_texture1 );
+  m_gpu_hyphaebuffer_program->install();
+  m_gpu_hyphaebuffer_program->set_input_int("hyphae_texture", 0);
+  m_gpu_hyphaebuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
+  m_gpu_hyphaebuffer_program->set_input_float("hyphae_decay", pe_script_engine().get_parameter("hyphae_decay"));
+  
+  //  We will draw the image as a texture on this quad.
+  qglColor(Qt::white);
+  glBegin(GL_QUADS);
+  glTexCoord2f( 0.0, 0.0 );
+  glVertex2d( -m_framebuffer_radius, -m_framebuffer_radius);
+  glTexCoord2f( 1.0, 0.0 ); 
+  glVertex2d( m_framebuffer_radius, -m_framebuffer_radius);
+  glTexCoord2f( 1.0, 1.0 );
+  glVertex2d( m_framebuffer_radius, m_framebuffer_radius);
+  glTexCoord2f( 0.0, 1.0 );
+  glVertex2d( -m_framebuffer_radius, m_framebuffer_radius);
+  glEnd();
+
+  glDisable( GL_TEXTURE_2D );
+  m_gpu_hyphaebuffer_program->uninstall();
+
+  // -----------------------
+  // Python render callback
+  // -----------------------
+  
+  // Call the python environment and allow it to render whatever it
+  // wants using PyOpenGL Fragment Shader
+  pe_script_engine().execute("pe_render()");
+
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  // ------------------- <FrameBuffer 0 - PE Layer> ----------------------
+ 
+  // Activate the framebuffer.  All of the following drawing is done
+  // in the framebuffer so that we have a larger area available to
+  // draw in.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+  glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+
+  // Set the background color and viewport
+  glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
+
+  // Set up the orthographic view of the scene.  The exact extent of
+  // the view onto the scene depends on the current panning and zoom
+  // in the UI.
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-m_framebuffer_radius, m_framebuffer_radius,
+          -m_framebuffer_radius, m_framebuffer_radius,
+          -1.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  // Clear the framebuffer
+  qglClearColor(QColor(0, 0, 0, 0));       // Clear the framebuffer
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // -----------------------
   // FEEDBACK TEXTURE 
@@ -392,18 +533,18 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
-  // Draw the video
-  if (m_debug_mode)
-    m_video_engine->drawDebug();
-  else 
-    m_video_engine->draw();
-
   // -----------------------
   // Call out to python environment
   // -----------------------
   
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
-  pe_script_engine().execute("pe_render()");
+  //  pe_script_engine().execute("pe_render()");
+
+  // Draw the video
+  if (m_debug_mode)
+    m_video_engine->drawDebug();
+  else 
+    m_video_engine->draw();
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
@@ -443,15 +584,23 @@ void GraphicsEngine::drawImage() {
   pe_script_engine().execute("pe_render_bg()");
   glLoadIdentity();
 
+  // --------------------------
+  // Ground with PE distortions
+  // --------------------------
+
   // Draw the ground texture
   qglColor(Qt::white);
   m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
-  // Draw the framebuffer to the real screen.
+  // --------------
+  // Hyphae layer
+  // --------------
+
+  // Draw the hyphae framebuffer to the real screen.
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
-  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
+  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture1 );
 
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);
@@ -485,11 +634,13 @@ void GraphicsEngine::drawImage() {
   glBindTexture( GL_TEXTURE_2D, 0 );
   glDisable( GL_TEXTURE_2D );
   glDisable(GL_BLEND);
+
   m_gpu_frontbuffer_program->uninstall();
 
   if (pe_script_engine().get_parameter("show_fps") != 0) {
     std::ostringstream docstring;
     docstring << "FPS: " << m_fps_avg;
+    glColor4f(1.0, 1.0, 1.0, 1.0);
     pe::graphics::drawBitmapString( docstring.str(), -m_aspect + 0.1, 0.9 ); 
   }
 
@@ -544,14 +695,22 @@ void GraphicsEngine::updateCurrentMousePosition() {
 void GraphicsEngine::saveFeedback() {
 
   // Activate the framebuffer.  All of the following steps pull data
-  // from the framebuffer rather than the main screen.
+  // from the framebuffer rather than the main screen.  Copy the
+  // contents of the framebuffer into the feedback texture.
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer0);
-
-  // Copy the contents of the framebuffer into the feedback texture.
-  glBindTexture(GL_TEXTURE_2D, m_feedback_texture);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture0);
   glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, 
                    m_framebuffer_width, m_framebuffer_height, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+  // Capture feedback texture 1.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_framebuffer1);
+  glBindTexture(GL_TEXTURE_2D, m_feedback_texture1);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 0, 0, 
+                   m_framebuffer_width, m_framebuffer_height, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
 void GraphicsEngine::recordFrame() {
