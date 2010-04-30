@@ -701,6 +701,9 @@ pe.register(Parameter( name = "vg_stroke_thickness",
            default_value = 0.01))
 
 
+
+# Hyphae
+
 pe.register(Parameter( name = "vision_threshold",
            description = "Threshold",
            default_value = 0.5))
@@ -708,4 +711,9 @@ pe.register(Parameter( name = "vision_threshold",
 pe.register(Parameter( name = "vision_num_blobs",
            description = "Number of blobs.",
            default_value = 50))
+
+
+pe.register(Parameter( name = "hyphae_decay",
+           description = "Decay rate of hyphae",
+           default_value = 0.999999))
 

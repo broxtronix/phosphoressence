@@ -141,16 +141,20 @@ private:
   void draw_milkdrop_waves();
   
   // Image & OpenGL
-  GLuint m_feedback_texture;
+  GLuint m_framebuffer0;
+  GLuint m_feedback_texture0;
   GLuint m_framebuffer_texture0;
   GLuint m_framebuffer_stencil0;
+
+  GLuint m_feedback_texture1;
   GLuint m_framebuffer_texture1;
   GLuint m_framebuffer_stencil1;
-  GLuint m_framebuffer0;
   GLuint m_framebuffer1;
+
   pe::graphics::Texture m_ground_texture;
   boost::shared_ptr<VideoEngine> m_video_engine;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_frontbuffer_program;
+  boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_hyphaebuffer_program;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_backbuffer_program;
   boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
 
