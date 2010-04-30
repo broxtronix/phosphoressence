@@ -26,102 +26,6 @@
 /// An audio and video delight.
 ///
 
-// #include "cv.h"
-// #include "highgui.h"
-// #include <iostream>
-
-// using namespace cv;
-
-// const int MAX_CORNERS = 500;
-
-// int process_frames(cv::Mat const& current_image, cv::Mat const& prev_image) {
-
-//   /// ---- Dense Optical Flow
-//   // Mat flow = current_image;
-//   // int pyramid_levels = 5;
-//   // calcOpticalFlowFarneback(prev_image, current_image, flow, 0.5, pyramid_levels, 
-//   //                          15, 10, 5, 1.1, OPTFLOW_USE_INITIAL_FLOW);
-
-//   // imshow("flow", flow);
-  
-
-//   /// ---- HoughCircles
-
-//   // Mat blur_image = current_image;
-//   // GaussianBlur( blur_image, blur_image, cv::Size(9, 9), 1, 1 );
-//   // vector<Vec3f> circles;
-//   // HoughCircles(blur_image, circles, CV_HOUGH_GRADIENT, 2, 50);
-
-//   // Mat draw_image = current_image;
-//   // std::cout << "There are " << circles.size() << " circlces.\n";
-//   // for (int i = 0; i < circles.size(); ++i) {
-    
-//   //   Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-//   //   int radius = cvRound(circles[i][2]);
-//   //   cv::circle(draw_image, center, radius, cv::Scalar(255,0,0));
-//   // }
-
-//   /// ---- Corners
-  
-//   // Find some corners
-//   vector<Point2f> corners;
-//   goodFeaturesToTrack(current_image, corners, MAX_CORNERS, 0.05, 5.0);
-
-//   // Refine w/ subpixel
-//   int win_size = 15;
-//   cornerSubPix(current_image, corners, cv::Size(win_size,win_size), cv::Size(-1,-1), 
-//                TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03));
-
-//   // // Call Lucas Kanade algorithm
-//   // int max_level = 5;
-//   // vector<Point2f> updated_corners;
-//   // vector<uchar> status;
-//   // vector<float> errors;
-//   // calcOpticalFlowPyrLK(prev_image, current_image, corners, updated_corners, status, errors,
-//   //                      cv::Size(win_size, win_size), max_level, 
-//   //                      TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.3));
-
-//   Mat draw_image = current_image;
-//   //  std::cout << "There are " << corners.size() << " circles.\n";
-//   for (int i = 0; i < corners.size(); ++i) {
-//     cv::circle(draw_image, corners[i], 3, cv::Scalar(255,0,0));
-//   }
-
-//   imshow("test", draw_image);
-//   return 0;
-// }
-
-
-// int main(int, char**)
-// {
-//     VideoCapture cap(0); // open the default camera
-//     if(!cap.isOpened())  // check if we succeeded
-//         return -1;
-
-//     namedWindow("Test Window",1);
-//     Mat currentFrame, prevFrame;
-
-//     // Seed the first frame
-//     Mat frame;
-//     cap >> frame;
-//     cvtColor(frame, currentFrame, CV_BGR2GRAY);
-
-//     for(;;)
-//     {
-//       prevFrame = currentFrame;
-//       cap >> frame; // get a new frame from camera
-//       cvtColor(frame, currentFrame, CV_BGR2GRAY);
-
-//       process_frames(currentFrame, prevFrame);
-//       //        GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-//       //        Canny(edges, edges, 0, 30, 3);
-//       //        imshow("Test", currentFrame);
-//       if(waitKey(30) >= 0) break;
-//     }
-//     // the camera will be deinitialized automatically in VideoCapture destructor
-//     return 0;
-// }
-
 // Qt
 #include <QApplication>
 #include <QWidget>
@@ -166,7 +70,8 @@ int main(int argc, char *argv[]) {
   po::options_description desc("Phosphoressence: the video feedback framework.");
   desc.add_options()
     ("help", "Display this help message")
-    ("debug,d", "Start PhosphorEssence in video debugging mode.\n")
+    ("debug,d", "Start PhosphorEssence in blob tracker debugging mode.\n")
+    ("video", "Start PhosphorEssence in video debugging mode.\n")
     ("window,w", "Start PhosphorEssence in windowed, rather than fullscreen, mode.")
     ("vertical,v", "Rotate the canvas by 90 degrees for vertical projection.");
   po::variables_map vm;
@@ -191,7 +96,7 @@ int main(int argc, char *argv[]) {
 
   // Start up the Qt GUI
   QApplication app(argc, argv);
-  MainWindow main_window(vm.count("debug"));
+  MainWindow main_window(vm.count("debug"), vm.count("video"));
 
   // Start up the OSC control thread.  It listens in the background,
   // changing the values in PeParameters as it receives updates.

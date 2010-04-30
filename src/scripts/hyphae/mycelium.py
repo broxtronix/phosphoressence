@@ -85,9 +85,6 @@ class PlantSmarts(object):
         self.tcenter = center
         self.loc = loc
 
-    def center(self):
-        return self.tcenter
-
     # Update the nearest hyphae
     def update_closest_hyphae(self, hypha):
         # Check to see if we are the only hyphae.  If so, we return
@@ -209,7 +206,7 @@ class Tendril(PlantSmarts):
         # Reset acceleration to 0 on each cycle
         self.acc = array([0.0,0.0])
 
-    def branch(self, hypha):
+    def branch(self):
         k = linalg.norm(self.loc - self.tcenter)
         r = random.uniform(0,(100/(k+0.5)))
         if ((r <= 0.2) and (self.parent.num_generated_tendrils < 50)):
@@ -230,7 +227,7 @@ class Tendril(PlantSmarts):
             w /= linalg.norm(w) # normalize
         return w
 
-    def attract(self, hypha):
+    def attract(self):
 
         d = array([0.0,0.0])
         
@@ -250,7 +247,7 @@ class Tendril(PlantSmarts):
                 
         return d
 
-    def stick(self, hypha):
+    def stick(self):
         d = array([0.0, 0.0])
         
         # Make sure there is a closest tendril we are tracking

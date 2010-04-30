@@ -34,8 +34,10 @@ public:
   ~VideoEngine();
 
   void operator()();
+  void set_aspect_ratio(float aspect_ratio);
   void draw();
   void drawDebug();
+  void drawMycelium();
   void capture_background_frame();
 
 };

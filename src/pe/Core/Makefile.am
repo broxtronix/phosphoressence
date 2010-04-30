@@ -14,11 +14,11 @@ if MAKE_MODULE_CORE
 include_HEADERS = Exception.h Debugging.h Thread.h Stopwatch.h Log.h	\
 		  Time.h Features.h Settings.h ConfigParser.h Cache.h	\
 		  VarArray.h Functors.h TypeDeduction.h			\
-		  FundamentalTypes.h CompoundTypes.h
+		  FundamentalTypes.h CompoundTypes.h Random.h
 
 libpeCore_la_SOURCES = Debugging.cc Exception.cc Thread.cc Time.cc	\
 		       Stopwatch.cc Log.cc Settings.cc ConfigParser.cc	\
-		       Cache.cc
+		       Cache.cc Random.cc
 libpeCore_la_LIBADD = @MODULE_CORE_LIBS@
 
 lib_LTLIBRARIES = libpeCore.la

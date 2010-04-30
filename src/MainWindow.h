@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow {
   bool m_debug_mode;
 
 public:
-  MainWindow(bool debug_mode);
+  MainWindow(bool debug_mode, bool video_debug_mode);
   virtual ~MainWindow() {}
 
   GraphicsEngine* gl_widget() const { return m_graphics_engine; }

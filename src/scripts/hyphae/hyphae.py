@@ -5,21 +5,19 @@ from mycelium import Mycelium
 class HyphaeController(object):
 
     def __init__(self):
+        pe.hyphae_decay=0.99999999
         pe.decay=0.99999999
         pe.warp=0.001
-        pe.q7 = 0.5
-        pe.q8 = 0.5
 
-        self.mycelium = Mycelium()
-        self.mycelium.spawn(0,250)
-        self.mycelium.spawn(180,0)
-        self.mycelium.spawn(199,32)
-        self.mycelium.spawn(-132,323)
-        self.mycelium.spawn(-233,-22)
+        pe.vision_blur_sigma = 10
+        pe.vision_threshold = 0.2
+        pe.vision_num_blobs = 10
+        pe.vision_blob_minsize = 100
+        pe.vision_blob_maxsize = 100000
+        pe.vision_blob_findholes = 1.0
+        pe.vision_blob_approximate = 1.0
 
     def render_callback(self):
-
-        self.mycelium.render()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

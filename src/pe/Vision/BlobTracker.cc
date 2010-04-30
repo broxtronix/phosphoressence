@@ -55,10 +55,7 @@ void pe::vision::BlobTracker::draw() {
   glColor4f(1.0, 1.0, 1.0, 1.0);
   for( int i=0; i<blobs.size(); i++ ) {
     std::ostringstream docstring;
-    docstring << findOrder(blobs[i].id) << "\n"; 
-    // docstring << findOrder(blobs[i].id) << " (" 
-    //           << blobs[i].deltaLoc.x() 
-    //           << " " << blobs[i].deltaLoc.y() << ")\n";
+    docstring << blobs[i].id << "\n"; 
     pe::graphics::drawBitmapString( docstring.str(),
                                     blobs[i].smoothedCentroid.x(), 
                                     blobs[i].smoothedCentroid.y() );

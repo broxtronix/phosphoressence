@@ -95,7 +95,6 @@ def pe_render():
 #    pe.set_control_value('zoom_rate',0)
 
 def pe_render_back():
-    pe.set_control_value('vision_threshold',0.5+0.4*math.cos(pe.time))
     pe_graphics.render_back()
 
 def pe_render_bg():

@@ -704,14 +704,33 @@ pe.register(Parameter( name = "vg_stroke_thickness",
 
 # Hyphae
 
+pe.register(Parameter( name = "vision_blur_sigma",
+           description = "Gaussian blur sigma before thresholding",
+           default_value = 1.5))
+
 pe.register(Parameter( name = "vision_threshold",
            description = "Threshold",
            default_value = 0.5))
 
 pe.register(Parameter( name = "vision_num_blobs",
            description = "Number of blobs.",
-           default_value = 50))
+           default_value = 10))
 
+pe.register(Parameter( name = "vision_blob_minsize",
+           description = "Smallest size of blob (pixels).",
+           default_value = 100))
+
+pe.register(Parameter( name = "vision_blob_maxsize",
+           description = "Largest size of blob (pixels).",
+           default_value = 10000))
+
+pe.register(Parameter( name = "vision_blob_findholes",
+           description = "Find holes or not.",
+           default_value = 0))
+
+pe.register(Parameter( name = "vision_blob_approximate",
+           description = "Approximate.",
+           default_value = 1.0))
 
 pe.register(Parameter( name = "hyphae_decay",
            description = "Decay rate of hyphae",

@@ -18,6 +18,8 @@
 #include <GL/glext.h>
 #endif 
 
+#include <Mycelium.h>
+
 #include <ScriptEngine.h>
 #include <pe/Math/Matrix.h>
 #include <pe/Graphics/Texture.h>
@@ -45,10 +47,12 @@ class VideoTask {
   pe::vision::ContourFinder m_contour_finder;
   pe::vision::BlobTracker m_blob_tracker;
   boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
+  boost::shared_ptr<Mycelium> m_mycelium;
+  pe::Vector2 m_resolution;
 
 public:
   VideoTask(pe::Vector2 resolution,
-            boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim) : m_terminate(false), m_needs_background_captured(false), m_fluid_sim(fluid_sim) {
+            boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim) : m_terminate(false), m_needs_background_captured(false), m_fluid_sim(fluid_sim), m_resolution(resolution) {
 
     m_video_capture.reset(new cv::VideoCapture(1));
     
@@ -80,15 +84,14 @@ public:
     // Allocate texture memory
     m_video_texture.allocate(frame.size().width, frame.size().height, GL_RGB);
 
-    // Set up the camera calibration matrix
-    m_aspect_ratio = resolution.x()/resolution.y();
-    pe::Matrix3x3 camera_calibration;
-    camera_calibration.set_identity();
-    camera_calibration(0,0) = -2.0*m_aspect_ratio/resolution[0];
-    camera_calibration(1,1) = -2.0/resolution[1];
-    camera_calibration(0,2) = m_aspect_ratio;
-    camera_calibration(1,2) = 1.0;
-    m_contour_finder.setCalibration(camera_calibration);
+    this->set_aspect_ratio(resolution.x()/resolution.y());
+
+    m_mycelium.reset(new Mycelium());
+    m_mycelium->spawn(0,250);
+    m_mycelium->spawn(180,0);
+    m_mycelium->spawn(199,32);
+    m_mycelium->spawn(-132,323);
+    m_mycelium->spawn(-233,-22);
   }
 
   void operator()() {
@@ -115,23 +118,22 @@ public:
       m_render_frame = m_working_frame.clone();
 
       // Blur a bit
-      GaussianBlur(m_working_frame, m_working_frame, cv::Size(7,7), 1.5, 1.5);
+      float sigma = pe_script_engine().get_parameter("vision_blur_sigma");
+      GaussianBlur(m_working_frame, m_working_frame, cv::Size(7,7), sigma, sigma);
       
       // Compute the threhold image.
-      //float thresh = pe_script_engine().get_parameter("vision_threshold");
-      float thresh = 0.2;
+      float thresh = pe_script_engine().get_parameter("vision_threshold");
       cv::threshold(m_working_frame, m_working_frame, 255*thresh, 255, cv::THRESH_BINARY);
 
       //      imshow("test", m_working_frame);
 
       // Find Contours
       m_contour_finder.findContours(m_working_frame,
-                                    100,     // Min area
-                                    640*480, // Max area
-                                    10,
-                                    //pe_script_engine().get_parameter("vision_num_blobs"),      // nConsidered
-                                    false,   // find holes
-                                    true);  // Use approximation
+                                    pe_script_engine().get_parameter("vision_blob_minsize"), 
+                                    pe_script_engine().get_parameter("vision_blob_maxsize"), 
+                                    pe_script_engine().get_parameter("vision_num_blobs"), 
+                                    pe_script_engine().get_parameter("vision_blob_findholes"), 
+                                    pe_script_engine().get_parameter("vision_blob_approximate"));
 
       // Track blobs
       m_blob_tracker.trackBlobs(m_contour_finder.blobs());
@@ -141,12 +143,28 @@ public:
     } 
   }
 
+  void set_aspect_ratio(float aspect_ratio) { 
+    m_aspect_ratio = aspect_ratio; 
+
+    // Set up the camera calibration matrix
+    pe::Matrix3x3 camera_calibration;
+    camera_calibration.set_identity();
+    camera_calibration(0,0) = -2.0*m_aspect_ratio/m_resolution[0];
+    camera_calibration(1,1) = -2.0/m_resolution[1];
+    camera_calibration(0,2) = m_aspect_ratio;
+    camera_calibration(1,2) = 1.0;
+    m_contour_finder.setCalibration(camera_calibration);
+  }
+
+  void drawMycelium() {
+    m_mycelium->render();
+  }
+
   void draw() {
     if (!m_initialized)
       return;
 
     pe::Mutex::Lock lock(m_mutex);
-    m_contour_finder.draw();
 
     // Add in perturbations to the fluid layer.
     for (unsigned i = 0; i < m_blob_tracker.blobs.size(); ++i) {
@@ -154,6 +172,8 @@ public:
                                             m_blob_tracker.blobs[i].smoothedCentroid.y(), 
                                             10.0*m_blob_tracker.blobs[i].deltaLoc);
     }
+
+    m_contour_finder.draw();
     m_blob_tracker.draw();
   }
 
@@ -162,14 +182,12 @@ public:
       return;
 
     pe::Mutex::Lock lock(m_mutex);
+
     m_video_texture.loadData(m_render_frame.ptr(), 
                              m_render_frame.size().width, 
                              m_render_frame.size().height, 
                              GL_LUMINANCE, GL_UNSIGNED_BYTE);
-
     m_video_texture.draw(m_aspect_ratio, -1.0, -2*m_aspect_ratio, 2.0);
-    m_contour_finder.draw();
-    m_blob_tracker.draw();
   }
   
   void capture_background_frame() {
@@ -198,12 +216,20 @@ VideoEngine::~VideoEngine() {
   }
 }
 
+void VideoEngine::set_aspect_ratio(float aspect_ratio) {
+  m_task->set_aspect_ratio(aspect_ratio);
+}
+
 void VideoEngine::draw() {
   m_task->draw();
 }
 
 void VideoEngine::drawDebug() {
   m_task->drawDebug();
+}
+
+void VideoEngine::drawMycelium() {
+  m_task->drawMycelium();
 }
 
 void VideoEngine::capture_background_frame() {

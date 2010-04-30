@@ -102,8 +102,8 @@ void check_gl_errors( void )
 //               GraphicsEngine Public Methods
 // --------------------------------------------------------------
 
-GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debug_mode) : 
-  QGLWidget(parent), m_debug_mode(debug_mode) {
+GraphicsEngine::GraphicsEngine(QWidget *parent, QGLFormat const& frmt, bool debug_mode, bool video_debug_mode) : 
+  QGLWidget(parent), m_debug_mode(debug_mode), m_video_debug_mode(video_debug_mode) {
 
   if (!this->isValid()) {
     pe::pe_out() << "Failed to initialize OpenGL.\nExiting\n\n";
@@ -263,6 +263,9 @@ void GraphicsEngine::initializeGL() {
   pe_script_engine().set_parameter("meshx", HORIZ_MESH_SIZE);
   pe_script_engine().set_parameter("meshy", VERT_MESH_SIZE);
 
+  // Start video capture
+  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
+
   // Now that GL is setup, we can start the Qt Timer that drives our
   // rendering.
   m_timer = new QTimer(this);
@@ -293,8 +296,8 @@ void GraphicsEngine::resizeGL(int width, int height) {
   //------------------------------------
   vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
   
-  // Start video capture
-  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
+  // Reset aspect ration for video
+  m_video_engine->set_aspect_ratio(m_aspect);
 
   //-------------------------------------------
   // Set up the framebuffer and textures 
@@ -481,13 +484,8 @@ void GraphicsEngine::drawImage() {
   glDisable( GL_TEXTURE_2D );
   m_gpu_hyphaebuffer_program->uninstall();
 
-  // -----------------------
-  // Python render callback
-  // -----------------------
-  
-  // Call the python environment and allow it to render whatever it
-  // wants using PyOpenGL Fragment Shader
-  pe_script_engine().execute("pe_render()");
+  // Draw Mycelium
+  m_video_engine->drawMycelium();
 
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -538,13 +536,7 @@ void GraphicsEngine::drawImage() {
   // -----------------------
   
   // Call the python environment and allow it to render whatever it wants using PyOpenGL
-  //  pe_script_engine().execute("pe_render()");
-
-  // Draw the video
-  if (m_debug_mode)
-    m_video_engine->drawDebug();
-  else 
-    m_video_engine->draw();
+  pe_script_engine().execute("pe_render()");
 
   // Run through the list of drawables, giving them each a chance to
   // render into the display.
@@ -589,8 +581,19 @@ void GraphicsEngine::drawImage() {
   // --------------------------
 
   // Draw the ground texture
-  qglColor(Qt::white);
-  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  if (!m_debug_mode) {
+    qglColor(Qt::white);
+    m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  }
+
+  // --------------
+  // Video layer
+  // --------------
+
+  if (m_video_debug_mode)
+    m_video_engine->drawDebug();
+  if (m_debug_mode)
+    m_video_engine->draw();
 
   // --------------
   // Hyphae layer

@@ -14,7 +14,7 @@
 
 #include <sstream>
 
-MainWindow::MainWindow(bool debug_mode) {
+MainWindow::MainWindow(bool debug_mode, bool video_debug_mode) {
   
   // Set the window title and add tabs
   std::string window_title = "Phosphor Essence v0.4";
@@ -27,7 +27,7 @@ MainWindow::MainWindow(bool debug_mode) {
   gl_frmt.setDoubleBuffer(true);
   gl_frmt.setSwapInterval(1);
 
-  m_graphics_engine = new GraphicsEngine(this, gl_frmt, debug_mode);
+  m_graphics_engine = new GraphicsEngine(this, gl_frmt, debug_mode, video_debug_mode);
   setCentralWidget(m_graphics_engine);
 
   // Set up the basic layout of the window and its menus
