@@ -50,7 +50,7 @@ public:
   VideoTask(pe::Vector2 resolution,
             boost::shared_ptr<pe::simulation::FluidSimulation> fluid_sim) : m_terminate(false), m_needs_background_captured(false), m_fluid_sim(fluid_sim) {
 
-    m_video_capture.reset(new cv::VideoCapture(0));
+    m_video_capture.reset(new cv::VideoCapture(1));
     
     // check if we succeeded  
     if(!m_video_capture->isOpened()) {
