@@ -27,6 +27,8 @@
 #include <pe/Core/Stopwatch.h>
 #include <pe/Math/Vector.h>
 #include <pe/Graphics/GpuProgram.h>
+#include <pe/Graphics/BitmapFont.h>
+
 
 #include <GraphicsEngine.h>
 #include <PeParameters.h>
@@ -358,11 +360,22 @@ void GraphicsEngine::drawImage() {
   glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
   glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 
-//   qglClearColor(QColor(0, 0, 0)); // Clear the framebuffer
-//   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // Set the background color and viewport
+  qglClearColor(QColor(0, 0, 0, 255));       // Clear the framebuffer
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0,0,m_framebuffer_width,m_framebuffer_height);
+  
 
-//    qglColor(Qt::white);
-//   m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  // Set up the orthographic view of the scene.  The exact extent of
+  // the view onto the scene depends on the current panning and zoom
+  // in the UI.
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-m_framebuffer_radius, m_framebuffer_radius,
+          -m_framebuffer_radius, m_framebuffer_radius,
+          -1.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
   // -----------------------
   // FEEDBACK TEXTURE 
@@ -474,23 +487,11 @@ void GraphicsEngine::drawImage() {
   glDisable(GL_BLEND);
   m_gpu_frontbuffer_program->uninstall();
 
-//   if (pe_script_engine().get_parameter("show_fps") != 0) {
-//     char fps_cstr[255];
-//     sprintf(fps_cstr, "FPS: %0.2f", m_fps_avg);
-//     QString fps_str(fps_cstr);
-//     this->renderText(20,20,fps_str);
-//   }
-
-//   glColor4f(1.0,0.0,0.0,1.0);
-//   glLineWidth(5.0);
-//   glBegin(GL_LINE_STRIP);
-//   glVertex2f(0.0, 0.0);
-//   glVertex2f(1.0, 0.0);
-//   glVertex2f(1.0, 1.0);
-//   glVertex2f(0.0, 1.0);
-//   glVertex2f(0.0, 0.0);
-//   glEnd();
-
+  if (pe_script_engine().get_parameter("show_fps") != 0) {
+    std::ostringstream docstring;
+    docstring << "FPS: " << m_fps_avg;
+    pe::graphics::drawBitmapString( docstring.str(), -m_aspect + 0.1, 0.9 ); 
+  }
 
   // Swap the buffer and render to the screen.
   this->recordFrame();

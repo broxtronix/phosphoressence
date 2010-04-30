@@ -43,7 +43,7 @@ class QPoint;
 
 #define HORIZ_MESH_SIZE 128
 #define VERT_MESH_SIZE HORIZ_MESH_SIZE
-#define FRAMEBUFFER_SIZE 1600
+#define FRAMEBUFFER_SIZE 2048
 
 /// Drawable
 ///
