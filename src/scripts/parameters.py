@@ -715,5 +715,5 @@ pe.register(Parameter( name = "vision_num_blobs",
 
 pe.register(Parameter( name = "hyphae_decay",
            description = "Decay rate of hyphae",
-           default_value = 0.999))
+           default_value = 0.999999))
 

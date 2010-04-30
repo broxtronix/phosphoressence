@@ -11,8 +11,14 @@ void main() {
 
   // Perform a simple fade-out
   vec4 gain = vec4(hyphae_decay, hyphae_decay, hyphae_decay, hyphae_decay);
+  vec4 sample_loc = gl_TexCoord[0];
 
-  gl_FragColor = gain * texture2D(hyphae_texture, gl_TexCoord[0].st);
+  // This gives the tendrils a little antialiasing (or "fuzz"), which
+  // makes them look nice.
+  sample_loc.s = sample_loc.s + 0.0000001;
+  sample_loc.t = sample_loc.t + 0.0000001;
+
+  gl_FragColor = gain * texture2D(hyphae_texture, sample_loc.st);
   return;
 
 }
