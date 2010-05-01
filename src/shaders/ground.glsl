@@ -85,9 +85,14 @@ void main() {
   // Perform a simple fade-out
   vec4 ground_texel = texture2D(ground_texture, ground_sample_loc.st);
   vec4 feedback_texel = texture2D(feedback_texture, feedback_sample_loc.st);
+
+  // RGB --> HSV Coversion
   vec4 hsv_ground_texel = rgb_to_hsv(ground_texel);
   vec4 hsv_feedback_texel = rgb_to_hsv(feedback_texel);
-  hsv_ground_texel.g *= (0.3 + (hsv_feedback_texel.b*0.7));  // mute the saturation
+  // hsv_ground_texel.g *= (0.3 + (hsv_feedback_texel.b*0.7));  // mute the saturation
+  // vec4 final_ground_texel = hsv_to_rgb(hsv_ground_texel);
+  // gl_FragColor = 
 
-  gl_FragColor = hsv_to_rgb(hsv_ground_texel);
+  // Blend
+  gl_FragColor = mix(ground_texel, feedback_texel, hsv_feedback_texel.b);
 }
