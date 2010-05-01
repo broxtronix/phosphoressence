@@ -123,6 +123,7 @@ void Tendril::render(hyphae_list_t hypha) {
     glBegin(GL_POINTS);
     glVertex2f(this->loc[0]*PIXEL_SCALE_FACTOR, this->loc[1]*PIXEL_SCALE_FACTOR);
     glEnd();
+    glDisable(GL_BLEND);
   }
 }
 

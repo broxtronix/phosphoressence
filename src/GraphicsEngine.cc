@@ -188,6 +188,7 @@ void GraphicsEngine::initializeGL() {
   m_gpu_frontbuffer_program = create_gpu_program(resources_dir + "/shaders/frontbuffer.glsl");
   m_gpu_backbuffer_program = create_gpu_program(resources_dir + "/shaders/backbuffer.glsl");
   m_gpu_hyphaebuffer_program = create_gpu_program(resources_dir + "/shaders/hyphaebuffer.glsl");
+  m_gpu_ground_program = create_gpu_program(resources_dir + "/shaders/ground.glsl");
 //                                                 std::vector<int>(),
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
@@ -196,6 +197,19 @@ void GraphicsEngine::initializeGL() {
   std::string ground_image_filename = pe_resources_directory() + "/images/ground2.jpg";
   std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
   cv::Mat ground_image = cv::imread(ground_image_filename);
+  glGenTextures(1, &m_dirt_texture);
+  glBindTexture(GL_TEXTURE_2D, m_dirt_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+  glTexImage2D(GL_TEXTURE_2D, 0, PE_GL_FORMAT, 
+               ground_image.size().width, 
+               ground_image.size().height,
+               0, GL_BGR, GL_UNSIGNED_BYTE, 
+               ground_image.ptr());
+  glBindTexture(GL_TEXTURE_2D, 0);
+
   m_ground_texture.allocate(ground_image.size().width, ground_image.size().height, GL_RGB);
   m_ground_texture.loadData(ground_image.ptr(), ground_image.size().width, 
                             ground_image.size().height, GL_BGR, GL_UNSIGNED_BYTE);
@@ -485,7 +499,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_hyphaebuffer_program->uninstall();
 
   // Draw Mycelium
-  //m_video_engine->drawMycelium();
+  m_video_engine->drawMycelium();
 
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -531,8 +545,21 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
+  //  We will draw the image as a texture on this quad.
+  glColor4f(0.0,0.0,1.0,0.5);
+  glBegin(GL_QUADS);
+  glVertex2d( 0, 0);
+  glVertex2d( 1, 0);
+  glVertex2d( 1, 1);
+  glVertex2d( 0, 1);
+  // glVertex2d( -0.5, -0.5);
+  // glVertex2d( 0.5, -0.5);
+  // glVertex2d( 0.5, 0.5);
+  // glVertex2d( -0.5, 0.5);
+  glEnd();
+
   // Draw Mycelium
-  m_video_engine->drawMycelium();
+  // m_video_engine->drawMycelium();
 
   // -----------------------
   // Call out to python environment
@@ -585,8 +612,39 @@ void GraphicsEngine::drawImage() {
 
   // Draw the ground texture
   //  if (!m_debug_mode) {
-    qglColor(Qt::white);
-    m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_dirt_texture);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_framebuffer_texture0);
+  qglColor(Qt::white);
+  m_gpu_ground_program->install();
+  m_gpu_ground_program->set_input_int("ground_texture", 0);
+  m_gpu_ground_program->set_input_int("feedback_texture", 1);
+  m_gpu_ground_program->set_input_float("aspect_ratio", float(m_aspect));
+  m_gpu_ground_program->set_input_float("framebuffer_radius", float(m_framebuffer_radius));
+
+  glBegin(GL_QUADS);
+  glMultiTexCoord2f(GL_TEXTURE0, 0, 0 );
+  glMultiTexCoord2f(GL_TEXTURE1, 0, 0 );
+  glVertex2d( -m_aspect, -1.0);
+  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 0 );
+  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 0 );
+  glVertex2d( m_aspect, -1.0);
+  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 1.0 );
+  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 1.0 );
+  glVertex2d( m_aspect, 1.0);
+  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0 );
+  glMultiTexCoord2f(GL_TEXTURE1, 0.0, 1.0 );
+  glVertex2d( -m_aspect, 1.0);
+  glEnd();
+  
+  m_gpu_ground_program->uninstall();
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_TEXTURE_2D);
     //  }
 
   // --------------
@@ -606,7 +664,7 @@ void GraphicsEngine::drawImage() {
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
-  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
+  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture1 );
 
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);

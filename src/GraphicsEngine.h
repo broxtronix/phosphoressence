@@ -151,11 +151,14 @@ private:
   GLuint m_framebuffer_stencil1;
   GLuint m_framebuffer1;
 
+  GLuint m_dirt_texture;
+
   pe::graphics::Texture m_ground_texture;
   boost::shared_ptr<VideoEngine> m_video_engine;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_frontbuffer_program;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_hyphaebuffer_program;
   boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_backbuffer_program;
+  boost::shared_ptr<pe::graphics::GpuProgram> m_gpu_ground_program;
   boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
 
   // Drawables & Script Engines
