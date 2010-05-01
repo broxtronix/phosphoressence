@@ -6,7 +6,7 @@ pe::vision::BlobTracker::BlobTracker() {
   currentID = 1;
   extraIDs = 0;
   reject_distance_threshold = 150;
-  minimumDisplacementThreshold = 2.0f;
+  minimumDisplacementThreshold = 0.02f;
   ghost_frames = 2;
 }
 
@@ -304,21 +304,21 @@ void pe::vision::BlobTracker::trackBlobs( const std::vector<pe::vision::Blob>& _
 //
 void pe::vision::BlobTracker::doBlobOn( const pe::vision::TrackedBlob& b ) {
   if( listener != NULL ) {
-    listener->blobOn( b.centroid.x(), b.centroid.y(), b.id, findOrder(b.id) );
+    listener->blobOn( b.smoothedCentroid.x(), b.smoothedCentroid.y(), b.id, findOrder(b.id) );
   } else {
     //    std::cout << "doBlobOn() event for blob: " << b.id << std::endl;
   }
 }
 void pe::vision::BlobTracker::doBlobMoved( const pe::vision::TrackedBlob& b ) {
   if( listener != NULL ) {
-    listener->blobMoved( b.centroid.x(), b.centroid.y(), b.id, findOrder(b.id) );
+    listener->blobMoved( b.smoothedCentroid.x(), b.smoothedCentroid.y(), b.id, findOrder(b.id) );
   } else {
     //    std::cout << "doBlobMoved() event for blob: " << b.id << std::endl;
   }
 }
 void pe::vision::BlobTracker::doBlobOff( const pe::vision::TrackedBlob& b ) {
   if( listener != NULL ) {
-    listener->blobOff( b.centroid.x(), b.centroid.y(), b.id, findOrder(b.id) );
+    listener->blobOff( b.smoothedCentroid.x(), b.smoothedCentroid.y(), b.id, findOrder(b.id) );
   } else {
     //    std::cout << "doBlobOff() event for blob: " << b.id << std::endl;
   }

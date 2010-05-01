@@ -25,6 +25,7 @@
 #include <pe/Graphics/Texture.h>
 #include <pe/Vision/ContourFinder.h>
 #include <pe/Vision/BlobTracker.h>
+#include <pe/Vision/Blob.h>
 #include <pe/Core/Time.h>
 #include <VideoEngine.h>
 #include <iostream>
@@ -32,6 +33,66 @@
 #include "highgui.h"
 using namespace cv;
 
+// ---------------------------------------------------------------------------
+//                              HyphaeListener
+// ---------------------------------------------------------------------------
+
+class HyphaeListener : public pe::vision::BlobListener {
+  std::list<boost::shared_ptr<Hyphae> > m_hypha;
+  std::map<int, int> m_timeouts;            // [ id, timeout ]
+  std::map<int, pe::Vector2> m_positions;   // [ id, position ]
+
+public:
+  virtual void blobOn( float x, float y, int id, int order) { 
+    // Create new timeout counter
+    m_timeouts[id] = 0;
+    m_positions[id] = pe::Vector2(x,y);
+  }
+
+  virtual void blobMoved( float x, float y, int id, int order ) {     
+    // Reset the timeout counter to zero
+    m_timeouts[id] = 0;
+    m_positions[id] = pe::Vector2(x,y);
+  }
+
+  virtual void blobOff( float x, float y, int id, int order ) {
+    // Erase this timeout counter
+    m_timeouts.erase(id);
+    m_positions.erase(id);
+  }
+
+  void render() {
+    // Step 1: Update Timeouts
+    std::map<int,int>::iterator t = m_timeouts.begin();
+    while (t != m_timeouts.end()) {
+
+      // Increment all timeouts by one.
+      (t->second)++;
+
+      // If the timeout threshold has been reached for this blob id,
+      // we launch a new hyphae!
+      if (t->second == pe_script_engine().get_parameter("vision_blob_movement_delay")) {
+        pe::Vector2 pos = m_positions[t->first];
+        boost::shared_ptr<Hyphae> hyphae(new Hyphae(pos.x(), pos.y(), t->first));
+        std::cout << "Creating hyphae at " << pos << "\n";
+        m_hypha.push_back(hyphae);
+      }
+      ++t;
+    }
+
+    // Step 2: Clean up "finished" hyphae and render the rest
+    std::list<boost::shared_ptr<Hyphae> >::iterator h = m_hypha.begin();
+    while (h != m_hypha.end()) {
+      std::list<boost::shared_ptr<Hyphae> >::iterator current_hyphae = h;
+      ++h;
+      if ((*current_hyphae)->tendrils.size() == 0) {
+        m_hypha.erase(current_hyphae);
+      } else {
+        (*current_hyphae)->render(m_hypha);
+      }
+    }
+  }
+};
 
 // ---------------------------------------------------------------------------
 //                              Video Thread
@@ -45,7 +106,8 @@ class VideoTask {
   cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame, m_render_frame;
   pe::graphics::Texture m_video_texture;
   pe::vision::ContourFinder m_contour_finder;
-  pe::vision::BlobTracker m_blob_tracker;
+  boost::shared_ptr<pe::vision::BlobTracker> m_blob_tracker;
+  HyphaeListener m_hyphae_listener;
   boost::shared_ptr<pe::simulation::FluidSimulation> m_fluid_sim;
   boost::shared_ptr<Mycelium> m_mycelium;
   pe::Vector2 m_resolution;
@@ -87,11 +149,15 @@ public:
     this->set_aspect_ratio(resolution.x()/resolution.y());
 
     m_mycelium.reset(new Mycelium());
-    m_mycelium->spawn(0,250);
-    m_mycelium->spawn(180,0);
-    m_mycelium->spawn(199,32);
-    m_mycelium->spawn(-132,323);
-    m_mycelium->spawn(-233,-22);
+    // m_mycelium->spawn(0,250);
+    // m_mycelium->spawn(180,0);
+    // m_mycelium->spawn(199,32);
+    // m_mycelium->spawn(-132,323);
+    // m_mycelium->spawn(-233,-22);
+
+    // Initialize blob tracker
+    m_blob_tracker.reset( new pe::vision::BlobTracker() );
+    m_blob_tracker->setListener(&m_hyphae_listener);
   }
 
   void operator()() {
@@ -106,6 +172,9 @@ public:
       (*m_video_capture) >> frame; 
       cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
 
+      // Normalize
+      cv::normalize(frame, frame);
+
       // Reset background image if requested
       if (m_needs_background_captured) {
         m_background_frame = m_raw_frame.clone();
@@ -113,8 +182,14 @@ public:
       }
       
       // Background subtraction
-      //      cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
-      m_working_frame = m_raw_frame.clone();
+      cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
+
+      // Uncomment to disable background subtraction
+      //m_working_frame = m_raw_frame.clone();
+
+      // Flip video left/right
+      cv::flip(m_working_frame, m_working_frame, 1);
+
       m_render_frame = m_working_frame.clone();
 
       // Blur a bit
@@ -136,7 +211,7 @@ public:
                                     pe_script_engine().get_parameter("vision_blob_approximate"));
 
       // Track blobs
-      m_blob_tracker.trackBlobs(m_contour_finder.blobs());
+      m_blob_tracker->trackBlobs(m_contour_finder.blobs());
 
       // Record frames at 30 Hz, tops!
       pe::Thread::sleep_ms(33);
@@ -157,6 +232,8 @@ public:
   }
 
   void drawMycelium() {
+    m_blob_tracker->minimumDisplacementThreshold = pe_script_engine().get_parameter("vision_blob_movement_threshold");
+    m_hyphae_listener.render();
     m_mycelium->render();
   }
 
@@ -167,14 +244,14 @@ public:
     pe::Mutex::Lock lock(m_mutex);
 
     // Add in perturbations to the fluid layer.
-    for (unsigned i = 0; i < m_blob_tracker.blobs.size(); ++i) {
-      m_fluid_sim->add_velocity_worldcoords(m_blob_tracker.blobs[i].smoothedCentroid.x(),
-                                            m_blob_tracker.blobs[i].smoothedCentroid.y(), 
-                                            10.0*m_blob_tracker.blobs[i].deltaLoc);
+    for (unsigned i = 0; i < m_blob_tracker->blobs.size(); ++i) {
+      m_fluid_sim->add_velocity_worldcoords(m_blob_tracker->blobs[i].smoothedCentroid.x(),
+                                            m_blob_tracker->blobs[i].smoothedCentroid.y(), 
+                                            10.0*m_blob_tracker->blobs[i].deltaLoc);
     }
 
     m_contour_finder.draw();
-    m_blob_tracker.draw();
+    m_blob_tracker->draw();
   }
 
   void drawDebug() {

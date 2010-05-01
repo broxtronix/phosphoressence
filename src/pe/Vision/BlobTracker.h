@@ -42,6 +42,8 @@ namespace vision {
     // corresponding blob in blobs vector
     void draw();
 
+    float minimumDisplacementThreshold;
+
   protected:
 
     int currentID;
@@ -52,7 +54,6 @@ namespace vision {
 
     int reject_distance_threshold;
     int ghost_frames;
-    float minimumDisplacementThreshold;
 
     std::vector<std::vector<int> > matrix;
     std::vector<int> ids;

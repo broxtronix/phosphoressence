@@ -84,9 +84,14 @@ public:
   pe::Vector2 center;
   tendril_list_t tendrils;
   int num_generated_tendrils;
+  int id;
+  int num_frames_since_last_movement;
 
   // Initialize a hyphae with the specified center location.
-  Hyphae(float x, float y);
+  Hyphae(float x, float y, int id);
+
+  // Update the position of this hyphae
+  void move(float x, float y);
 
   // We pass in the complete list of hypha so that hyphae children
   // can access those center loctaions.

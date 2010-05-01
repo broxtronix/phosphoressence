@@ -212,6 +212,7 @@ class Tendril(PlantSmarts):
         if ((r <= 0.2) and (self.parent.num_generated_tendrils < 50)):
             self.parent.add_tendril( self.loc, self.tcenter, 1.0)
 
+
     def disperse(self):
         d = array([0.0,0.0])
         cdist = linalg.norm(self.loc - self.tcenter)

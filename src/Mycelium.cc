@@ -1,4 +1,5 @@
 #include "Mycelium.h"
+#include "ScriptEngine.h"
 #include <pe/Math/Vector.h>
 #include <pe/Core/Random.h>
 using namespace pe;
@@ -232,8 +233,9 @@ void Tendril::branch() {
 //                              HYPHAE
 // ----------------------------------------------------------------------
 
-Hyphae::Hyphae(float x, float y) {
-  center = Vector2(x,y);
+Hyphae::Hyphae(float x, float y, int _id) {
+  center = Vector2(x/PIXEL_SCALE_FACTOR,y/PIXEL_SCALE_FACTOR);
+  id = _id;
   m_next_id = 0;
   num_generated_tendrils = 0;
   
@@ -243,18 +245,19 @@ Hyphae::Hyphae(float x, float y) {
 }
 
 void Hyphae::render(hyphae_list_t hypha) {
-  // Draw the shape.
-  glLoadIdentity();
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glColor4f(0.0, 0.8, 0.2, 1.0);
+
+  // // Draw the shape.
+  // glLoadIdentity();
+  // glEnable(GL_BLEND);
+  // glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glColor4f(0.0, 0.8, 0.2, 1.0);
   
-  // Draw the dots at the vertices
-  glPointSize(10.0);
-  glBegin(GL_POINTS);
-  glVertex2f(center[0]*PIXEL_SCALE_FACTOR, center[1]*PIXEL_SCALE_FACTOR);
-  glEnd();
-  
+  // // Draw the dots at the vertices
+  // glPointSize(10.0);
+  // glBegin(GL_POINTS);
+  // glVertex2f(this->center[0]*PIXEL_SCALE_FACTOR, this->center[1]*PIXEL_SCALE_FACTOR);
+  // glEnd();
+
   tendril_list_t::iterator t = tendrils.begin();
   while (t != tendrils.end()) {
     tendril_list_t::iterator current_tendril = t;
@@ -266,6 +269,14 @@ void Hyphae::render(hyphae_list_t hypha) {
     else
       (*current_tendril)->render(hypha);
   }
+
+}
+
+void Hyphae::move(float x, float y) {
+
+  this->center = Vector2(x/PIXEL_SCALE_FACTOR,y/PIXEL_SCALE_FACTOR);
+  //  std::cout << "\tMoving hyphae id = " << this->id << "   " << this->center.x() << " " << this->center.y() << "\n";
+  this->num_generated_tendrils = 0;
 }
 
 void Hyphae::add_tendril(Vector2 loc, Vector2 center, float radius) {
@@ -280,7 +291,7 @@ void Hyphae::add_tendril(Vector2 loc, Vector2 center, float radius) {
 // ----------------------------------------------------------------------
 
 void Mycelium::spawn(float x, float y) {
-  boost::shared_ptr<Hyphae> h( new Hyphae(x,y) );
+  boost::shared_ptr<Hyphae> h( new Hyphae(x,y,0) );
   m_hypha.push_back( h );
 }
 

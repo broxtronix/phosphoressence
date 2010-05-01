@@ -485,7 +485,7 @@ void GraphicsEngine::drawImage() {
   m_gpu_hyphaebuffer_program->uninstall();
 
   // Draw Mycelium
-  m_video_engine->drawMycelium();
+  //m_video_engine->drawMycelium();
 
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -530,6 +530,9 @@ void GraphicsEngine::drawImage() {
   // Motion Vectors
   // ----------------------
   drawVectorField();
+
+  // Draw Mycelium
+  m_video_engine->drawMycelium();
 
   // -----------------------
   // Call out to python environment
@@ -581,10 +584,10 @@ void GraphicsEngine::drawImage() {
   // --------------------------
 
   // Draw the ground texture
-  if (!m_debug_mode) {
+  //  if (!m_debug_mode) {
     qglColor(Qt::white);
     m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
-  }
+    //  }
 
   // --------------
   // Video layer
@@ -603,7 +606,7 @@ void GraphicsEngine::drawImage() {
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable( GL_TEXTURE_2D );
-  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture1 );
+  glBindTexture( GL_TEXTURE_2D, m_framebuffer_texture0 );
 
   m_gpu_frontbuffer_program->install();
   m_gpu_frontbuffer_program->set_input_int("backbuffer_texture", 0);

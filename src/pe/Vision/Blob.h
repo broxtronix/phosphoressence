@@ -33,9 +33,9 @@ namespace vision {
 
   class BlobListener {
   public:
-    virtual void blobOn( int x, int y, int id, int order) = 0;
-    virtual void blobMoved( int x, int y, int id, int order ) = 0;
-    virtual void blobOff( int x, int y, int id, int order ) = 0;
+    virtual void blobOn( float x, float y, int id, int order) = 0;
+    virtual void blobMoved( float x, float y, int id, int order ) = 0;
+    virtual void blobOff( float x, float y, int id, int order ) = 0;
   };
 
   class Blob {

@@ -732,6 +732,14 @@ pe.register(Parameter( name = "vision_blob_approximate",
            description = "Approximate.",
            default_value = 1.0))
 
+pe.register(Parameter( name = "vision_blob_movement_threshold",
+           description = "Approximate.",
+           default_value = 0.01))
+
+pe.register(Parameter( name = "vision_blob_movement_delay",
+           description = "Approximate.",
+           default_value = 150))
+
 pe.register(Parameter( name = "hyphae_decay",
            description = "Decay rate of hyphae",
            default_value = 0.999999))
