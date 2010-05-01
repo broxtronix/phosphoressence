@@ -546,17 +546,16 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   //  We will draw the image as a texture on this quad.
-  glColor4f(0.0,0.0,1.0,0.5);
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glColor4f(1.0,1.0,1.0,0.05);
   glBegin(GL_QUADS);
-  glVertex2d( 0, 0);
-  glVertex2d( 1, 0);
-  glVertex2d( 1, 1);
-  glVertex2d( 0, 1);
-  // glVertex2d( -0.5, -0.5);
-  // glVertex2d( 0.5, -0.5);
-  // glVertex2d( 0.5, 0.5);
-  // glVertex2d( -0.5, 0.5);
+  glVertex2d( -0.25, -0.25);
+  glVertex2d( 0.25, -0.25);
+  glVertex2d( 0.25, 0.25);
+  glVertex2d( -0.25, 0.25);
   glEnd();
+  glDisable(GL_BLEND);
 
   // Draw Mycelium
   // m_video_engine->drawMycelium();
@@ -683,7 +682,7 @@ void GraphicsEngine::drawImage() {
   float h_texture = 0.5 * 1.0/m_framebuffer_radius;      // r_texture * ( h_object / r_object )
 
   //  We will draw the image as a texture on this quad.
-  qglColor(Qt::blue);
+  qglColor(Qt::white);
   glBegin(GL_QUADS);
   glTexCoord2f( 0.5-w_texture, 0.5-h_texture );
   glVertex2d( -m_aspect, -1.0);
