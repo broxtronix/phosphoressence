@@ -545,17 +545,21 @@ void GraphicsEngine::drawImage() {
   // ----------------------
   drawVectorField();
 
-  //  We will draw the image as a texture on this quad.
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glColor4f(1.0,1.0,1.0,0.05);
-  glBegin(GL_QUADS);
-  glVertex2d( -0.25, -0.25);
-  glVertex2d( 0.25, -0.25);
-  glVertex2d( 0.25, 0.25);
-  glVertex2d( -0.25, 0.25);
-  glEnd();
-  glDisable(GL_BLEND);
+  // -----------------------
+  // PhosphorEssence alpha shapes
+  // ----------------------
+  m_video_engine->drawPhosphorEssence();
+
+  // glEnable(GL_BLEND);
+  // glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // glColor4f(1.0,1.0,1.0,0.1);
+  // glBegin(GL_QUADS);
+  // glVertex2d( -0.2, -0.2);
+  // glVertex2d( 0.2, -0.2);
+  // glVertex2d( 0.2, 0.2);
+  // glVertex2d( -0.2, 0.2);
+  // glEnd();
+  // glDisable(GL_BLEND);
 
   // Draw Mycelium
   // m_video_engine->drawMycelium();

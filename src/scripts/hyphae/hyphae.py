@@ -5,19 +5,20 @@ from mycelium import Mycelium
 class HyphaeController(object):
 
     def __init__(self):
-        pe.hyphae_decay=0.99999
-        pe.decay=0.99999999
-        pe.warp=0.001
+        pe.hyphae_decay=0.9999
+        pe.decay=0.99
+        pe.warp=1.0
+        pe.warp_scale=1.5
 
         pe.vision_blur_sigma = 10
-        pe.vision_threshold = 0.03
+        pe.vision_threshold = 0.04
         pe.vision_num_blobs = 5
         pe.vision_blob_minsize = 10000
         pe.vision_blob_maxsize = 100000
         pe.vision_blob_findholes = 1.0
         pe.vision_blob_approximate = 1.0
-        pe.vision_blob_movement_threshold = 0.03  # in world units
-        pe.vision_blob_movement_delay = 30        # in frames
+        pe.vision_blob_movement_threshold = 0.05  # in world units
+        pe.vision_blob_movement_delay = 15        # in frames
 
     def render_callback(self):
 

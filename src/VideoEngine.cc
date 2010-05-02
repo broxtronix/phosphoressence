@@ -103,7 +103,7 @@ class VideoTask {
   bool m_initialized, m_terminate, m_needs_background_captured;
   float m_aspect_ratio;
   boost::shared_ptr<cv::VideoCapture> m_video_capture;
-  cv::Mat m_raw_frame, m_prev_frame, m_background_frame, m_working_frame, m_render_frame;
+  cv::Mat m_raw_frame, m_background_frame, m_working_frame, m_render_frame;
   pe::graphics::Texture m_video_texture;
   pe::vision::ContourFinder m_contour_finder;
   boost::shared_ptr<pe::vision::BlobTracker> m_blob_tracker;
@@ -138,10 +138,9 @@ public:
     cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
 
     // Save the background image & set the intial previous frame.
-    m_prev_frame = m_raw_frame;
     m_background_frame = m_raw_frame.clone();
     m_working_frame = m_raw_frame.clone();
-    m_render_frame = m_raw_frame;
+    m_render_frame = m_raw_frame.clone();
 
     // Allocate texture memory
     m_video_texture.allocate(frame.size().width, frame.size().height, GL_RGB);
@@ -164,16 +163,16 @@ public:
     cv::Mat frame;
     while (!m_terminate) {
       pe::Mutex::Lock lock(m_mutex);
-
-      // Store the previous frame
-      m_prev_frame = m_raw_frame;
       
       // Get a new frame from camera
       (*m_video_capture) >> frame; 
-      cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
 
       // Normalize
-      cv::normalize(frame, frame);
+      // cv::Mat norm_frame;
+      // cv::normalize(frame, norm_frame);
+
+      // Convert to grayscale
+      cvtColor(frame, m_raw_frame, CV_BGR2GRAY);
 
       // Reset background image if requested
       if (m_needs_background_captured) {
@@ -183,7 +182,7 @@ public:
       
       // Background subtraction
       cv::absdiff(m_raw_frame, m_background_frame, m_working_frame);
-
+      
       // Uncomment to disable background subtraction
       //m_working_frame = m_raw_frame.clone();
 
@@ -199,7 +198,6 @@ public:
       // Compute the threhold image.
       float thresh = pe_script_engine().get_parameter("vision_threshold");
       cv::threshold(m_working_frame, m_working_frame, 255*thresh, 255, cv::THRESH_BINARY);
-
       //      imshow("test", m_working_frame);
 
       // Find Contours
@@ -219,6 +217,7 @@ public:
   }
 
   void set_aspect_ratio(float aspect_ratio) { 
+    pe::Mutex::Lock lock(m_mutex);
     m_aspect_ratio = aspect_ratio; 
 
     // Set up the camera calibration matrix
@@ -232,24 +231,42 @@ public:
   }
 
   void drawMycelium() {
+    pe::Mutex::Lock lock(m_mutex);
+
     m_blob_tracker->minimumDisplacementThreshold = pe_script_engine().get_parameter("vision_blob_movement_threshold");
     m_hyphae_listener.render();
     m_mycelium->render();
   }
 
-  void draw() {
-    if (!m_initialized)
-      return;
-
+  void drawPhosphorEssence() {
     pe::Mutex::Lock lock(m_mutex);
 
     // Add in perturbations to the fluid layer.
     for (unsigned i = 0; i < m_blob_tracker->blobs.size(); ++i) {
-      m_fluid_sim->add_velocity_worldcoords(m_blob_tracker->blobs[i].smoothedCentroid.x(),
-                                            m_blob_tracker->blobs[i].smoothedCentroid.y(), 
-                                            10.0*m_blob_tracker->blobs[i].deltaLoc);
-    }
+      float x = m_blob_tracker->blobs[i].smoothedCentroid.x();
+      float y = m_blob_tracker->blobs[i].smoothedCentroid.y();
 
+      glEnable(GL_BLEND);
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glColor4f(1.0,1.0,1.0,0.1);
+      glBegin(GL_QUADS);
+      glVertex2d( x-0.25, y-0.25);
+      glVertex2d( x+0.25, y-0.25);
+      glVertex2d( x+0.25, y+0.25);
+      glVertex2d( x-0.25, y+0.25);
+      glEnd();
+      glDisable(GL_BLEND);
+
+      // Add in perturbations to the fluid layer.
+      // m_fluid_sim->add_velocity_worldcoords(m_blob_tracker->blobs[i].smoothedCentroid.x(),
+      //                                       m_blob_tracker->blobs[i].smoothedCentroid.y(), 
+      //                                       10.0*m_blob_tracker->blobs[i].deltaLoc);
+
+    }
+  }
+
+  void draw() {
+    pe::Mutex::Lock lock(m_mutex);
     m_contour_finder.draw();
     m_blob_tracker->draw();
   }
@@ -307,6 +324,10 @@ void VideoEngine::drawDebug() {
 
 void VideoEngine::drawMycelium() {
   m_task->drawMycelium();
+}
+
+void VideoEngine::drawPhosphorEssence() {
+  m_task->drawPhosphorEssence();
 }
 
 void VideoEngine::capture_background_frame() {

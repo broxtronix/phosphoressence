@@ -38,6 +38,7 @@ public:
   void draw();
   void drawDebug();
   void drawMycelium();
+  void drawPhosphorEssence();
   void capture_background_frame();
 
 };
