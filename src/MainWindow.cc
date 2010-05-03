@@ -54,6 +54,11 @@ void MainWindow::create_actions() {
   about_action->setStatusTip(tr("Show the PhosphorEssence about box."));
   connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
 
+  // Full screen
+  fullscreen_action = new QAction(tr("Full Screen"), this);
+  fullscreen_action->setStatusTip(tr("Go to full screen."));
+  connect(fullscreen_action, SIGNAL(triggered()), this, SLOT(fullscreen()));
+
   // Exit or Quit
   exit_action = new QAction(tr("E&xit"), this);
   exit_action->setShortcut(tr("Ctrl+Q"));
@@ -89,6 +94,10 @@ void MainWindow::about() {
                        
 }
 
+void MainWindow::fullscreen() {
+  this->showFullScreen();
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event) {
 
   std::ostringstream s; 
@@ -96,6 +105,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
   switch (event->key()) {
   case Qt::Key_Escape:  // Quit
     close();
+    break;
+  case Qt::Key_F:  // Fullscreen
+    this->showFullScreen();
     break;
   }
 }

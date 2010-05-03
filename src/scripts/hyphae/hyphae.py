@@ -6,7 +6,7 @@ class HyphaeController(object):
 
     def __init__(self):
         pe.hyphae_decay=0.9999
-        pe.decay=0.99
+        pe.decay=0.992
         pe.warp=1.0
         pe.warp_scale=1.5
 
@@ -17,8 +17,8 @@ class HyphaeController(object):
         pe.vision_blob_maxsize = 100000
         pe.vision_blob_findholes = 1.0
         pe.vision_blob_approximate = 1.0
-        pe.vision_blob_movement_threshold = 0.05  # in world units
-        pe.vision_blob_movement_delay = 15        # in frames
+        pe.vision_blob_movement_threshold = 0.1   # in world units
+        pe.vision_blob_movement_delay = 20        # in frames
 
     def render_callback(self):
 

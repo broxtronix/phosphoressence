@@ -32,6 +32,7 @@ public:
 
 private slots:
   void about();
+  void fullscreen();
 
 protected:
   void keyPressEvent(QKeyEvent *event);
@@ -47,6 +48,7 @@ private:
   QMenu *help_menu;
 
   QAction *about_action;
+  QAction *fullscreen_action;
   QAction *exit_action;
 };
 

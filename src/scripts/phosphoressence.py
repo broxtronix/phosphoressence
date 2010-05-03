@@ -25,7 +25,7 @@ ENABLE_CONTROLLERS = 1
 JOY_DEBUG = 1;
 #OSC_DEBUG = 1;
 #TUIO_DEBUG = 1;
-pe.show_fps = 1;
+pe.show_fps = 0;
 
 # Instantiate hardware controllers
 #osc = OscController(OSC_DEBUG)
