@@ -14,8 +14,9 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.02, 1.0, "log10")
-        self.bindings.add(self, "/joystick0/axis5", "warp", 4.0, 0.0, 0.0)
+        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 1.0, "log10")
+        self.bindings.add(self, "/joystick0/axis5", "warp", 3.0, 0.0, 0.0)
+#        self.bindings.add(self, "/joystick0/axis5", "q3", 1.0, -1.0, 0.0)
         self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
 #        self.bindings.add(self, "/joystick0/axis2", "q7", 0.01, 1.0, 0.01)
 #        self.bindings.add(self, "/joystick0/axis5", "q8", 0.01, 1.0, 0.01)
@@ -51,7 +52,7 @@ class JoystickController(object):
         pe.rot = -0.001
         pe.sx=0.999
         pe.kaleidoscope_radius=0.25
-        pe.fluid_viscosity=0.00001
+        pe.fluid_viscosity=0.0001
         pe.fluid_diffusion=0.00001
         
 
@@ -112,6 +113,15 @@ class JoystickController(object):
             else:
                 pe.set_control_value('kaleidoscope', 1.0)
 
+        # Video fractal enable
+        if (path == "/joystick0/button5" and value == 1.0):
+            if (pe.video_fractal):
+                pe.set_control_value('video_fractal', 0.0)
+                pe.set_control_value('brighten', 0.0)
+            else:
+                pe.set_control_value('video_fractal', 1.0)
+                pe.set_control_value('brighten', 1.0)
+
         # Squareshape Enable
         if (path == "/joystick0/button6" and value == 1):
             if (pe.wave_enabled): pe.set_control_value('wave_enabled', 0.0)
@@ -124,26 +134,25 @@ class JoystickController(object):
 
         # Translation
         if (path == "/joystick0/hat0" and value == 2):
-            pe.set_control_value('brighten', 1.0);
-            pe.set_control_value('darken', 0.0);
-            #            self.square_athick_coeff = 1.0
+            #            pe.set_control_value('brighten', 1.0);
+            #            pe.set_control_value('darken', 0.0);
+            self.square_thick_coeff = 1.0
         if (path == "/joystick0/hat0" and value == 8):
-            pe.set_control_value('darken', 1.0);
-            pe.set_control_value('brighten', 0.0);
-            #            self.square_thick_coeff = -1.0
+            #pe.set_control_value('darken', 1.0);
+            #pe.set_control_value('brighten', 0.0);
+            self.square_thick_coeff = -1.0
         if (path == "/joystick0/hat0" and value == 1): 
-            pe.set_control_value('darken', 0.0);
-            pe.set_control_value('solarize', 0.0);
-            pe.set_control_value('brighten', 0.0);
-            #            self.square_scale_coeff = 1.0
+            #pe.set_control_value('darken', 0.0);
+            #pe.set_control_value('solarize', 0.0);
+            #pe.set_control_value('brighten', 0.0);
+            self.square_scale_coeff = 1.0
         if (path == "/joystick0/hat0" and value == 4): 
-            pe.set_control_value('solarize', 1.0);
-            #            self.square_scale_coeff = -1.0
+            #pe.set_control_value('solarize', 1.0);
+            self.square_scale_coeff = -1.0
         if (path == "/joystick0/hat0" and value == 0.0):
-            pass
-#            self.square_thick_coeff = 0.0
-#            self.square_scale_coeff = 0.0
-#            self.wave_frequency_coeff = 0.0
+            self.square_thick_coeff = 0.0
+            self.square_scale_coeff = 0.0
+            self.wave_frequency_coeff = 0.0
 
 
         # Wave Movement
@@ -417,8 +426,8 @@ class JoystickController(object):
         pe.sy = 1
         pe.zoomexp = 1
         pe.edge_filter = 0
-        pe.brighten = 0
-        pe.gamma = 1.0
+#        pe.brighten = 0
+#        pe.gamma = 1.0
         pe.ifs_mode = 0
 
         # Tweak decay

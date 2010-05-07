@@ -709,3 +709,10 @@ pe.register(Parameter( name = "vision_num_blobs",
            description = "Number of blobs.",
            default_value = 50))
 
+
+# MISC
+pe.register(Parameter( name = "video_fractal",
+           description = "Activates video fractal mode.",
+           default_value = 0.0))
+
+

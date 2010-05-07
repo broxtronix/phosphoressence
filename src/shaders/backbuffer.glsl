@@ -2,12 +2,14 @@
 uniform sampler2D feedback_texture;
 uniform sampler2D framebuffer_texture;
 uniform float framebuffer_radius;
+uniform float aspect_ratio;
 uniform float decay;
 uniform float ifs_mode;
 uniform float invert;
 uniform float edge_extend;
 uniform float kaleidoscope;
 uniform float kaleidoscope_radius;
+uniform float video_fractal;
 
 // Video Echo
 uniform float echo_zoom;
@@ -214,6 +216,28 @@ void main() {
 
   // --------------------------  Kaleidoscope  --------------------------------
 
+  // Compute video fractal
+  if (video_fractal == 1.0) {
+//     float z = remapped_coords.y * q3 + 1.0;
+//     remapped_coords.x = remapped_coords.x / z;
+//     remapped_coords.y = remapped_coords.y / z;
+
+    if (remapped_coords.x >= 0.0 && remapped_coords.y >= 0.0) {
+      remapped_coords.x = 2.0 * remapped_coords.x - aspect_ratio;
+      remapped_coords.y = 2.0 * remapped_coords.y - 1.0;
+    } else if (remapped_coords.x < 0.0 && remapped_coords.y >= 0.0) {
+      remapped_coords.x = 2.0 * remapped_coords.x + aspect_ratio;
+      remapped_coords.y = 2.0 * remapped_coords.y - 1.0;
+    } else if (remapped_coords.x >= 0.0 && remapped_coords.y < 0.0) {
+      remapped_coords.x = 2.0 * remapped_coords.x - aspect_ratio;
+      remapped_coords.y = 2.0 * remapped_coords.y + 1.0;
+    } else {
+      gl_FragColor = vec4(0.0,0.0,0.0,0.0);
+      return;
+    }
+  }
+
+  // Compute Kaleidoscope
   if (kaleidoscope == 1.0) {
 
     remapped_coords.x -= kaleidoscope_x;

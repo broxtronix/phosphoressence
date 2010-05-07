@@ -43,6 +43,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_int("feedback_texture", 0);
   m_gpu_backbuffer_program->set_input_int("framebuffer_texture", 1);
   m_gpu_backbuffer_program->set_input_float("framebuffer_radius", m_framebuffer_radius);
+  m_gpu_backbuffer_program->set_input_float("aspect_ratio", m_aspect);
   m_gpu_backbuffer_program->set_input_float("decay", pe_script_engine().get_parameter("decay"));
   m_gpu_backbuffer_program->set_input_float("ifs_mode", pe_script_engine().get_parameter("ifs_mode"));
   m_gpu_backbuffer_program->set_input_float("invert", pe_script_engine().get_parameter("invert"));
@@ -54,6 +55,7 @@ void GraphicsEngine::drawFeedback() {
   m_gpu_backbuffer_program->set_input_float("echo_zoom", pe_script_engine().get_parameter("echo_zoom"));
   m_gpu_backbuffer_program->set_input_float("echo_alpha", pe_script_engine().get_parameter("echo_alpha"));
   m_gpu_backbuffer_program->set_input_float("echo_orient", pe_script_engine().get_parameter("echo_orient"));
+  m_gpu_backbuffer_program->set_input_float("video_fractal", pe_script_engine().get_parameter("video_fractal"));
 
   // These are handled by the mobius transform
   m_gpu_backbuffer_program->set_input_float("zoom", pe_script_engine().get_parameter("zoom"));
