@@ -101,6 +101,8 @@ void GraphicsEngine::drawFeedback() {
   float sy = pe_script_engine().get_parameter("sy")+0.00001;
 
   // Update the fluid simulation
+  m_fluid_sim->set_viscosity(pe_script_engine().get_parameter("fluid_viscosity"));
+  m_fluid_sim->set_diffusion(pe_script_engine().get_parameter("fluid_diffusion"));
   m_fluid_sim->update();
 
   // Iterate through the coordinates in the mesh, applying a coordinate by coordinate

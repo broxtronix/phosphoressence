@@ -184,8 +184,8 @@ class InvertSprite(object):
 
 # Instantiate the graphics object
 pe_graphics = PeGraphics()
-#pe_graphics.register(SquareSprite())
-pe_graphics.register(RandomWalkSprite())
+pe_graphics.register(SquareSprite())
+#pe_graphics.register(RandomWalkSprite())
 pe_graphics.register(BorderSprite())
 pe_graphics.register(InvertSprite())
 #ergo = Ergo()

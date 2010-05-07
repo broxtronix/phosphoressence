@@ -33,7 +33,7 @@ joystick = JoystickController(JOY_DEBUG)
 #tuio = TuioController(TUIO_DEBUG,host="antiprism.local",port=3333)
 
 # Set up Hyphae
-osc_handler = hyphae.OscHandler()
+#osc_handler = hyphae.OscHandler()
 #tuio_handler = hyphae.MultitouchHandler()
 hyphae = hyphae.HyphaeController()
 
@@ -86,16 +86,15 @@ def pe_animate():
 #
 # This method is called by the GraphicsEngine as it renders each frame.
 def pe_render():
-
+    
     # Render Hypae Sprites
     hyphae.render_callback()
-
-#    pe_graphics.render()
+    pe_graphics.render()
 #    pe.set_control_value('rot_rate',0)
 #    pe.set_control_value('zoom_rate',0)
 
 def pe_render_back():
-    pe.set_control_value('vision_threshold',0.5+0.4*math.cos(pe.time))
+#    pe.set_control_value('vision_threshold',0.5+0.4*math.cos(pe.time))
     pe_graphics.render_back()
 
 def pe_render_bg():

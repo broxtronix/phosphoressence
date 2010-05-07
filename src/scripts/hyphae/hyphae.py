@@ -5,10 +5,10 @@ from mycelium import Mycelium
 class HyphaeController(object):
 
     def __init__(self):
-        pe.decay=0.99999999
-        pe.warp=0.001
-        pe.q7 = 0.5
-        pe.q8 = 0.5
+#        pe.decay=0.99999999
+#        pe.warp=0.001
+#        pe.q7 = 0.5
+#        pe.q8 = 0.5
 
         self.mycelium = Mycelium()
         self.mycelium.spawn(0,250)
@@ -19,7 +19,7 @@ class HyphaeController(object):
 
     def render_callback(self):
 
-        self.mycelium.render()
+#        self.mycelium.render()
 
         # Cycle through IB colors
         pe.ib_r = 0.5

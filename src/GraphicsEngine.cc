@@ -275,7 +275,7 @@ void GraphicsEngine::resizeGL(int width, int height) {
   vgCreateContextSH(m_framebuffer_width, m_framebuffer_height);
   
   // Start video capture
-  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
+  //  m_video_engine.reset(new VideoEngine(pe::Vector2(640,480), m_fluid_sim));
 
   //------------------------------------
   // Set up the framebuffer and textures
@@ -393,10 +393,10 @@ void GraphicsEngine::drawImage() {
   drawVectorField();
 
   // Draw the video
-  if (m_debug_mode)
-    m_video_engine->drawDebug();
-  else 
-    m_video_engine->draw();
+//   if (m_debug_mode)
+//     m_video_engine->drawDebug();
+//   else 
+//     m_video_engine->draw();
 
   // -----------------------
   // Call out to python environment
@@ -591,7 +591,7 @@ void GraphicsEngine::paintEvent(QPaintEvent * /* event */) {
 void GraphicsEngine::mousePressEvent(QMouseEvent *event) { 
   // Update background image
   std::cout << "Capturing new background frame.\n";
-  m_video_engine->capture_background_frame();
+  //  m_video_engine->capture_background_frame();
 }
 
 void GraphicsEngine::mouseMoveEvent(QMouseEvent *event) {
@@ -667,7 +667,7 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
 
   case Qt::Key_B:  
     std::cout << "Capturing new background frame.\n";
-    m_video_engine->capture_background_frame();
+    //    m_video_engine->capture_background_frame();
     break;
 
   case Qt::Key_Up:  
