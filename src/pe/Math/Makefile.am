@@ -14,7 +14,7 @@ if MAKE_MODULE_MATH
 include_HEADERS = Functors.h Vector.h Matrix.h BBox.h
 
 libpeMath_la_SOURCES = 
-libpeMATH_la_LIBADD = @MODULE_MATH_LIBS@
+libpeMath_la_LIBADD = @MODULE_MATH_LIBS@
 
 lib_LTLIBRARIES = libpeMath.la
 
