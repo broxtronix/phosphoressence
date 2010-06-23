@@ -291,9 +291,18 @@ void Hyphae::add_tendril(Vector2 loc, Vector2 center, float radius) {
 //                              MYCELIUM
 // ----------------------------------------------------------------------
 
+Mycelium::Mycelium() {
+  for (int i = 0; i < 7; ++i) {
+    boost::shared_ptr<Hyphae> h( new Hyphae(pe_random().uniform(-1.0,1.0),
+                                            pe_random().uniform(-1.0,1.0),
+                                            0));
+    m_hypha.push_back( h );
+  }
+}
+
 void Mycelium::spawn(float x, float y) {
   boost::shared_ptr<Hyphae> h( new Hyphae(x,y,0) );
-  m_hypha.push_back( h );
+  // m_hypha.push_back( h );
 }
 
 void Mycelium::render() {

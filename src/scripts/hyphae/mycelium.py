@@ -17,7 +17,6 @@ class Mycelium(object):
         random.seed()
         self.hypha = []
 
-
     def spawn(self, x, y):
         self.hypha.append( Hyphae(x,y) )
 

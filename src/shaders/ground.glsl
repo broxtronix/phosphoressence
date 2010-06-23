@@ -89,8 +89,8 @@ void main() {
   // RGB --> HSV Coversion
   vec4 hsv_ground_texel = rgb_to_hsv(ground_texel);
   vec4 hsv_feedback_texel = rgb_to_hsv(feedback_texel);
-  hsv_ground_texel.b *= (0.5 + (hsv_feedback_texel.b*0.8));  // mute the luminance
-  hsv_ground_texel.g *= (0.6 + (hsv_feedback_texel.b*0.5));  // mute the saturation
+  //  hsv_ground_texel.b *= (0.5 + (hsv_feedback_texel.b*0.8));  // mute the luminance
+  //  hsv_ground_texel.g *= (0.6 + (hsv_feedback_texel.b*0.5));  // mute the saturation
   if (hsv_feedback_texel.g > 1.0)
     hsv_feedback_texel.g = 1.0;
   if (hsv_feedback_texel.b > 1.0)

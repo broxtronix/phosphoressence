@@ -109,6 +109,7 @@ class Mycelium {
   hyphae_list_t m_hypha;
 
 public:
+  Mycelium();
   void spawn(float x, float y);
   void render();
 };
