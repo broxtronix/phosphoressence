@@ -52,8 +52,8 @@ class JoystickController(object):
         pe.rot = -0.001
         pe.sx=0.999
         pe.kaleidoscope_radius=0.25
-        pe.fluid_viscosity=0.0001
-        pe.fluid_diffusion=0.00001
+        pe.fluid_viscosity=0.0005
+        pe.fluid_diffusion=0.001
         
 
     def receive_callback(self, path, value):
