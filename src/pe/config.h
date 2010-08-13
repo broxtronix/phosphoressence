@@ -121,6 +121,9 @@
 /* Define to 1 if the OPENVG package is available. */
 #define PE_HAVE_PKG_OPENVG 1
 
+/* Define to 1 if the PHOSPHORESSENCE app is available. */
+#define PE_HAVE_PKG_PHOSPHORESSENCE 1
+
 /* Define to 1 if the PTHREADS package is available. */
 #define PE_HAVE_PKG_PTHREADS 1
 

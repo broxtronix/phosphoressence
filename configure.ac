@@ -222,7 +222,7 @@ AX_MODULE(GRAPHICS,     [src/pe/Graphics],   [libpeGraphics.la],    yes, [CORE],
 AX_MODULE(VIDEO,        [src/pe/Video],      [libpeVideo.la],       yes, [CORE GRAPHICS OPENCV],    [])
 AX_MODULE(VISION,       [src/pe/Vision],     [libpeVision.la],      yes, [CORE OPENCV],   [])
 AX_MODULE(SIMULATION,   [src/pe/Simulation], [libpeSimulation.la],  yes, [CORE MATH],  [])
-#AX_APP(PHOSPHORESSENCE, [src], yes,  [CORE GRAPHICS MATH VIDEO SIMULATION VISION BOOST_THREAD BOOST_PROGRAM_OPTIONS QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
+AX_APP(PHOSPHORESSENCE, [src], yes,  [CORE GRAPHICS MATH VIDEO SIMULATION VISION BOOST_THREAD BOOST_PROGRAM_OPTIONS QT RTAUDIO LO FREEIMAGE GLEE FREETYPE OPENVG OPENCV])
 
 # These are here (instead of inside the APP macro where they belong)
 # for backwards compatability with older versions of automake.
