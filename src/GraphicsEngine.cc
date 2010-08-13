@@ -444,8 +444,8 @@ void GraphicsEngine::drawImage() {
   glLoadIdentity();
 
   // Draw the ground texture
-  qglColor(Qt::white);
-  m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
+  //qglColor(Qt::white);
+  //m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
 
   // Draw the framebuffer to the real screen.
   glEnable(GL_BLEND);
