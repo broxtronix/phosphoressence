@@ -97,11 +97,11 @@ void ScriptEngine::start() {
 }
 
 ScriptEngine::~ScriptEngine() {
-  // std::cout << "Issuing command to quit.";
-  // if (m_command_prompt_task->active())
-  //   this->execute("quit()");
-  // std::cout << "Joining thread!\n";
-  // m_thread->join();
+//   std::cout << "Issuing command to quit.";
+//   if (m_command_prompt_task->active())
+//     this->execute("quit()");
+//   std::cout << "Joining thread!\n";
+//   m_thread->join();
 }
 
 double ScriptEngine::get_parameter(const char* name) {
@@ -160,8 +160,6 @@ void ScriptEngine::controller_receive_callback(const char* controller_name,
   // Acquire the python Global Interpreter Lock (GIL)
   PyGILState_STATE gstate = PyGILState_Ensure();
   
-
-
   // Create the Python float object and set it's value in the global
   // dictionary.
   PyObject* controller = PyObject_GetAttrString(m_command_prompt_task->main_module(), controller_name);  
@@ -227,41 +225,6 @@ void ScriptEngine::controller_receive_callback(const char* controller_name,
   // Release the thread. No Python API allowed beyond this point. 
   PyGILState_Release(gstate);
 }
-
-// void ScriptEngine::controller_receive_callback(const char* controller_name, const char* path, 
-//                                                std::vector<float> values) {
-
-
-//   if (!m_command_prompt_task->active())
-//     return;
-
-//   // Acquire the python Global Interpreter Lock (GIL)
-//   PyGILState_STATE gstate = PyGILState_Ensure();
-
-//   // Create the Python float object and set it's value in the global
-//   // dictionary.
-//   PyObject* controller = PyObject_GetAttrString(m_command_prompt_task->main_module(), 
-//                                                 controller_name);  
-//   if (controller == NULL) { PyErr_Print(); return; }
-//   PyObject* receive_callback = PyObject_GetAttrString(controller, "receive_callback");  
-//   if (receive_callback == NULL) { PyErr_Print(); return; }
-
-//   PyObject* mytuple = PyTuple_New(values.size());
-
-//   float test = 4.0;
-//   PyEval_CallFunction(receive_callback, "sf", path, test);
-
-//   std::cout << "OSC #3 " << controller_name << "!!! > " << path << " : ";
-//   for (int i=0; i< values.size(); ++i)
-//     std::cout << values[i] << " ";
-//   std::cout << "\n";
-
-//   Py_DECREF(controller);
-//   Py_DECREF(receive_callback);
-
-//   // Release the thread. No Python API allowed beyond this point. 
-//   PyGILState_Release(gstate);
-// }
 
 void ScriptEngine::execute(std::string const& cmd) {
   if (!m_command_prompt_task->active()) {

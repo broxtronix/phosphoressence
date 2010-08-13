@@ -116,7 +116,7 @@ public:
       float r = norm_color[0] * alpha * beta_factor;
       float g = norm_color[1] * alpha * beta_factor;
       float b = norm_color[2] * alpha * beta_factor;
-      glColor4f(r, g, b, wave_a );
+      glColor4f(r, g, b, alpha );
 
       // We only draw the line if it moves from left to right.  (We
       // don't draw the scan return...)

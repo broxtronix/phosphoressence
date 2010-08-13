@@ -14,7 +14,7 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.03, 1.0, "log10")
+        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.01, 1.0, "log10")
         self.bindings.add(self, "/joystick0/axis5", "warp", 3.0, 0.0, 0.0)
 #        self.bindings.add(self, "/joystick0/axis5", "q3", 1.0, -1.0, 0.0)
         self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
@@ -98,13 +98,18 @@ class JoystickController(object):
 
         # Motion Vectors
         if (path == "/joystick0/button1" and value == 1):
-            if (pe.mv_a): pe.set_control_value('mv_a', 0.0)
-            else: pe.set_control_value('mv_a', 1.0);    
+            if (pe.ib_a): pe.set_control_value('ib_a', 0.0)
+            else: pe.set_control_value('ib_a', 1.0);    
 
         # Border Enable
-        if (path == "/joystick0/button2" and value == 1): 
-            if (pe.ib_a): pe.set_control_value('ib_a', 0.0)
-            else: pe.set_control_value('ib_a', 1.0)
+        if (path == "/joystick0/button2" and value == 1):
+            if (pe.warp_scale == 1.0):
+                pe.set_control_value('warp_scale', 5.0)
+            else:
+                pe.warp_scale=1.0
+                pe.set_control_value('warp_scale', 1.0)
+#            if (pe.wave_move): pe.set_control_value('wave_move', 0.0)
+#            else: pe.set_control_value('wave_move', 1.0)
 
         # Kaleidoscope
         if (path == "/joystick0/button4" and value == 1.0):
@@ -131,6 +136,8 @@ class JoystickController(object):
         if (path == "/joystick0/button7" and value == 1):
             if (pe.invert): pe.set_control_value('invert', 0.0)
             else: pe.set_control_value('invert', 1.0)
+#            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
+#            else: pe.set_control_value('wave_usedots', 1.0)
 
         # Translation
         if (path == "/joystick0/hat0" and value == 2):
@@ -165,7 +172,7 @@ class JoystickController(object):
 
 
         # Capture the rotation rate
-        rot_rate_gain = -0.05
+        rot_rate_gain = -0.01
         if (path == "/joystick0/axis0"):
             delta = (value-0.5) * rot_rate_gain
             if (math.fabs(value-0.5) > 0.05):
