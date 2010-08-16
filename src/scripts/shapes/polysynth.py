@@ -23,7 +23,7 @@ INNER_RADIUS = .2/2
 LINE_WIDTH = .04
 
 
-class WheelSprite(object):
+class PolySynth(object):
 
     def __init__(self):
         VG.create_context((2048,2048))

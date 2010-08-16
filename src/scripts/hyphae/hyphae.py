@@ -30,7 +30,7 @@ class HyphaeController(object):
         pe.ib_b += 0.35 * math.sin(13/10.0*pe.time)
 	
         # Cycle through Wave colors
-        pe.wave_brighten = 1.0
+        #        pe.wave_brighten = 1.0
         pe.wave_r=0.65
         pe.wave_g=0.65
         pe.wave_b=0.65

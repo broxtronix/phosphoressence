@@ -325,7 +325,7 @@ void main() {
     g = vec4(1.0, 1.0, decay, decay); 
 
   vec4 hsv_texel = g * rgb_to_hsv(mixed_texel);
-  hsv_texel.r = mod(hsv_texel.r,1.0)+0.0004; // Wrap hue
+  hsv_texel.r = mod(hsv_texel.r,1.0);        // Wrap hue
   hsv_texel = clamp(hsv_texel,0.0,1.0);      // Clamp saturation, luminance, and alpha
   vec4 final_texel = hsv_to_rgb(hsv_texel);
 

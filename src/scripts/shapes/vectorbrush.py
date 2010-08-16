@@ -21,7 +21,6 @@ class VectorBrush(object):
         VG.create_context((2048,2048))
 
     def render(self):
-        return
         smack = 1/2048.0
         glScale(smack,smack,1.0)
 

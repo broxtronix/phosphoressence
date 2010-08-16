@@ -5,11 +5,13 @@ from OpenGL.GLU import *
 from numpy import *
 
 from parameters import pe
+from color import ColorGenerator
 from shapes.bezier import *
 from shapes.random_walk import *
 from shapes.test import *
 from shapes.polybouncer import *
 from shapes.wheelsprite import *
+from shapes.polysynth import *
 from shapes.earthquakesprite import *
 from shapes.vu_spirals import *
 from shapes.bezierchaos import *
@@ -43,6 +45,9 @@ class PeGraphics(object):
                 sprite.render_bg()
 
 class SquareSprite(object):
+    def __init__(self):
+        self.colorgen = ColorGenerator()
+    
     def render(self):
 
         if (pe.square_a != 0.0 and pe.vg_mode == 0):
@@ -67,7 +72,8 @@ class SquareSprite(object):
             glLineWidth(pe.square_thick)
             glPointSize(pe.square_thick/2.0)
 
-            color = array([pe.square_r, pe.square_g, pe.square_b])
+            square_color = self.colorgen.generate()
+            color = array([square_color[0], square_color[1], square_color[2]])
             norm_color = color
             if (pe.wave_brighten):
                 norm_color = color / sqrt(dot(color,color.conj()))
@@ -191,6 +197,7 @@ pe_graphics.register(InvertSprite())
 #ergo = Ergo()
 #pe_graphics.register(ergo)
 #pe_graphics.register(WheelSprite())
+#pe_graphics.register(PolySynth())
 #pe_graphics.register(EarthquakeSprite())
 pe_graphics.register(BezierSprite())
 pe_graphics.register(PolyBouncerSprite(5))
