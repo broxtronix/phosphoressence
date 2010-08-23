@@ -3,9 +3,7 @@ OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import math
-
 from parameters import pe
-
 from numpy import *
 
 
@@ -13,12 +11,12 @@ from numpy import *
 # own.  It may split from time to two hyphae.
 class Hyphae(object):
 
-    def __init__(self, loc, stroke_width, level):
+    def __init__(self, loc, level):
         self.loc = loc
         self.level = level
         self.direction = array([1, 0])
         self.children = []
-        self.stroke_width = stroke_width
+        self.stroke_width = 5
 
         self.decay_counter = 0
         self.split_counter = 0
@@ -29,13 +27,13 @@ class Hyphae(object):
         self.split_counter -= 1
 
         if (self.decay_counter < 0):
-            if (pe.q7 > 0): # a value of 1.0 seems good
+            if (pe.q7 > 1.0): # a value of 1.0 seems good
                 self.decay_counter = random.geometric(pe.q7)
             else:
                 self.decay_counter = random.geometric(0.1)
 
         if (self.split_counter < 0):
-            if (pe.q6 > 0): # a value of 200.0 seems good
+            if (pe.q6 > 200): # a value of 200.0 seems good
                 self.split_counter = random.poisson(pe.q6)
             else:
                 self.split_counter = random.poisson(200.0)
@@ -44,10 +42,10 @@ class Hyphae(object):
     # This function creates a new child!
     def split(self):
         if (self.split_counter == 0 and self.level < 5):  # Max of 5 levels.
-            self.children.append( Hyphae(self.loc, self.stroke_width*3.0/4.0, self.level+1 ) )
+            self.children.append( RandomWalkSprite(self.loc, self.stroke_width*3.0/4.0, self.level+1 ) )
 
     def randomize_direction(self):
-        std_dev = pe.q8  # a value of 0.2 is pretty good
+        std_dev = 0.2  # a value of 0.2 is pretty good
         if (std_dev <= 0): std_dev = 1
         angle = random.normal(0, std_dev);
         rotation = array([[math.cos(angle), -math.sin(angle)],
@@ -103,10 +101,9 @@ class Hyphae(object):
 class RandomWalkSprite(object):
 
     def __init__(self):
-        self.root_node = Hyphae(array([0, 0]), 5.0, 0)
+        self.root_node = Hyphae(array([0, 0]), 5)
 
-    # Draw Hyphae (recursively)
+    # Draw RandomWalkSprite (recursively)
     def render(self):
-        if (pe.square_a != 0.0):
-            self.root_node.draw()
+        self.root_node.draw()
 

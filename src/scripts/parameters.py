@@ -121,7 +121,8 @@ class PhosphorEssence(object):
     def set_read_only(self, key, value):
         pass
 
-    # The time parameter is special, so we bind it by hand.
+    # The time, screen orientation, and screen aspect ratio parameters
+    # are special, so we bind them by hand.
     time = property(pe_cpp_bridge.pe_time, set_read_only)    
     orientation = property(pe_cpp_bridge.pe_orientation, set_read_only)    
     aspect = property(pe_cpp_bridge.pe_aspect, set_read_only)    
@@ -129,13 +130,17 @@ class PhosphorEssence(object):
     # ------------------------- --------- ---------------------------
 
     def __init__(self):
-        self.params = {}
+        self.params = {}           # Create the parameter dictionary
         self.__initialised = True  # for __setattr__
 
     # Register a new paramater.  This store the parameter in a
     # dictionary, and then creates a class property for its access.
     def register(self, parameter):
         self.params[parameter.name] = parameter
+
+    # Unregister a parameter from the dictionary.
+    def unregister(self, parameter):
+        self.params.remove(parameter)
 
     # There are two flavors for setting parameter values.  The first,
     # set_value(), is equivelent to setting the attribute value
@@ -169,8 +174,6 @@ class PhosphorEssence(object):
 # creating your own instance.  This should be the only one!!  (TODO:
 # Maybe it should be a singleton class?)
 pe = PhosphorEssence()
-
-
 
 # --------------------------------------------------------------
 #                   Parameter Definition
@@ -653,7 +656,7 @@ pe.register(Parameter( name = "wave_move",
 # Vector graphics parameters
 pe.register(Parameter( name = "vg_mode",
                        description = "",
-                       default_value = 0))
+                       default_value = 3))
 
 pe.register(Parameter( name = "vg_x",
            description = "Position of cursor in X.",
@@ -663,10 +666,26 @@ pe.register(Parameter( name = "vg_y",
            description = "Position of cursor in Y.",
            default_value = 0.0))
 
+pe.register(Parameter( name = "vg_scale",
+           description = "Scaling factor for VG in X.",
+           default_value = 1.0))
+
+pe.register(Parameter( name = "vg_shear_x",
+           description = "Shearing factor for VG in X.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_shear_y",
+           description = "Shearing factor for VG in Y.",
+           default_value = 0.0))
+
+pe.register(Parameter( name = "vg_rot",
+           description = "Rotation of VG (the range 0.0 to 1.0 performs one full rotation.",
+           default_value = 0.0))
+
 
 pe.register(Parameter( name = "vg_stroke_r",
            description = "Stroke color.",
-           default_value = 0.0))
+           default_value = 1.0))
 
 pe.register(Parameter( name = "vg_stroke_g",
            description = "Stroke color.",
@@ -678,7 +697,7 @@ pe.register(Parameter( name = "vg_stroke_b",
 
 pe.register(Parameter( name = "vg_stroke_a",
            description = "Stroke color.",
-           default_value = 0.0))
+           default_value = 1.0))
 
 pe.register(Parameter( name = "vg_fill_r",
            description = "Fill color.",
@@ -686,7 +705,7 @@ pe.register(Parameter( name = "vg_fill_r",
 
 pe.register(Parameter( name = "vg_fill_g",
            description = "Fill color.",
-           default_value = 0.0))
+           default_value = 1.0))
 
 pe.register(Parameter( name = "vg_fill_b",
            description = "Fill color.",
@@ -694,11 +713,11 @@ pe.register(Parameter( name = "vg_fill_b",
 
 pe.register(Parameter( name = "vg_fill_a",
            description = "Fill color.",
-           default_value = 0.0))
+           default_value = 1.0))
 
-pe.register(Parameter( name = "vg_stroke_thickness",
+pe.register(Parameter( name = "vg_stroke_width",
            description = "Thickness of stroke.",
-           default_value = 0.01))
+           default_value = 0.003))
 
 
 pe.register(Parameter( name = "vision_threshold",

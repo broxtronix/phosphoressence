@@ -189,14 +189,6 @@ void GraphicsEngine::initializeGL() {
 //                                                 std::vector<int>(),
 //                                                 resources_dir + "/shaders/backbuffer_vertex.glsl",
 //                                                 std::vector<int>());
-
-  // Load the ground image
-  std::string ground_image_filename = pe_resources_directory() + "/images/ground2.jpg";
-  std::cout << "\t--> Loading ground image: " << ground_image_filename << "\n";
-  cv::Mat ground_image = cv::imread(ground_image_filename);
-  m_ground_texture.allocate(ground_image.size().width, ground_image.size().height, GL_RGB);
-  m_ground_texture.loadData(ground_image.ptr(), ground_image.size().width, 
-                            ground_image.size().height, GL_BGR, GL_UNSIGNED_BYTE);
   
   // Generate the feedback texture
   glGenTextures(1, &m_feedback_texture);
@@ -234,7 +226,7 @@ void GraphicsEngine::initializeGL() {
   // aglContext = aglGetCurrentContext();
   // GLint swapInt = 1;
   // aglSetInteger(aglContext, AGL_SWAP_INTERVAL, &swapInt);
-  this->setAutoBufferSwap(false);
+  //  this->setAutoBufferSwap(false);
 #endif
 
   // Enable hardware anti-aliasing
@@ -443,10 +435,6 @@ void GraphicsEngine::drawImage() {
   pe_script_engine().execute("pe_render_bg()");
   glLoadIdentity();
 
-  // Draw the ground texture
-  //qglColor(Qt::white);
-  //m_ground_texture.draw(-m_aspect, -1.0, 2*m_aspect, 2.0);
-
   // Draw the framebuffer to the real screen.
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -590,7 +578,7 @@ void GraphicsEngine::paintEvent(QPaintEvent * /* event */) {
 
 void GraphicsEngine::mousePressEvent(QMouseEvent *event) { 
   // Update background image
-  std::cout << "Capturing new background frame.\n";
+  //  std::cout << "Capturing new background frame.\n";
   //  m_video_engine->capture_background_frame();
 }
 
@@ -666,7 +654,7 @@ void GraphicsEngine::keyPressEvent(QKeyEvent *event) {
     break;
 
   case Qt::Key_B:  
-    std::cout << "Capturing new background frame.\n";
+    //    std::cout << "Capturing new background frame.\n";
     //    m_video_engine->capture_background_frame();
     break;
 

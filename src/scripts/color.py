@@ -81,8 +81,8 @@ class ColorGenerator(object):
         colorscheme_hue = colorscheme_hue % (2 * math.pi) / (2 * math.pi)
 #        print str(colorscheme_hue) + " " + str(self.saturation) + " " + str(self.luminance)
         rgb = colorsys.hsv_to_rgb(colorscheme_hue, self.saturation, self.luminance)
-        if (pe.time % 3.0 < 0.03):
-            print self.phase, "  --  ", colorscheme_hue, " ", self.saturation, " ", self.luminance, "  :  ", rgb
+#        if (pe.time % 3.0 < 0.03):
+#            print self.phase, "  --  ", colorscheme_hue, " ", self.saturation, " ", self.luminance, "  :  ", rgb
 
         return (rgb[0], rgb[1], rgb[2], self.alpha)
     
