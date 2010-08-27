@@ -9,6 +9,7 @@ from shapes.bezier import BezierSprite
 from shapes.polybouncer import PolyBouncerSprite
 from shapes.random_walk import RandomWalkSprite
 from shapes.aimless_bit import AimlessBitSprite
+from shapes.colorwheel import ColorWheelSprite
 # from shapes.wheelsprite import *
 # from shapes.earthquakesprite import *
 # from shapes.vu_spirals import *
@@ -86,10 +87,11 @@ pe_graphics = PeGraphics()
 pe_graphics.register(BorderSprite())
 
 # The render-one-at-a-time sprites
+pe_graphics.register(ColorWheelSprite(), False)
 pe_graphics.register(PolygonSprite(), False)
 pe_graphics.register(BezierSprite(), False)
 pe_graphics.register(PolyBouncerSprite(5), False)
-pe_graphics.register(AimlessBitSprite(), True)
+pe_graphics.register(AimlessBitSprite(), False)
 #pe_graphics.register(RandomWalkSprite(), False)
 #pe_graphics.register(EarthquakeSprite())
 #pe_graphics.register(VectorBrush())

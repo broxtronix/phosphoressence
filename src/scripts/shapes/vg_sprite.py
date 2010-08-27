@@ -1,3 +1,4 @@
+from color import ColorScheme
 from parameters import pe
 
 # OpenGL and OpenVG
@@ -8,6 +9,9 @@ from OpenGL.GLU import *
 from OpenVG import VG
 from OpenVG import VGU
 from OpenVG.constants import *
+
+# Python
+import colorsys
 
 # ---------------------------------------------------------------------------
 #                               OpenVgSprite
@@ -20,6 +24,8 @@ from OpenVG.constants import *
 class OpenVgSprite(object):
     def __init__(self):
         VG.create_context((2048,2048))
+        self.colorscheme = ColorScheme()
+        self.colorscheme.set_color_scheme(5)
 
     # Children call this method to set up the OpenVG canvas.  This is
     # an odd bit of scaling gymnastics, but it seems to result in a
@@ -39,13 +45,20 @@ class OpenVgSprite(object):
         # Set up nice corner join angles
         VG.set(VG_STROKE_JOIN_STYLE, VG_JOIN_ROUND)
 
+        # Compute root hue
+        self.colorscheme.set_root_rgba(pe.vg_stroke_r,
+                                       pe.vg_stroke_g,
+                                       pe.vg_stroke_b,
+                                       pe.vg_stroke_a)
+        colorscheme_rgba = self.colorscheme.sample()
+
         # Set up stroke and fill color properties (these can be
         # overridden by sub-classes, of course...)
-        VG.set(VG_STROKE_LINE_WIDTH, pe.vg_stroke_width)  # Stroke width
-        stroke_paint = VG.ColorPaint((pe.vg_stroke_r,
-                                      pe.vg_stroke_g,
-                                      pe.vg_stroke_b,
-                                      pe.vg_stroke_a))    # Stroke color
+        VG.set(VG_STROKE_LINE_WIDTH, pe.vg_stroke_width)      # Stroke width
+        stroke_paint = VG.ColorPaint((colorscheme_rgba[0],
+                                      colorscheme_rgba[1],
+                                      colorscheme_rgba[2],
+                                      colorscheme_rgba[3]))    # Stroke color
         VG.set_paint(stroke_paint, VG_STROKE_PATH)
 
         fill_paint = VG.ColorPaint((pe.vg_fill_r,

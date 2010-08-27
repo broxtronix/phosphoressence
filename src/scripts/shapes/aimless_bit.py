@@ -1,5 +1,4 @@
 # Phosphoressence
-from color import ColorGenerator
 from parameters import pe
 from shapes.vg_sprite import OpenVgSprite
 

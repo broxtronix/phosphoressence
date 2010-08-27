@@ -656,7 +656,7 @@ pe.register(Parameter( name = "wave_move",
 # Vector graphics parameters
 pe.register(Parameter( name = "vg_mode",
                        description = "",
-                       default_value = 3))
+                       default_value = 1))
 
 pe.register(Parameter( name = "vg_x",
            description = "Position of cursor in X.",
@@ -713,7 +713,7 @@ pe.register(Parameter( name = "vg_fill_b",
 
 pe.register(Parameter( name = "vg_fill_a",
            description = "Fill color.",
-           default_value = 1.0))
+           default_value = 0.01))
 
 pe.register(Parameter( name = "vg_stroke_width",
            description = "Thickness of stroke.",
