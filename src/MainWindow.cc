@@ -5,7 +5,7 @@
 
 /// \file MainWindow.cc
 ///
-#include <pe_config.h>
+#include <pe/config.h>
 #include <MainWindow.h>
 #include <GraphicsEngine.h>
 #include <PeParameters.h>

@@ -15,4 +15,5 @@ ENABLE_APP_PHOSPHORESSENCE=yes
 PKG_PATHS="  \
   $HOME/projects/visionworkbench/build/    \
   $HOME/local \
+  /usr/local
 "

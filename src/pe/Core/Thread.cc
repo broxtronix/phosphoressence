@@ -5,7 +5,7 @@
 // __END_LICENSE__
 
 #include <pe/Core/Thread.h>
-#include <pe_config.h>
+#include <pe/config.h>
 
 namespace pe { 
 namespace thread {

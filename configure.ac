@@ -150,7 +150,7 @@ AX_PKG(SDL,               [],      [-lSDL], [SDL.h], [SDL])
 
 # Dependencies for OpenFrameworks
 AX_PKG(FREEIMAGE,               [],      [-lfreeimage], [FreeImage.h])
-AX_PKG(GLEE,                    [],      [-lGLee], [GL/GLee.h])
+AX_PKG(GLEE,                    [],      [-lglee], [GL/GLee.h])
 AX_PKG(FREETYPE,                [],      [-lfreetype], [ft2build.h freetype/freetype.h], [freetype2])
 
 # OpenGL
@@ -162,7 +162,7 @@ AX_PKG_ONE_OF(GL,
      AX_PKG(LINUX_GL, [X11], [-lglut -lGLU -lGL], [GL/gl.h GL/glu.h GL/glut.h], [], [], [glCreateShader])])
 
 AX_PKG(OPENVG,        [GL],      [-lOpenVG], [vg/openvg.h])
-AX_PKG(OPENCV,        [],        [-lcv -lcvaux -lcxcore -lml -lhighgui], [cv.h], [opencv])
+AX_PKG(OPENCV,        [],        [-lopencv_core -lopencv_imgproc -lopencv_highgui], [cv.h], [opencv])
 
 if test "$ENABLE_QT_QMAKE" = no; then
   AX_GROUP_PKG([QT_QMAKE])

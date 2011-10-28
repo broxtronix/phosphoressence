@@ -39,7 +39,7 @@ std::string pe_resources_directory() {
   return resources_dir;
 #else
   std::cout << "Error: pe_resources_directory() not yet implemented on this platform.  Please contact the author!\n";
-  return "/home/mbroxton/projects/phosphoressence/src";
+  return "/home/broxton/projects/phosphoressence/src";
 #endif
 }
 
