@@ -14,7 +14,7 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.85, 1.01, 1.0, "log10")
+        self.bindings.add(self, "/joystick0/axis4", "decay", 0.92, 1.03, 1.0, "log10")
         self.bindings.add(self, "/joystick0/axis5", "warp", 3.0, 0.0, 0.0)
 #        self.bindings.add(self, "/joystick0/axis5", "q3", 1.0, -1.0, 0.0)
         self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
