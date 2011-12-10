@@ -14,7 +14,7 @@ class JoystickController(object):
         self.bindings = PeBindings()
 
         # Priceless
-        self.bindings.add(self, "/joystick0/axis4", "decay", 0.92, 1.03, 1.0, "log10")
+        self.bindings.add(self, "/joystick0/axis4", "decay", 0.97, 1.015, 1.0, "log10")
         self.bindings.add(self, "/joystick0/axis5", "warp", 3.0, 0.0, 0.0)
 #        self.bindings.add(self, "/joystick0/axis5", "q3", 1.0, -1.0, 0.0)
         self.bindings.add(self, "/joystick0/axis2", "echo_alpha", 0.0, 0.98, 0.0)
@@ -39,7 +39,7 @@ class JoystickController(object):
         self.square_thick_coeff = 0.0
 
         # Default parameters for PhosphorEssence
-        pe.wave_enabled = 1.0
+        pe.wave_enabled = 0.0
         pe.wave_mode = 1.0
         pe.square_a = 1.0
         pe.ib_size=10.0
@@ -54,6 +54,8 @@ class JoystickController(object):
         pe.kaleidoscope_radius=0.25
         pe.fluid_viscosity=0.0005
         pe.fluid_diffusion=0.001
+        pe.brighten = 0
+        pe.darken = 0
         
 
     def receive_callback(self, path, value):
@@ -89,7 +91,9 @@ class JoystickController(object):
             pe.set_control_value('wave_enabled',1.0)
             pe.set_control_value('square_a', 1.0)
             pe.set_control_value('ib_size',10.0)
-    
+            pe.set_control_value('brighten', 0)
+            pe.set_control_value('darken', 0)
+
         # Waveshape Enable
         if (path == "/joystick0/button0" and value == 1):
             pe.vg_mode = pe.vg_mode + 1;
@@ -103,13 +107,8 @@ class JoystickController(object):
 
         # Border Enable
         if (path == "/joystick0/button2" and value == 1):
-            if (pe.warp_scale == 1.0):
-                pe.set_control_value('warp_scale', 5.0)
-            else:
-                pe.warp_scale=1.0
-                pe.set_control_value('warp_scale', 1.0)
-#            if (pe.wave_move): pe.set_control_value('wave_move', 0.0)
-#            else: pe.set_control_value('wave_move', 1.0)
+            if (pe.mv_a == 1.0): pe.set_control_value('mv_a', 0.0)
+            else: pe.set_control_value('mv_a', 1.0)
 
         # Kaleidoscope
         if (path == "/joystick0/button4" and value == 1.0):
@@ -120,12 +119,14 @@ class JoystickController(object):
 
         # Video fractal enable
         if (path == "/joystick0/button5" and value == 1.0):
-            if (pe.video_fractal):
-                pe.set_control_value('video_fractal', 0.0)
-                pe.set_control_value('brighten', 0.0)
-            else:
-                pe.set_control_value('video_fractal', 1.0)
+            if (not pe.darken and not pe.brighten):
                 pe.set_control_value('brighten', 1.0)
+            elif (pe.brighten):
+                pe.set_control_value('brighten', 0.0)
+                pe.set_control_value('darken', 1.0)
+            else:
+                pe.set_control_value('brighten', 0.0)
+                pe.set_control_value('darken', 0.0)
 
         # Squareshape Enable
         if (path == "/joystick0/button6" and value == 1):
@@ -134,8 +135,10 @@ class JoystickController(object):
 
         # Vector Field
         if (path == "/joystick0/button7" and value == 1):
-            if (pe.invert): pe.set_control_value('invert', 0.0)
-            else: pe.set_control_value('invert', 1.0)
+#            if (pe.invert): pe.set_control_value('invert', 0.0)
+#            else: pe.set_control_value('invert', 1.0)
+            if (pe.wave_move): pe.set_control_value('wave_move', 0.0)
+            else: pe.set_control_value('wave_move', 1.0)
 #            if (pe.wave_usedots): pe.set_control_value('wave_usedots', 0.0)
 #            else: pe.set_control_value('wave_usedots', 1.0)
 
